@@ -137,7 +137,7 @@ export default function OurClients() {
             <span className="block">Is real, it shows</span>
           </h2>
 
-          <div className="absolute left-48 top-0 sm:left-64 lg:left-[420px]">
+          <div className="absolute right-0 -bottom-16 md:right-8 md:bottom-0 lg:top-1/2 lg:-translate-y-1/2 lg:right-16">
             <RatingBadge />
           </div>
         </motion.div>
