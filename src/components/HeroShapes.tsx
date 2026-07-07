@@ -1,4 +1,7 @@
+"use client";
+
 import type { SVGProps } from "react";
+import { motion } from "motion/react";
 
 /** Sky-blue multi-point burst / star. */
 export function Burst(props: SVGProps<SVGSVGElement>) {
@@ -53,27 +56,37 @@ export function HalfCircle(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Coiled spring/squiggle — used as a playful letter replacement. */
+/** Coiled spring/squiggle — used as a playful letter replacement. Loops are
+ *  generated as identical alternating semicircular arcs at a fixed
+ *  x-interval, so every loop is guaranteed even and evenly spaced. Draws
+ *  itself in left-to-right once scrolled into view. */
 export function Coil(props: SVGProps<SVGSVGElement>) {
-  const loops = 7;
-  const width = 200;
-  const amplitude = 34;
-  const midY = 40;
+  const loops = 11;
+  const width = 320;
+  const height = 60;
+  const midY = height / 2;
+  const loopWidth = width / loops;
+  const r = loopWidth / 2;
+
   let d = `M 0 ${midY} `;
   for (let i = 0; i < loops; i++) {
-    const x0 = (i / loops) * width;
-    const x1 = ((i + 0.5) / loops) * width;
-    const x2 = ((i + 1) / loops) * width;
-    const dir = i % 2 === 0 ? -1 : 1;
-    const y = midY + dir * amplitude;
-    d += `C ${x0 + (x1 - x0) * 0.55} ${y}, ${x1 - (x1 - x0) * 0.55} ${y}, ${x1} ${midY} `;
-    d += `C ${x1 + (x2 - x1) * 0.55} ${midY - dir * amplitude}, ${x2 - (x2 - x1) * 0.55} ${
-      midY - dir * amplitude
-    }, ${x2} ${midY} `;
+    const xEnd = (i + 1) * loopWidth;
+    const sweep = i % 2 === 0 ? 0 : 1;
+    d += `A ${r} ${r} 0 0 ${sweep} ${xEnd.toFixed(2)} ${midY} `;
   }
+
   return (
-    <svg viewBox={`0 0 ${width} 80`} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d={d} stroke="currentColor" strokeWidth="9" strokeLinecap="round" />
+    <svg viewBox={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <motion.path
+        d={d}
+        stroke="currentColor"
+        strokeWidth="13"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      />
     </svg>
   );
 }

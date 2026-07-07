@@ -1,32 +1,77 @@
 "use client";
 
 import { useId, useState } from "react";
+import type { SVGProps } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
-import { Burst, Coil, ScallopBadge } from "@/components/HeroShapes";
+import { Burst, Coil } from "@/components/HeroShapes";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const LOGOS = Array.from({ length: 17 }, (_, i) => `/clients/${i + 1}.png`);
 
+/** Even 9-petal flower, local to this badge only — not the shared
+ *  ScallopBadge (which stays untouched for the Hero/CTA buttons). */
+function ScoreBadgeShape(props: SVGProps<SVGSVGElement>) {
+  const petals = 9;
+  const segments = 240;
+  const outer = 48;
+  const inner = 41;
+  const cx = 50;
+  const cy = 50;
+  let d = "";
+  for (let i = 0; i <= segments; i++) {
+    const t = (i / segments) * Math.PI * 2;
+    const r = (outer + inner) / 2 + ((outer - inner) / 2) * Math.cos(petals * t);
+    const x = cx + r * Math.cos(t);
+    const y = cy + r * Math.sin(t);
+    d += `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)} `;
+  }
+  d += "Z";
+  return (
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d={d} fill="currentColor" />
+    </svg>
+  );
+}
+
 function RatingBadge() {
   const pathId = `rating-circle-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  // Text ring sits at r=38, safely inside the petals' minimum radius (41).
+  const textRadius = 38;
+  const circumference = 2 * Math.PI * textRadius;
 
   return (
     <div className="relative h-36 w-36 shrink-0 sm:h-44 sm:w-44 lg:h-48 lg:w-48">
-      <ScallopBadge className="absolute inset-0 h-full w-full text-blue" />
-      <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden>
+      <ScoreBadgeShape className="absolute inset-0 h-full w-full text-blue" />
+      <motion.svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 h-full w-full"
+        aria-hidden
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, ease: "linear", repeat: Infinity }}
+      >
         <defs>
-          <path id={pathId} d="M 50,8 A 42,42 0 1,1 49.9,8 Z" fill="none" />
+          <path
+            id={pathId}
+            d={`M 50,${50 - textRadius} A ${textRadius},${textRadius} 0 1,1 ${50 - 0.001},${
+              50 - textRadius
+            } Z`}
+            fill="none"
+          />
         </defs>
-        <text fill="white" fontSize="5.4" fontWeight="700" letterSpacing="0.3">
-          <textPath href={`#${pathId}`}>
+        <text fill="white" fontSize="5.4" fontWeight="700">
+          <textPath
+            href={`#${pathId}`}
+            textLength={circumference}
+            lengthAdjust="spacing"
+          >
             OVERALL CLIENT RATING SCORE • OVERALL CLIENT RATING SCORE •
           </textPath>
         </text>
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
+      </motion.svg>
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <span className="font-heading text-4xl font-bold text-white sm:text-5xl">9.6</span>
       </div>
     </div>
@@ -51,8 +96,8 @@ function ClientMarquee() {
         }`}
       >
         {[...LOGOS, ...LOGOS].map((src, i) => (
-          <div key={i} className="relative h-24 w-56 shrink-0 sm:h-32 sm:w-72 lg:h-36 lg:w-80">
-            <Image src={src} alt="" fill className="object-contain" sizes="320px" />
+          <div key={i} className="relative h-[168px] w-[392px] shrink-0 sm:h-[224px] sm:w-[504px] lg:h-[252px] lg:w-[560px]">
+            <Image src={src} alt="" fill className="object-contain" sizes="560px" />
           </div>
         ))}
       </div>
@@ -86,7 +131,7 @@ export default function OurClients() {
             <span className="block">When the</span>
             <span className="flex items-center">
               C
-              <Coil className="mx-1 h-[0.5em] w-[1.4em] text-orange" />
+              <Coil className="mx-4 h-[0.6em] w-[3em] text-orange sm:w-[3.5em]" />
               NNECTION
             </span>
             <span className="block">Is real, it shows</span>
