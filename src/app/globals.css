@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand colors — stored as space-separated RGB so Tailwind's
+     text-white/80 style opacity modifiers can slot in an alpha value. */
+  --blue: 40 79 159;
+  --orange: 220 92 38;
+  --yellow: 224 182 36;
+  --sky: 37 127 194;
+  --green: 119 194 107;
+  --white: 255 255 255;
+  --ink: 26 26 26;
+}
+
+* {
+  scroll-behavior: auto;
+}
+
+html.lenis {
+  height: auto;
+}
+
+html.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+body {
+  background: rgb(var(--white));
+  color: rgb(var(--ink));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.cursor-none,
+.cursor-none * {
+  cursor: none;
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 70s linear infinite;
+}
+
+.animate-marquee-paused {
+  animation-play-state: paused;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
