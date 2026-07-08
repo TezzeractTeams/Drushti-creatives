@@ -2,7 +2,6 @@
 
 import { useId, useState } from "react";
 import type { SVGProps } from "react";
-import Image from "next/image";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
 import { Burst, Coil } from "@/components/HeroShapes";
@@ -96,9 +95,10 @@ function ClientMarquee() {
         }`}
       >
         {[...LOGOS, ...LOGOS].map((src, i) => (
-          <div key={i} className="relative h-[168px] w-[392px] shrink-0 sm:h-[224px] sm:w-[504px] lg:h-[252px] lg:w-[560px]">
-            <Image src={src} alt="" fill className="object-contain" sizes="560px" />
-          </div>
+          // Fixed height, natural (auto) width per logo — no internal
+          // letterbox padding, so the only space between logos is the gap.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={i} src={src} alt="" className="h-40 w-auto shrink-0 object-contain" />
         ))}
       </div>
     </div>
@@ -125,19 +125,19 @@ export default function OurClients() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="relative"
+          className="relative max-w-3xl"
         >
           <h2 className="max-w-3xl font-heading text-4xl font-bold uppercase leading-[0.95] text-ink sm:text-5xl lg:text-6xl">
             <span className="block">When the</span>
             <span className="flex items-center">
               C
-              <Coil className="mx-4 h-[0.6em] w-[3em] text-orange sm:w-[3.5em]" />
+              <Coil className="mx-1 h-[0.7em] w-[3.5em] text-orange sm:w-[3.8em]" />
               NNECTION
             </span>
             <span className="block">Is real, it shows</span>
           </h2>
 
-          <div className="absolute right-0 -bottom-16 md:right-8 md:bottom-0 lg:top-1/2 lg:-translate-y-1/2 lg:right-16">
+          <div className="absolute right-0 -bottom-16 md:right-0 md:bottom-0 lg:top-1/2 lg:-translate-y-1/2 lg:right-0">
             <RatingBadge />
           </div>
         </motion.div>

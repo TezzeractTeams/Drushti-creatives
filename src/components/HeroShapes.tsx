@@ -1,7 +1,4 @@
-"use client";
-
 import type { SVGProps } from "react";
-import { motion } from "motion/react";
 
 /** Sky-blue multi-point burst / star. */
 export function Burst(props: SVGProps<SVGSVGElement>) {
@@ -56,37 +53,40 @@ export function HalfCircle(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Coiled spring/squiggle — used as a playful letter replacement. Loops are
- *  generated as identical alternating semicircular arcs at a fixed
- *  x-interval, so every loop is guaranteed even and evenly spaced. Draws
- *  itself in left-to-right once scrolled into view. */
+/** Coiled spring — traced from the reference: a row of tall, identical
+ *  arches sharing one baseline, each a single cubic Bézier (control points
+ *  directly above its own endpoints, so it departs/arrives vertically —
+ *  the classic "arch" Bézier), flowing straight into the next arch's base.
+ *  Short flat leads on both ends. One path, one M, no repeated shapes. */
 export function Coil(props: SVGProps<SVGSVGElement>) {
-  const loops = 11;
-  const width = 320;
-  const height = 60;
-  const midY = height / 2;
-  const loopWidth = width / loops;
-  const r = loopWidth / 2;
+  const loops = 9;
+  const loopWidth = 60;
+  const archHeight = 95;
+  const leadLength = 14;
+  const margin = 10;
+  const baseline = archHeight + margin;
+  const height = baseline + margin;
+  const totalWidth = leadLength * 2 + loops * loopWidth;
 
-  let d = `M 0 ${midY} `;
+  let d = `M 0 ${baseline} L ${leadLength} ${baseline} `;
   for (let i = 0; i < loops; i++) {
-    const xEnd = (i + 1) * loopWidth;
-    const sweep = i % 2 === 0 ? 0 : 1;
-    d += `A ${r} ${r} 0 0 ${sweep} ${xEnd.toFixed(2)} ${midY} `;
+    const x0 = leadLength + i * loopWidth;
+    const x1 = x0 + loopWidth;
+    const top = baseline - archHeight;
+    d += `C ${x0.toFixed(2)} ${top.toFixed(2)}, ${x1.toFixed(2)} ${top.toFixed(2)}, ${x1.toFixed(
+      2
+    )} ${baseline} `;
   }
+  d += `L ${totalWidth.toFixed(2)} ${baseline} `;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <motion.path
-        d={d}
-        stroke="currentColor"
-        strokeWidth="13"
-        strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-      />
+    <svg
+      viewBox={`0 0 ${totalWidth.toFixed(2)} ${height.toFixed(2)}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d={d} stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
