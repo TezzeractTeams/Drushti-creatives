@@ -1,4 +1,4 @@
-import Hero from "@/sections/Hero";
+import Hero from "@/components/Hero";
 import AboutUs from "@/sections/AboutUs";
 import Manifesto from "@/sections/Manifesto";
 import Services from "@/sections/Services";

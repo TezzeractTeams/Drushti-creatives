@@ -1,47 +1,83 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
   useReducedMotion,
-  useScroll,
   useSpring,
   useTransform,
-  type Variants,
+  type MotionValue,
 } from "motion/react";
-import Container from "@/components/Container";
-import BadgeButton from "@/components/BadgeButton";
-import FloatingShape from "@/components/FloatingShape";
-import TypewriterWord from "@/components/TypewriterWord";
-import { Burst, Circle, Spike, HalfCircle } from "@/components/HeroShapes";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Mask/clip reveal — child words roll up from behind a bar, staggered. */
-const lineGroup: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
-};
+interface FloatingImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  pointerX: MotionValue<number>;
+  pointerY: MotionValue<number>;
+  scrollY: MotionValue<number>;
+  depth: number;
+  scrollDrift: number;
+  floatY?: number;
+  duration?: number;
+  delay?: number;
+}
 
-const wordMask: Variants = {
-  hidden: { y: "115%" },
-  visible: { y: "0%", transition: { duration: 0.85, ease: EASE } },
-};
+function FloatingImage({
+  src,
+  alt,
+  className,
+  pointerX,
+  pointerY,
+  scrollY,
+  depth,
+  scrollDrift,
+  floatY = 14,
+  duration = 8,
+  delay = 0,
+}: FloatingImageProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const px = useTransform(pointerX, (v) => v * depth);
+  const py = useTransform(pointerY, (v) => v * depth);
+  // Map 0→900px of window scroll to the drift distance for this image.
+  // Using window scrollY directly (not target-based progress) so Lenis
+  // smooth scroll doesn't interfere with Framer Motion's tracking.
+  const sy = useTransform(scrollY, [0, 900], [0, scrollDrift]);
 
-const lineFade: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
-};
-
-/** A single word wrapped in an overflow-hidden mask. */
-function Word({ children, className }: { children: string; className?: string }) {
   return (
-    <span className="inline-flex overflow-hidden pb-[0.12em] align-bottom">
-      <motion.span variants={wordMask} className={`inline-block ${className ?? ""}`}>
-        {children}
-      </motion.span>
-    </span>
+    // Outer: scroll parallax drift
+    <motion.div
+      className={`absolute ${className}`}
+      style={prefersReducedMotion ? undefined : { y: sy }}
+    >
+      {/* Pointer parallax */}
+      <motion.div style={prefersReducedMotion ? undefined : { x: px, y: py }}>
+        {/* Continuous slow float */}
+        <motion.div
+          animate={prefersReducedMotion ? undefined : { y: [0, -floatY, 0] }}
+          transition={{ duration, delay, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.a
+            href="#work"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="relative block aspect-square overflow-hidden rounded-2xl shadow-xl transition-shadow hover:shadow-2xl"
+          >
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 33vw"
+            />
+          </motion.a>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -49,17 +85,18 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
-  // --- Scroll parallax ---
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const yBurst = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const yCircle = useTransform(scrollYProgress, [0, 1], [0, 240]);
-  const ySpike = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const yHalf = useTransform(scrollYProgress, [0, 1], [0, 180]);
+  // Manual scroll listener — bypasses Framer Motion's useScroll which conflicts
+  // with Lenis smooth scroll. Native scroll events DO fire (Lenis uses native
+  // scroll mode), so we set the MotionValue directly on each event.
+  const scrollY = useMotionValue(0);
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__heroScrollY = scrollY;
+    const update = () => scrollY.set(window.scrollY);
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, [scrollY]);
 
-  // --- Pointer parallax (spring-followed, normalized -0.5..0.5) ---
+  // Pointer parallax (normalized -0.5..0.5)
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const sx = useSpring(px, { stiffness: 120, damping: 20, mass: 0.4 });
@@ -72,113 +109,94 @@ export default function Hero() {
     py.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  // Per-shape pointer depth (px of travel across the full viewport).
-  const burstPX = useTransform(sx, (v) => v * 46);
-  const burstPY = useTransform(sy, (v) => v * 46);
-  const circlePX = useTransform(sx, (v) => v * -70);
-  const circlePY = useTransform(sy, (v) => v * -70);
-  const spikePX = useTransform(sx, (v) => v * 34);
-  const spikePY = useTransform(sy, (v) => v * 34);
-  const halfPX = useTransform(sx, (v) => v * -52);
-  const halfPY = useTransform(sy, (v) => v * -52);
-
   return (
     <section
       ref={sectionRef}
       onMouseMove={handlePointer}
-      className="relative flex min-h-screen items-center overflow-hidden bg-orange"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-blue"
     >
-      {/* Decorative floating shapes */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <FloatingShape
-          scrollY={yBurst}
-          pointerX={burstPX}
-          pointerY={burstPY}
-          floatRotate={20}
-          duration={9}
-          className="absolute right-[8%] top-[16%] w-24 text-sky sm:w-32 lg:w-40"
-        >
-          <Burst className="h-auto w-full" />
-        </FloatingShape>
+      {/* All images behind the wordmark (z-0 vs h1 z-10).
+          Each has a unique scrollDrift so they travel at different speeds
+          as the user scrolls — matching the reference's canvas parallax. */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="pointer-events-auto h-full w-full">
 
-        <FloatingShape
-          scrollY={yCircle}
-          pointerX={circlePX}
-          pointerY={circlePY}
-          floatY={26}
-          floatRotate={0}
-          duration={8}
-          delay={0.5}
-          className="absolute right-[22%] top-[62%] w-16 text-blue sm:w-20 lg:w-24"
-        >
-          <Circle className="h-auto w-full" />
-        </FloatingShape>
+          {/* Left mid — drifts slowly */}
+          <FloatingImage
+            src="/work/softlogic.webp"
+            alt="Softlogic project"
+            pointerX={sx}
+            pointerY={sy}
+            scrollY={scrollY}
+            depth={-50}
+            scrollDrift={-180}
+            duration={9}
+            className="left-[2%] top-[28%] w-44 sm:w-60 lg:w-72"
+          />
 
-        <FloatingShape
-          scrollY={ySpike}
-          pointerX={spikePX}
-          pointerY={spikePY}
-          floatY={14}
-          floatRotate={-30}
-          duration={11}
-          delay={0.2}
-          className="absolute left-[6%] top-[18%] w-14 text-yellow sm:w-20 lg:w-24"
-        >
-          <Spike className="h-auto w-full" />
-        </FloatingShape>
+          {/* Top left — faster drift, partially behind header on load */}
+          <FloatingImage
+            src="/work/advantis.webp"
+            alt="Advantis project"
+            pointerX={sx}
+            pointerY={sy}
+            scrollY={scrollY}
+            depth={80}
+            scrollDrift={-300}
+            duration={10}
+            delay={0.7}
+            className="left-[4%] top-[2%] w-44 sm:w-60 lg:w-72"
+          />
 
-        <FloatingShape
-          scrollY={yHalf}
-          pointerX={halfPX}
-          pointerY={halfPY}
-          floatY={20}
-          floatRotate={12}
-          duration={10}
-          delay={0.8}
-          className="absolute bottom-[12%] left-[12%] w-20 text-green sm:w-28 lg:w-32"
-        >
-          <HalfCircle className="h-auto w-full" />
-        </FloatingShape>
+          {/* Center bottom — emerges from below as page loads */}
+          <FloatingImage
+            src="/work/ginger-fresh.webp"
+            alt="Ginger Fresh project"
+            pointerX={sx}
+            pointerY={sy}
+            scrollY={scrollY}
+            depth={60}
+            scrollDrift={-140}
+            duration={7.5}
+            delay={0.4}
+            className="left-[38%] top-[60%] w-40 sm:w-56 lg:w-64"
+          />
+
+          {/* Top right — fastest drift, tucked near header */}
+          <FloatingImage
+            src="/work/norlanka.webp"
+            alt="Norlanka project"
+            pointerX={sx}
+            pointerY={sy}
+            scrollY={scrollY}
+            depth={-70}
+            scrollDrift={-260}
+            duration={11}
+            delay={0.2}
+            className="right-[2%] top-[2%] w-44 sm:w-60 lg:w-72"
+          />
+
+          {/* Right mid — medium drift */}
+          <FloatingImage
+            src="/work/fairfirst.webp"
+            alt="Fairfirst Insurance project"
+            pointerX={sx}
+            pointerY={sy}
+            scrollY={scrollY}
+            depth={-40}
+            scrollDrift={-200}
+            duration={8.5}
+            delay={0.5}
+            className="right-[4%] top-[40%] w-40 sm:w-56 lg:w-64"
+          />
+
+        </div>
       </div>
 
-      <Container className="relative z-10 py-28">
-        {/* Kicker */}
-        <p className="mb-6 text-xs font-semibold uppercase tracking-[0.32em] text-white/80 sm:text-sm">
-          A creative marketing agency
-        </p>
-
-        {/* Headline with staggered word mask reveal */}
-        <motion.h1
-          variants={lineGroup}
-          initial="hidden"
-          animate="visible"
-          className="font-heading font-bold text-white text-display-lg"
-        >
-          <span className="block">
-            <Word>YOUR</Word>
-          </span>
-          <motion.div variants={lineFade} className="block">
-            <TypewriterWord className="text-blue" />
-          </motion.div>
-          <span className="block">
-            <Word>OUR</Word> <Word>CREATIVITY</Word>
-          </span>
-        </motion.h1>
-
-        {/* Sub-line */}
-        <p className="mt-8 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-          We turn the way you see your brand into results the world can&apos;t look
-          away from — clarity of vision, made real.
-        </p>
-
-        {/* CTAs */}
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <BadgeButton href="#contact">Let&apos;s create</BadgeButton>
-          <a href="#work" className="text-sm font-semibold text-white hover:underline">
-            See our work →
-          </a>
-        </div>
-      </Container>
+      {/* Central wordmark — sits above all images */}
+      <h1 className="pointer-events-none relative z-10 font-heading text-[clamp(4rem,18vw,20rem)] font-bold uppercase leading-none tracking-tight text-white">
+        Drushti
+      </h1>
     </section>
   );
 }

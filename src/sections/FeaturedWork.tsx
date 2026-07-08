@@ -72,6 +72,7 @@ export default function FeaturedWork() {
 
   return (
     <section
+      id="work"
       ref={wrapperRef}
       className="relative bg-white"
       style={{ height: `${PROJECTS.length * 80}vh` }}
