@@ -53,31 +53,34 @@ export function HalfCircle(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Coiled spring — traced from the reference: a row of tall, identical
- *  arches sharing one baseline, each a single cubic Bézier (control points
- *  directly above its own endpoints, so it departs/arrives vertically —
- *  the classic "arch" Bézier), flowing straight into the next arch's base.
- *  Short flat leads on both ends. One path, one M, no repeated shapes. */
+/** Continuous coiled spring using a prolate trochoid parametric equation.
+ *  This creates smooth, self-intersecting loops like cursive 'l's or a spring.
+ *  Short flat leads on both ends connect it seamlessly to surrounding text. */
 export function Coil(props: SVGProps<SVGSVGElement>) {
-  const loops = 9;
-  const loopWidth = 60;
-  const archHeight = 95;
-  const leadLength = 14;
+  const loops = 10;
+  const radiusY = 45; 
+  const radiusX = 25; 
+  const speed = 9.5; 
+  const leadLength = 14; 
+  const pointsPerLoop = 60; 
   const margin = 10;
-  const baseline = archHeight + margin;
-  const height = baseline + margin;
-  const totalWidth = leadLength * 2 + loops * loopWidth;
 
+  const baseline = radiusY * 2 + margin;
+  const height = baseline + margin;
+  
   let d = `M 0 ${baseline} L ${leadLength} ${baseline} `;
-  for (let i = 0; i < loops; i++) {
-    const x0 = leadLength + i * loopWidth;
-    const x1 = x0 + loopWidth;
-    const top = baseline - archHeight;
-    d += `C ${x0.toFixed(2)} ${top.toFixed(2)}, ${x1.toFixed(2)} ${top.toFixed(2)}, ${x1.toFixed(
-      2
-    )} ${baseline} `;
+  
+  const segments = loops * pointsPerLoop;
+  for (let i = 0; i <= segments; i++) {
+    const u = (i / segments) * (loops * 2 * Math.PI);
+    const x = leadLength + speed * u + radiusX * Math.sin(u);
+    const y = radiusY * Math.cos(u) + radiusY + margin;
+    d += `L ${x.toFixed(2)} ${y.toFixed(2)} `;
   }
-  d += `L ${totalWidth.toFixed(2)} ${baseline} `;
+  
+  const endX = leadLength + speed * (loops * 2 * Math.PI);
+  const totalWidth = endX + leadLength;
+  d += `L ${totalWidth.toFixed(2)} ${baseline}`;
 
   return (
     <svg
