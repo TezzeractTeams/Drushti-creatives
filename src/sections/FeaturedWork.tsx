@@ -87,6 +87,16 @@ export default function FeaturedWork() {
             className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
           >
             <Burst className="h-4 w-4 text-orange" />
+            Featured Work
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
+          >
+            <Burst className="h-4 w-4 text-orange" />
             Featured work
           </motion.div>
 
@@ -97,17 +107,15 @@ export default function FeaturedWork() {
                 <div key={project.name} className="border-b border-ink/10 py-4 first:pt-0">
                   <div className="flex items-center gap-4">
                     <span
-                      className={`hidden text-xl text-ink/40 transition-transform duration-300 sm:inline-block ${
-                        isActive ? "-rotate-90" : ""
-                      }`}
+                      className={`hidden text-xl text-ink/40 transition-transform duration-300 sm:inline-block ${isActive ? "-rotate-90" : ""
+                        }`}
                       aria-hidden
                     >
                       ↓
                     </span>
                     <span
-                      className={`font-heading text-3xl font-bold uppercase tracking-tight transition-colors duration-300 sm:text-4xl lg:text-5xl ${
-                        isActive ? "text-ink" : "text-ink/25"
-                      }`}
+                      className={`font-heading text-3xl font-bold uppercase tracking-tight transition-colors duration-300 sm:text-4xl lg:text-5xl ${isActive ? "text-ink" : "text-ink/25"
+                        }`}
                     >
                       {project.name}
                     </span>

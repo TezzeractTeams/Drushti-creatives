@@ -3,6 +3,7 @@ import { Space_Grotesk, Inter } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <CustomCursor />
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

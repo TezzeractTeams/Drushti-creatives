@@ -14,7 +14,7 @@ const IMAGES = [
 
 export default function AboutUs() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -30,7 +30,7 @@ export default function AboutUs() {
 
   const topPath = useMotionTemplate`M 0 0 L 100 0 L 100 ${topEdgeY} Q 50 ${topCenterY} 0 ${topEdgeY} Z`;
   const bottomPath = useMotionTemplate`M 0 100 L 100 100 L 100 ${bottomEdgeY} Q 50 ${bottomCenterY} 0 ${bottomEdgeY} Z`;
-  
+
   const titleOpacity = useTransform(scrollYProgress, [0, 0.15, 0.35, 0.45], [0, 1, 1, 0]);
   const titleScale = useTransform(scrollYProgress, [0, 0.2, 0.35, 0.45], [0.9, 1, 1, 0.8]);
   const titleY = useTransform(scrollYProgress, [0.35, 0.45], ["0%", "-20%"]);
@@ -43,17 +43,17 @@ export default function AboutUs() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 1500); 
+    }, 1500);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <section ref={containerRef} className="relative h-[300vh] bg-white">
       <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden">
-        
-        <svg 
-          viewBox="0 0 100 100" 
-          preserveAspectRatio="none" 
+
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
           className="absolute inset-0 pointer-events-none z-0 w-full h-full text-[#75c16a]"
         >
           <motion.path d={topPath} fill="currentColor" />
@@ -68,37 +68,37 @@ export default function AboutUs() {
         </Container>
 
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-          <motion.h2 
-            style={{ 
-              opacity: titleOpacity, 
+          <motion.h2
+            style={{
+              opacity: titleOpacity,
               scale: titleScale,
               y: titleY
             }}
             className="text-center font-heading text-[clamp(4rem,10vw,12rem)] font-bold leading-[0.85] text-white uppercase px-4"
           >
-            Nice to<br/>bond<br/>with you
+            MORE STRATEGY.<br />MORE CONNECTION.<br />
           </motion.h2>
         </div>
 
-        <motion.div 
+        <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
           className="absolute inset-0 z-20 flex items-center pt-20"
         >
           <Container className="flex w-full flex-col lg:flex-row items-center justify-between gap-12">
-            
+
             <div className="flex-1 max-w-3xl">
               <p className="font-heading text-[clamp(1.5rem,3.5vw,3.5rem)] font-bold uppercase leading-[1.1] text-white/90 mb-12">
-                We&apos;re thinkers, makers, and doers, coffee lovers <span className="text-white/60">[mostly all]</span>, food obsessed, curious by nature, strategic by choice. We explore, question, and connect until the answer fits. Every project is a journey, and we&apos;re here for the ride.
+                Born from the belief that a great business deserves a voice as strong as its vision, we evolved into a dedicated creative partner for brands that want to lead. We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
               </p>
-              
+
               <div className="group inline-flex items-center gap-4 cursor-pointer">
                 <span className="text-sm font-semibold uppercase tracking-wider text-white border-b border-white pb-1">
-                  Bond more with us
+                  About Us
                 </span>
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#75c16a] transition-transform group-hover:scale-110">
                   <span className="sr-only">Go</span>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
               </div>
