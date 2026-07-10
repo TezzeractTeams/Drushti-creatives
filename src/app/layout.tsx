@@ -3,6 +3,7 @@ import { Space_Grotesk, Inter } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -36,7 +37,10 @@ export default function RootLayout({
         <SmoothScroll />
         <CustomCursor />
         <Header />
-        {children}
+        {/* z-10 wrapper keeps all page content painting above the pinned
+            footer so it stays hidden until the CTA sheet lifts away. */}
+        <div className="relative z-10">{children}</div>
+        <Footer />
       </body>
     </html>
   );

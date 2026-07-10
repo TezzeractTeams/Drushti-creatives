@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -14,12 +14,49 @@ const LINKS = [
 ];
 
 /** Top-right + expands into a row of nav pills, morphing to × — matching
- *  the reference site's header interaction. */
+ *  the reference site's header interaction. Hides on scroll down, shows on
+ *  scroll up, matching copula.agency's header behavior. */
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Tracks the page's overall scroll position (no target = whole document).
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    const scrollingDown = latest > previous;
+
+    // Solid background only kicks in once you've actually left the very top
+    // of the page — at scrollY 0 it stays transparent over the hero.
+    setScrolled(latest > 10);
+
+    // If the nav menu is open, force the header to stay visible so it can't
+    // slide away mid-click on a link.
+    if (open) {
+      setHidden(false);
+      return;
+    }
+
+    // 80px threshold so the header doesn't flicker away on a tiny nudge
+    // right at the top of the page.
+    if (scrollingDown && latest > 80) {
+      setHidden(true);
+    } else if (!scrollingDown) {
+      setHidden(false);
+    }
+  });
 
   return (
-    <header className="fixed inset-x-0 top-0 z-20 border-b border-white/25">
+    <motion.header
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ duration: 0.4, ease: EASE }}
+      // Transparent at the top of the page, solid once scrolled — the
+      // color itself cross-fades via the transition-colors class below.
+      className={`fixed inset-x-0 top-0 z-20 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-[#284f9e]" : "bg-transparent"
+        }`}
+    >
       <Container className="flex items-center justify-between py-6">
         <span className="font-heading text-lg font-bold text-white">Drushti</span>
 
@@ -64,6 +101,6 @@ export default function Header() {
           </motion.button>
         </div>
       </Container>
-    </header>
+    </motion.header>
   );
 }

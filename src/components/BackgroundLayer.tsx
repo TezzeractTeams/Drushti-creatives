@@ -5,34 +5,36 @@ import { useAnimationFrame } from "@/hooks/useAnimationFrame";
 import { FloatingImage } from "@/components/FloatingImage";
 import { FLOATING_IMAGES } from "@/data/floatingImages";
 
-// Canvas: 300vw wide × 160vh tall
+// Canvas: 140vw wide × 140vh tall (40vw/40vh overshoot beyond the viewport,
+// so mouse travel pans the canvas by at most ±20vw/±20vh from rest).
 // Image size: 20vw × 20vh
-// Gap between images: 50vw × 50vh
-// Col step: 20 + 50 = 70vw | Row step: 20 + 50 = 70vh
 //
 // Checkerboard pattern (X = image, 0 = empty):
 //   X(0,0)  0(0,1)  X(0,2)  0(0,3)  X(0,4)   ← row 0
 //   0(1,0)  X(1,1)  0(1,2)  X(1,3)  0(1,4)   ← row 1
 //   X(2,0)  0(2,1)  X(2,2)  0(2,3)  X(2,4)   ← row 2
 //
-// Each position defined explicitly (col × 70vw, row × 70vh):
+// At mouse-center the viewport shows canvas x: 20→120vw, y: 20→120vh.
+// Positions are defined so that, at rest, images land at these viewport
+// spots: cols at 2% / 40% / 78% (rows 0 & 2) and 21% / 59% (row 1),
+// rows at 2vh / 40vh / 78vh. Canvas coord = viewport coord + 20.
 const IMAGE_POSITIONS = [
-  { left: "0vw",   top: "0vh"   },   // row 0, col 0
-  { left: "140vw", top: "0vh"   },   // row 0, col 2
-  { left: "280vw", top: "0vh"   },   // row 0, col 4
-  { left: "70vw",  top: "70vh"  },   // row 1, col 1
-  { left: "210vw", top: "70vh"  },   // row 1, col 3
-  { left: "0vw",   top: "140vh" },   // row 2, col 0
-  { left: "140vw", top: "140vh" },   // row 2, col 2
-  { left: "280vw", top: "140vh" },   // row 2, col 4
+  { left: "22vw", top: "22vh" },   // row 0, col 0 → viewport ( 2vw,  2vh)
+  { left: "60vw", top: "22vh" },   // row 0, col 2 → viewport (40vw,  2vh)
+  { left: "98vw", top: "22vh" },   // row 0, col 4 → viewport (78vw,  2vh)
+  { left: "41vw", top: "60vh" },   // row 1, col 1 → viewport (21vw, 40vh)
+  { left: "79vw", top: "60vh" },   // row 1, col 3 → viewport (59vw, 40vh)
+  { left: "22vw", top: "98vh" },   // row 2, col 0 → viewport ( 2vw, 78vh)
+  { left: "60vw", top: "98vh" },   // row 2, col 2 → viewport (40vw, 78vh)
+  { left: "98vw", top: "98vh" },   // row 2, col 4 → viewport (78vw, 78vh)
 ] as const;
 
 // Mouse center (0.5, 0.5) → canvas center aligned to viewport center
 // Mouse top-right (1, 0)  → canvas top-right aligned to viewport top-right
-// offsetX = −mouseX × (300vw − 100vw) = −mouseX × 200vw
-// offsetY = −mouseY × (160vh − 100vh) = −mouseY × 60vh
-const CANVAS_W_VW = 300;
-const CANVAS_H_VH = 160;
+// offsetX = −mouseX × (140vw − 100vw) = −mouseX × 40vw
+// offsetY = −mouseY × (140vh − 100vh) = −mouseY × 40vh
+const CANVAS_W_VW = 140;
+const CANVAS_H_VH = 140;
 
 interface Props {
   containerRef: React.RefObject<HTMLElement | null>;

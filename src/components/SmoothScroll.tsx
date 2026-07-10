@@ -10,6 +10,10 @@ export default function SmoothScroll() {
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
+    // Exposed so components (e.g. FeaturedWork's click-to-reveal) can drive
+    // programmatic scrolling through Lenis instead of window.scrollTo, which
+    // Lenis would fight and reset.
+    (window as unknown as Record<string, unknown>).__lenis = lenis;
 
     let rafId: number;
     function raf(time: number) {
