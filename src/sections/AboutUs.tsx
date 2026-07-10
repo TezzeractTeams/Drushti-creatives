@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useMotionTemplate } from "motion/react";
+import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
@@ -12,6 +12,12 @@ const IMAGES = [
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=800"
 ];
 
+// This is the point in the scroll (0 -> 1) at which the green shape is fully
+// closed (top and bottom curves have met in the middle). Everything about the
+// title fade is keyed off this same value so the text is never visible while
+// there's still a gap showing whatever is behind the section.
+const SHAPE_CLOSED_AT = 0.25;
+
 export default function AboutUs() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -21,18 +27,53 @@ export default function AboutUs() {
   });
 
   // Top shape control points
-  const topCenterY = useTransform(scrollYProgress, [0, 0.2, 0.25], [0, 50, 50]);
-  const topEdgeY = useTransform(scrollYProgress, [0, 0.1, 0.25], [0, 15, 50]);
+  const topCenterY = useTransform(scrollYProgress, [0, 0.2, SHAPE_CLOSED_AT], [0, 50, 50]);
+  const topEdgeY = useTransform(scrollYProgress, [0, 0.1, SHAPE_CLOSED_AT], [0, 15, 50]);
 
   // Bottom shape control points
-  const bottomCenterY = useTransform(scrollYProgress, [0, 0.2, 0.25], [100, 50, 50]);
-  const bottomEdgeY = useTransform(scrollYProgress, [0, 0.1, 0.25], [100, 85, 50]);
+  const bottomCenterY = useTransform(scrollYProgress, [0, 0.2, SHAPE_CLOSED_AT], [100, 50, 50]);
+  const bottomEdgeY = useTransform(scrollYProgress, [0, 0.1, SHAPE_CLOSED_AT], [100, 85, 50]);
 
   const topPath = useMotionTemplate`M 0 0 L 100 0 L 100 ${topEdgeY} Q 50 ${topCenterY} 0 ${topEdgeY} Z`;
   const bottomPath = useMotionTemplate`M 0 100 L 100 100 L 100 ${bottomEdgeY} Q 50 ${bottomCenterY} 0 ${bottomEdgeY} Z`;
 
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.15, 0.35, 0.45], [0, 1, 1, 0]);
-  const titleScale = useTransform(scrollYProgress, [0, 0.2, 0.35, 0.45], [0.9, 1, 1, 0.8]);
+  // CLOSING (scroll down) — left exactly as-is. The title stays invisible
+  // for almost the entire closing motion and only pops in during the last
+  // sliver of it, right as the shape seals shut.
+  const closingOpacity = useTransform(
+    scrollYProgress,
+    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0, 0, 1, 1, 0]
+  );
+
+  // OPENING (scroll up) — mirrors the closing curve's narrow snap window,
+  // instead of ramping gradually across the whole SHAPE_CLOSED_AT -> 0
+  // range. Opacity stays at 1 right up until progress is a hair below
+  // SHAPE_CLOSED_AT, then drops to 0 within that same narrow 0.04 window —
+  // so the text is already fully invisible for the rest of the opening
+  // motion, well before the gap becomes visually noticeable.
+  const openingOpacity = useTransform(
+    scrollYProgress,
+    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0, 0, 1, 1, 0]
+  );
+
+  // Plain motion value driven manually, switching between the two curves
+  // above depending on which way the user is actually scrolling.
+  const titleOpacity = useMotionValue(0);
+  const prevProgress = useRef(0);
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const isScrollingDown = latest >= prevProgress.current;
+    prevProgress.current = latest;
+    titleOpacity.set(isScrollingDown ? closingOpacity.get() : openingOpacity.get());
+  });
+
+  const titleScale = useTransform(
+    scrollYProgress,
+    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0.9, 0.9, 1, 1, 0.8]
+  );
   const titleY = useTransform(scrollYProgress, [0.35, 0.45], ["0%", "-20%"]);
 
   const contentY = useTransform(scrollYProgress, [0.45, 0.65], ["50px", "0px"]);
@@ -48,24 +89,43 @@ export default function AboutUs() {
   }, []);
 
   return (
-    <section ref={containerRef} className="relative h-[300vh] bg-white">
+    <section ref={containerRef} className="relative z-10 h-[300vh]">
       <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden">
+
+        {/*
+          Scrim: masks whatever section sits before this one, which is
+          otherwise visible through the gap while the shape is open.
+          It reuses the exact same titleOpacity value as the title text, so:
+          - CLOSING (scroll down): scrim fades in alongside the title,
+            covering the previous section's text as the gap seals.
+          - OPENING (scroll up): scrim fades out alongside the title,
+            revealing the previous section's text again as the gap reopens.
+          It's placed before the svg in the DOM so the green shape still
+          paints on top of it at the same z-index.
+          NOTE: bg-white is a guess to match the page background — swap this
+          for whatever color/section actually sits behind this one if it's
+          not white.
+        */}
+        <motion.div
+          style={{ opacity: titleOpacity }}
+          className="absolute inset-0 z-0 bg-white pointer-events-none"
+        />
 
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
-          className="absolute inset-0 pointer-events-none z-0 w-full h-full text-[#75c16a]"
+          className="absolute inset-0 pointer-events-none z-0 w-full h-full text-[#db5b26]"
         >
           <motion.path d={topPath} fill="currentColor" />
           <motion.path d={bottomPath} fill="currentColor" />
         </svg>
 
-        <Container className="relative z-10 pt-8 sm:pt-12">
+        {/*<Container className="relative z-10 pt-8 sm:pt-12">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink mix-blend-difference invert">
             <Burst className="h-4 w-4" />
             About us
           </div>
-        </Container>
+        </Container>*/}
 
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <motion.h2

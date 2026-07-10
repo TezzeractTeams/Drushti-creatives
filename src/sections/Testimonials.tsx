@@ -56,117 +56,123 @@ const CARD_WIDTH = 420;
 const CARD_GAP = 24;
 const STEP = CARD_WIDTH + CARD_GAP;
 
+function Initials({ name, className }: { name: string; className?: string }) {
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-full bg-orange/10 font-heading font-bold text-orange ${className}`}
+    >
+      {name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()}
+    </div>
+  );
+}
+
+function LinkedInIcon() {
+  return (
+    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-label="LinkedIn">
+      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z" />
+    </svg>
+  );
+}
+
+/** Testimonials carousel traced from the reference: static left column with
+ *  Clutch rating; click-driven card track on the right that clips at the
+ *  screen edge; circular prev/next buttons beneath the cards. */
 export default function Testimonials() {
-  const [offset, setOffset] = useState(0);
-
-  const maxOffset = -(TESTIMONIALS.length - 1) * STEP;
-
-  const goLeft = () => {
-    setOffset((prev) => Math.min(prev + STEP, 0));
-  };
-
-  const goRight = () => {
-    setOffset((prev) => Math.max(prev - STEP, maxOffset));
-  };
+  const [index, setIndex] = useState(0);
+  const maxIndex = TESTIMONIALS.length - 1;
 
   return (
-    <section className="relative bg-[#f4f3ef] py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-[#f4f3ef] py-20 lg:py-32">
       <Container>
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
-
-          {/* Left Column */}
-          <div className="lg:w-[360px] shrink-0">
-            <div className="lg:sticky lg:top-32 flex flex-col items-start">
-              <h2 className="mb-6 font-heading text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
-                KIND WORDS FROM<br />OUR CLIENTS
+          {/* Left column — heading, promise, Clutch rating */}
+          <div className="shrink-0 lg:w-[340px]">
+            <div className="flex flex-col items-start lg:sticky lg:top-32">
+              <h2 className="mb-6 font-heading text-4xl font-bold leading-[1.05] text-ink sm:text-5xl">
+                KIND WORDS FROM
+                <br />
+                OUR CLIENTS
               </h2>
-              <p className="mb-12 max-w-sm text-base text-ink/70">
-                We won&apos;t just be executors. We&apos;ll be your partners, we promise. If you&apos;re not convinced, check out our verified testimonials from around the world about working with us.
+              <p className="mb-12 max-w-sm text-sm text-ink/70 sm:text-base">
+                We won&apos;t just be executors. We&apos;ll be your partners, we
+                promise. If you&apos;re not convinced, check out our verified
+                testimonials from around the world about working with us.
               </p>
 
-              {/* Navigation Buttons */}
-              <div className="flex gap-4">
-                <button
-                  onClick={goLeft}
-                  disabled={offset === 0}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-30"
-                  aria-label="Previous testimonial"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={goRight}
-                  disabled={offset === maxOffset}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-orange text-white shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-30"
-                  aria-label="Next testimonial"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
 
-              {/* Dot indicators */}
-              <div className="mt-8 flex gap-2">
-                {TESTIMONIALS.map((_, i) => {
-                  const activeIndex = Math.round(-offset / STEP);
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => setOffset(-i * STEP)}
-                      className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? "w-6 bg-orange" : "w-2 bg-ink/20"
-                        }`}
-                      aria-label={`Go to testimonial ${i + 1}`}
-                    />
-                  );
-                })}
-              </div>
             </div>
           </div>
 
-          {/* Right Column — clipping window */}
-          <div className="relative flex-1 overflow-hidden">
-            <motion.div
-              className="flex gap-6"
-              animate={{ x: offset }}
-              transition={{ duration: 0.6, ease: EASE }}
-            >
-              {TESTIMONIALS.map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  style={{ width: `${CARD_WIDTH}px`, minWidth: `${CARD_WIDTH}px` }}
-                  className="flex flex-col justify-between rounded-3xl bg-white p-8 shadow-sm min-h-[420px]"
-                >
-                  <div>
-                    {/* Avatar initials */}
-                    <div className="mb-6 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange font-bold text-lg font-heading">
-                      {testimonial.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+          {/* Right column — card track clipping at the screen's right edge */}
+          <div className="min-w-0 flex-1">
+            <div className="overflow-hidden lg:[margin-right:calc(50%-50vw)]">
+              <motion.div
+                className="flex gap-6"
+                animate={{ x: -index * STEP }}
+                transition={{ duration: 0.6, ease: EASE }}
+              >
+                {TESTIMONIALS.map((t) => (
+                  <div
+                    key={t.id}
+                    style={{ width: `${CARD_WIDTH}px`, minWidth: `${CARD_WIDTH}px` }}
+                    className="flex min-h-[440px] max-w-[85vw] flex-col rounded-3xl bg-white p-8 shadow-sm"
+                  >
+                    {/* Header: avatar left, company wordmark right */}
+                    <div className="mb-6 flex items-start justify-between gap-4">
+                      <Initials name={t.name} className="h-12 w-12 text-base" />
+                      <p className="pt-2 text-right font-heading text-sm font-bold uppercase tracking-wide text-ink">
+                        {t.company}
+                      </p>
                     </div>
 
-                    {/* Testimonial Text */}
-                    <p className="text-base leading-relaxed text-ink/80">
-                      &ldquo;{testimonial.text}&rdquo;
+                    <p className="text-sm leading-relaxed text-ink/80 sm:text-base">
+                      {t.text}
                     </p>
-                  </div>
 
-                  {/* Bottom: User Info */}
-                  <div className="mt-8 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange text-sm font-bold font-heading">
-                      {testimonial.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-ink">{testimonial.name}</h4>
-                      <p className="text-sm text-ink/60">{testimonial.role}</p>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-orange mt-1">{testimonial.company}</p>
+                    {/* Footer pinned to the card bottom */}
+                    <div className="mt-auto pt-8">
+                      <p className="flex items-center gap-2 font-bold text-ink">
+                        {t.name}
+                        <LinkedInIcon />
+                      </p>
+                      <p className="mt-1 text-sm text-ink/50">
+                        {t.role} at {t.company}
+                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
-            </motion.div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Prev / next under the cards */}
+            <div className="mt-10 flex gap-3">
+              <button
+                onClick={() => setIndex((prev) => Math.max(prev - 1, 0))}
+                disabled={index === 0}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+                aria-label="Previous testimonial"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setIndex((prev) => Math.min(prev + 1, maxIndex))}
+                disabled={index === maxIndex}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-orange text-white shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+                aria-label="Next testimonial"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           </div>
-
         </div>
       </Container>
     </section>

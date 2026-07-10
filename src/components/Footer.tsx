@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
-
+import Image from "next/image";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const WORDS = ["exceptional", "innovative", "impactful", "memorable", "remarkable"];
+const WORDS = ["EXCEPTIONAL", "INNOVATIVE", "IMPACTFUL", "MEMORABLE", "REMARKABLE"];
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
@@ -66,18 +66,14 @@ export default function Footer() {
 
   return (
     <>
-      {/* ── CTA SECTION ─────────────────────────────────────── */}
-      <section className="bg-[#f4f3ef] py-20 lg:py-32 relative overflow-hidden">
-        {/* Decorative blurred blobs */}
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-[45%]">
-          <div className="absolute right-[-10%] top-[-10%] h-72 w-72 rounded-full bg-orange/60 blur-[80px]" />
-          <div className="absolute right-[5%] top-[40%] h-60 w-60 rounded-full bg-orange/40 blur-[80px]" />
-        </div>
-
+      {/* ── CTA SECTION ─────────────────────────────────────────
+          The "sheet": opaque, rounded bottom, stacked above the pinned
+          footer. As the page ends it lifts away, uncovering the footer. */}
+      <section className="bg-[#db5b26] py-20 lg:py-32 relative z-10 overflow-hidden rounded-b-3xl">
         <Container>
           <div className="max-w-xl relative z-10">
             <h2 className="mb-4 font-heading text-5xl font-bold leading-tight text-ink sm:text-6xl lg:text-7xl">
-              Let&apos;s make<br />something{" "}
+              LET&apos;S MAKE<br />SOMETHING{" "}
               <span className="relative inline-block">
                 <AnimatePresence mode="wait">
                   <motion.span
@@ -86,7 +82,7 @@ export default function Footer() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4, ease: EASE }}
-                    className="text-orange inline-block"
+                    className="text-white inline-block"
                   >
                     {WORDS[wordIndex]}
                   </motion.span>
@@ -124,70 +120,73 @@ export default function Footer() {
         </Container>
       </section>
 
-      {/* ── DARK FOOTER ─────────────────────────────────────── */}
-      <footer className="bg-[#1c1c1c] py-16">
-        <Container>
-          <div className="grid grid-cols-2 gap-10 lg:grid-cols-[2fr_1fr_1.5fr_1fr]">
+      {/* ── DARK FOOTER ─────────────────────────────────────────
+          Pinned at the viewport bottom (sticky bottom-0, z-0 under the
+          page's z-10 wrapper): revealed as the CTA sheet lifts away.
+          -mt-8 pulls it up underneath the CTA section above so the two
+          overlap slightly instead of leaving a seam/gap between them
+          before the sticky reveal kicks in. Adjust the value (e.g. -mt-4
+          or -mt-16) depending on how much overlap you actually want. */}
+      <footer className="sticky bottom-0 z-0 -mt-8 h-[70vh] overflow-hidden bg-[#1c1c1c]">
+        <Container className="relative flex h-full flex-col justify-center gap-12 py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+          {/* Giant lowercase wordmark, left — sized up from the original
+              (which had no explicit width, so it rendered at the image's
+              small natural/intrinsic size). Bumped through breakpoints so
+              it stays proportionally large on bigger screens too. */}
+          <div className="relative flex items-center justify-center overflow-hidden">
+            <img
+              src="work/drushtiwhitecopy.png"
+              alt="Drushti Creatives"
+              className="w-64 sm:w-80 lg:w-[28rem] xl:w-[32rem] h-auto"
+            />
+          </div>
 
-            {/* Brand */}
-            <div className="col-span-2 lg:col-span-1">
-              <h3 className="font-heading text-[clamp(3.5rem,8vw,6rem)] font-bold uppercase leading-none text-white">
-                Drushti
-              </h3>
-            </div>
+          {/* Nav / contact / socials, right */}
+          <div className="flex flex-col gap-10 sm:flex-row sm:gap-14 lg:gap-16">
+            <nav className="flex flex-col gap-2">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="w-fit whitespace-nowrap text-sm text-white transition-colors hover:text-white/60"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
 
-            {/* Nav Links */}
-            <div>
-              <nav className="flex flex-col gap-3">
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="text-sm text-white/60 transition-colors hover:text-white"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            {/* Contact */}
-            <div className="flex flex-col gap-2 text-sm text-white/60">
-              <p className="font-semibold text-white">Sri Lanka</p>
-              <address className="not-italic leading-relaxed">
+            <div className="flex flex-col gap-1 text-sm text-white/50">
+              <p className="text-white">Sri Lanka</p>
+              <address className="max-w-56 not-italic leading-relaxed">
                 Orion City, Colombo 09, Western Province
               </address>
-              <a href="mailto:hello@drushticreatives.com" className="mt-2 transition-colors hover:text-white">
-                collabs@drushticreatives.com
-              </a>
-              <a href="tel:+94768519161" className="transition-colors hover:text-white">
+              <a href="tel:+94768519161" className="mt-5 transition-colors hover:text-white">
                 +94 76 851 9161
               </a>
+              <a href="mailto:collabs@drushticreatives.com" className="transition-colors hover:text-white">
+                collabs@drushticreatives.com
+              </a>
             </div>
 
-            {/* Social + Copyright */}
-            <div className="flex flex-col justify-between">
-              <div className="flex flex-wrap gap-4">
-                {SOCIAL_LINKS.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-white hover:text-white"
-                  >
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-
-              <p className="mt-8 text-xs text-white/30">
-                © Drushti Creatives {new Date().getFullYear()}
-              </p>
+            <div className="flex items-start gap-5">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="text-white transition-colors hover:text-white/60"
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
-
           </div>
+
+          <p className="text-xs text-white/60 lg:absolute lg:bottom-14 lg:right-0">
+            © Drushti Creatives {new Date().getFullYear()}
+          </p>
         </Container>
       </footer>
     </>

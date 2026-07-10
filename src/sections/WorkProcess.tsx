@@ -57,7 +57,7 @@ export default function WorkProcess() {
   });
 
   return (
-    <section ref={containerRef} className="relative h-[400vh] bg-orange">
+    <section ref={containerRef} className="relative h-[400vh] bg-[#284f9e]">
       {/* Sticky container that stays in the viewport while we scroll through the 400vh */}
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-10 lg:py-20">
         <Container className="flex h-full w-full flex-col justify-center">
@@ -110,7 +110,21 @@ export default function WorkProcess() {
                     overflow: "hidden",
                     borderRadius: "1.5rem", // rounded-3xl
                   }}
-                  className="relative flex flex-col justify-between"
+                  // Clicking a card manually sets it as the active/expanded one.
+                  // This just calls the same setActiveIndex that scroll uses, so
+                  // scrolling afterwards will naturally take over again once the
+                  // scroll position moves past this card's range.
+                  onClick={() => setActiveIndex(i)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setActiveIndex(i);
+                    }
+                  }}
+                  aria-pressed={isActive}
+                  className="relative flex cursor-pointer flex-col justify-between"
                 >
                   {/* Title is always visible and wraps normally. Changes color based on state */}
                   <motion.h3

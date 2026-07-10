@@ -2,7 +2,6 @@ import Hero from "@/components/Hero";
 import AboutUs from "@/sections/AboutUs";
 import Manifesto from "@/sections/Manifesto";
 import Services from "@/sections/Services";
-import CtaBanner from "@/sections/CtaBanner";
 import FeaturedWork from "@/sections/FeaturedWork";
 import OurClients from "@/sections/OurClients";
 import ServicePillars from "@/sections/ServicePillars";
@@ -13,10 +12,13 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <OurClients />
-      <AboutUs />
+      {/* Curtain reveal: OurClients pins (sticky) while AboutUs — with its
+          curved green shapes and no background — slides up covering it. */}
+      <div className="relative">
+        <OurClients />
+        <AboutUs />
+      </div>
       <Services />
-      <CtaBanner />
       <WorkProcess />
       <FeaturedWork />
       <Testimonials />

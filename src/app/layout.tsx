@@ -37,7 +37,9 @@ export default function RootLayout({
         <SmoothScroll />
         <CustomCursor />
         <Header />
-        {children}
+        {/* z-10 wrapper keeps all page content painting above the pinned
+            footer so it stays hidden until the CTA sheet lifts away. */}
+        <div className="relative z-10">{children}</div>
         <Footer />
       </body>
     </html>

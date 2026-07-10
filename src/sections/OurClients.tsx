@@ -43,7 +43,7 @@ function ClientMarquee() {
 
 export default function OurClients() {
   return (
-    <section className="bg-white py-28">
+    <section className="sticky top-0 z-0 flex min-h-screen flex-col justify-center bg-white py-28">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 14 }}
