@@ -1,24 +1,15 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import {
+  ACTIVE_FONT_SYSTEM,
+  fontVariables,
+  getFontSystemCssVars,
+  headingGoogleFontsUrl,
+} from "@/config/fonts";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Drushti Creatives",
@@ -31,9 +22,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const fontSystemCssVars = getFontSystemCssVars();
+
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
-      <body className="bg-white font-body text-ink antialiased">
+    <html
+      lang="en"
+      className={fontVariables}
+      data-font-system={ACTIVE_FONT_SYSTEM}
+      style={fontSystemCssVars}
+    >
+      <head>
+        {headingGoogleFontsUrl ? (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            <link href={headingGoogleFontsUrl} rel="stylesheet" />
+          </>
+        ) : null}
+      </head>
+      <body className="bg-white font-body text-base text-ink antialiased">
         <SmoothScroll />
         <CustomCursor />
         <Header />

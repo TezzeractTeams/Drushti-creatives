@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
 import Image from "next/image";
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
 
-const WORDS = ["EXCEPTIONAL", "INNOVATIVE", "IMPACTFUL", "MEMORABLE", "REMARKABLE"];
+const WORDS = ["Exceptional", "Innovative", "Impactful", "Memorable", "Remarkable"];
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
@@ -69,11 +69,11 @@ export default function Footer() {
       {/* ── CTA SECTION ─────────────────────────────────────────
           The "sheet": opaque, rounded bottom, stacked above the pinned
           footer. As the page ends it lifts away, uncovering the footer. */}
-      <section className="bg-[#db5b26] py-20 lg:py-32 relative z-10 overflow-hidden rounded-b-3xl">
+      <section className="bg-orange py-20 lg:py-32 relative z-10 overflow-hidden rounded-b-3xl">
         <Container>
           <div className="max-w-xl relative z-10">
-            <h2 className="mb-4 font-heading text-5xl font-bold leading-tight text-ink sm:text-6xl lg:text-7xl">
-              LET&apos;S MAKE<br />SOMETHING{" "}
+            <h2 className="mb-4 font-heading text-heading-5xl leading-heading text-ink sm:text-heading-6xl lg:text-heading-7xl">
+              Let&apos;s make<br />something{" "}
               <span className="relative inline-block">
                 <AnimatePresence mode="wait">
                   <motion.span
@@ -95,7 +95,7 @@ export default function Footer() {
             <div className="flex flex-wrap gap-4">
               <a
                 href="mailto:collabs@drushticreatives.com"
-                className="inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-sm font-semibold uppercase tracking-widest text-white transition-transform hover:scale-105"
+                className="inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-sm font-semibold tracking-widest text-white transition-transform hover:scale-105"
               >
                 Discuss a project
                 <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/30">
@@ -106,7 +106,7 @@ export default function Footer() {
               </a>
               <a
                 href="https://wa.me/94768519161"
-                className="inline-flex items-center gap-3 rounded-full border border-ink/20 bg-white px-7 py-4 text-sm font-semibold uppercase tracking-widest text-ink transition-transform hover:scale-105"
+                className="inline-flex items-center gap-3 rounded-full border border-ink/20 bg-white px-7 py-4 text-sm font-semibold tracking-widest text-ink transition-transform hover:scale-105"
               >
                 Schedule a call
                 <span className="flex h-6 w-6 items-center justify-center rounded-full border border-ink/20">
@@ -127,7 +127,7 @@ export default function Footer() {
           overlap slightly instead of leaving a seam/gap between them
           before the sticky reveal kicks in. Adjust the value (e.g. -mt-4
           or -mt-16) depending on how much overlap you actually want. */}
-      <footer className="sticky bottom-0 z-0 -mt-8 h-[70vh] overflow-hidden bg-[#1c1c1c]">
+      <footer className="sticky bottom-0 z-0 -mt-8 h-[70vh] overflow-hidden bg-ink">
         <Container className="relative flex h-full flex-col justify-center gap-12 py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           {/* Giant lowercase wordmark, left — sized up from the original
               (which had no explicit width, so it rendered at the image's

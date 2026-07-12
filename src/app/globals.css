@@ -12,6 +12,15 @@
   --green: 119 194 107;
   --white: 255 255 255;
   --ink: 26 26 26;
+  --cream: 244 243 239;
+
+  /* Typography — defaults; overridden per preset via layout inline styles */
+  --body-font-size: 1rem;
+  --heading-weight: 400;
+  --heading-line-height: 1.4;
+  --heading-transform: none;
+  --heading-letter-spacing: -0.02em;
+  --heading-scale: 1;
 }
 
 * {
@@ -27,6 +36,9 @@ html.lenis.lenis-smooth {
 }
 
 body {
+  font-family: var(--font-body);
+  font-size: var(--body-font-size);
+  line-height: 1.5;
   background: rgb(var(--white));
   color: rgb(var(--ink));
 }
@@ -36,10 +48,13 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+.font-heading {
   font-family: var(--font-heading);
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-letter-spacing);
+  line-height: var(--heading-line-height);
+  text-transform: var(--heading-transform);
 }
 
 .cursor-none,
@@ -82,5 +97,10 @@ h6 {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .font-heading {
+    font-weight: var(--heading-weight);
+    text-transform: var(--heading-transform);
   }
 }

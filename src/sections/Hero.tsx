@@ -11,7 +11,7 @@ import {
   type MotionValue,
 } from "motion/react";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
 
 interface FloatingImageProps {
   src: string;
@@ -65,7 +65,7 @@ function FloatingImage({
             href="#work"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="relative block aspect-square overflow-hidden rounded-2xl shadow-xl transition-shadow hover:shadow-2xl"
+            className="relative block aspect-[8/5] overflow-hidden rounded-2xl shadow-xl transition-shadow hover:shadow-2xl"
           >
             <Image
               src={src}
@@ -194,7 +194,7 @@ export default function Hero() {
       </div>
 
       {/* Central wordmark — sits above all images */}
-      <h1 className="pointer-events-none relative z-10 font-heading text-[clamp(4rem,18vw,20rem)] font-bold uppercase leading-none tracking-tight text-white">
+      <h1 className="pointer-events-none relative z-10 font-heading text-heading-hero leading-heading-display tracking-tight text-white">
         Drushti
       </h1>
     </section>

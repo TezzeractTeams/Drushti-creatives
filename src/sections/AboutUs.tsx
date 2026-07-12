@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type RefObject } from "react";
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
-import { Burst } from "@/components/HeroShapes";
+import { ABOUT_SCROLL_VH, SHAPE_CLOSED_AT } from "@/config/clientCurtain";
 
 const IMAGES = [
   "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800",
@@ -12,18 +12,17 @@ const IMAGES = [
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=800"
 ];
 
-// This is the point in the scroll (0 -> 1) at which the green shape is fully
-// closed (top and bottom curves have met in the middle). Everything about the
-// title fade is keyed off this same value so the text is never visible while
-// there's still a gap showing whatever is behind the section.
-const SHAPE_CLOSED_AT = 0.25;
+type AboutUsProps = {
+  scrollRef?: RefObject<HTMLElement | null>;
+};
 
-export default function AboutUs() {
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function AboutUs({ scrollRef }: AboutUsProps) {
+  const fallbackRef = useRef<HTMLElement>(null);
+  const containerRef = scrollRef ?? fallbackRef;
 
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
+    target: containerRef as RefObject<HTMLElement>,
+    offset: ["start start", "end end"],
   });
 
   // Top shape control points
@@ -89,7 +88,11 @@ export default function AboutUs() {
   }, []);
 
   return (
-    <section ref={containerRef} className="relative z-10 h-[300vh]">
+    <section
+      ref={containerRef as RefObject<HTMLElement>}
+      className="relative z-10"
+      style={{ height: `${ABOUT_SCROLL_VH}vh` }}
+    >
       <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden">
 
         {/*
@@ -114,14 +117,14 @@ export default function AboutUs() {
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
-          className="absolute inset-0 pointer-events-none z-0 w-full h-full text-[#db5b26]"
+          className="absolute inset-0 pointer-events-none z-0 w-full h-full text-orange"
         >
           <motion.path d={topPath} fill="currentColor" />
           <motion.path d={bottomPath} fill="currentColor" />
         </svg>
 
         {/*<Container className="relative z-10 pt-8 sm:pt-12">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink mix-blend-difference invert">
+          <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink mix-blend-difference invert">
             <Burst className="h-4 w-4" />
             About us
           </div>
@@ -134,9 +137,9 @@ export default function AboutUs() {
               scale: titleScale,
               y: titleY
             }}
-            className="text-center font-heading text-[clamp(4rem,10vw,12rem)] font-bold leading-[0.85] text-white uppercase px-4"
+            className="text-center font-heading text-heading-hero-compact leading-heading text-white px-4"
           >
-            MORE STRATEGY.<br />MORE CONNECTION.<br />
+            More strategy.<br />More connection.<br />
           </motion.h2>
         </div>
 
@@ -147,15 +150,15 @@ export default function AboutUs() {
           <Container className="flex w-full flex-col lg:flex-row items-center justify-between gap-12">
 
             <div className="flex-1 max-w-3xl">
-              <p className="font-heading text-[clamp(1.5rem,3.5vw,3.5rem)] font-bold uppercase leading-[1.1] text-white/90 mb-12">
-                Born from the belief that a great business deserves a voice as strong as its vision, we evolved into a dedicated creative partner for brands that want to lead. We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
+              <p className="font-heading text-heading-sub leading-heading-loose text-white/90 mb-12">
+              We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
               </p>
 
               <div className="group inline-flex items-center gap-4 cursor-pointer">
-                <span className="text-sm font-semibold uppercase tracking-wider text-white border-b border-white pb-1">
+                <span className="text-sm font-semibold tracking-wider text-white border-b border-white pb-1">
                   About Us
                 </span>
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#75c16a] transition-transform group-hover:scale-110">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green transition-transform group-hover:scale-110">
                   <span className="sr-only">Go</span>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
 
 export function ForegroundLayer() {
   return (
@@ -11,7 +11,7 @@ export function ForegroundLayer() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="font-heading text-[clamp(4rem,18vw,20rem)] font-bold uppercase leading-none tracking-tight text-white"
+        className="font-heading text-heading-hero leading-heading-display tracking-tight text-white"
       >
         Drushti
       </motion.h1>
@@ -20,7 +20,7 @@ export function ForegroundLayer() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
-        className="max-w-sm text-sm font-medium uppercase tracking-[0.25em] text-white/60"
+        className="max-w-sm text-sm font-medium tracking-[0.25em] text-white/60"
       >
         Creative design studio
       </motion.p>
@@ -31,7 +31,7 @@ export function ForegroundLayer() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.35, ease: EASE }}
         whileHover={{ scale: 1.05 }}
-        className="pointer-events-auto mt-2 rounded-full border border-white/30 bg-white/10 px-8 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+        className="pointer-events-auto mt-2 rounded-full border border-white/30 bg-white/10 px-8 py-3 text-xs font-semibold tracking-[0.2em] text-white backdrop-blur-sm transition-colors hover:bg-white/20"
       >
         View our work
       </motion.a>
@@ -44,7 +44,7 @@ export function ForegroundLayer() {
         className="absolute bottom-[-40vh] flex flex-col items-center gap-2"
         aria-hidden
       >
-        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40">
+        <span className="text-[10px] font-semibold tracking-[0.3em] text-white/40">
           Scroll
         </span>
         <motion.div

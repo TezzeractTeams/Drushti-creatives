@@ -5,36 +5,46 @@ import { useAnimationFrame } from "@/hooks/useAnimationFrame";
 import { FloatingImage } from "@/components/FloatingImage";
 import { FLOATING_IMAGES } from "@/data/floatingImages";
 
-// Canvas: 140vw wide × 140vh tall (40vw/40vh overshoot beyond the viewport,
-// so mouse travel pans the canvas by at most ±20vw/±20vh from rest).
-// Image size: 20vw × 20vh
+// Canvas: 200vw wide × 200vh tall (100vw/100vh overshoot beyond the viewport,
+// so mouse travel pans the canvas by at most ±50vw/±50vh from rest).
+// Image size: 20vw × 12.5vw (8:5 aspect ratio)
 //
-// Checkerboard pattern (X = image, 0 = empty):
-//   X(0,0)  0(0,1)  X(0,2)  0(0,3)  X(0,4)   ← row 0
-//   0(1,0)  X(1,1)  0(1,2)  X(1,3)  0(1,4)   ← row 1
-//   X(2,0)  0(2,1)  X(2,2)  0(2,3)  X(2,4)   ← row 2
-//
-// At mouse-center the viewport shows canvas x: 20→120vw, y: 20→120vh.
-// Positions are defined so that, at rest, images land at these viewport
-// spots: cols at 2% / 40% / 78% (rows 0 & 2) and 21% / 59% (row 1),
-// rows at 2vh / 40vh / 78vh. Canvas coord = viewport coord + 20.
+// At mouse-center the viewport shows canvas x: 50→150vw, y: 50→150vh.
+// Positions are defined so that, at rest, images land at these viewport spots.
+// Canvas coord = viewport coord + 50.
 const IMAGE_POSITIONS = [
-  { left: "22vw", top: "22vh" },   // row 0, col 0 → viewport ( 2vw,  2vh)
-  { left: "60vw", top: "22vh" },   // row 0, col 2 → viewport (40vw,  2vh)
-  { left: "98vw", top: "22vh" },   // row 0, col 4 → viewport (78vw,  2vh)
-  { left: "41vw", top: "60vh" },   // row 1, col 1 → viewport (21vw, 40vh)
-  { left: "79vw", top: "60vh" },   // row 1, col 3 → viewport (59vw, 40vh)
-  { left: "22vw", top: "98vh" },   // row 2, col 0 → viewport ( 2vw, 78vh)
-  { left: "60vw", top: "98vh" },   // row 2, col 2 → viewport (40vw, 78vh)
-  { left: "98vw", top: "98vh" },   // row 2, col 4 → viewport (78vw, 78vh)
+  // 3 rows × 4 cols (12 total), row-major
+  // Preserve corner boxes exactly (current corners):
+  //   top-left     (15vw,  25vh)
+  //   top-right    (165vw, 25vh)
+  //   bottom-left  (15vw,  165vh)
+  //   bottom-right (165vw, 165vh)
+  //
+  // Spread the two middle columns outward while keeping a consistent grid:
+  //   cols: 15vw, 50vw, 130vw, 165vw
+  //   rows: 25vh, 90vh, 165vh
+  { left: "15vw",  top: "15vh" },   // row 0, col 0 (corner)
+  { left: "75vw",  top: "25vh" },   // row 0, col 1 (middle)
+  { left: "125vw", top: "55vh" },   // row 0, col 2 (middle)
+  { left: "175vw", top: "25vh" },   // row 0, col 3 (corner)
+
+  { left: "5vw",  top: "90vh" },   // row 1, col 0
+  { left: "50vw",  top: "65vh" },   // row 1, col 1
+  { left: "110vw", top: "110vh" },   // row 1, col 2
+  { left: "155vw", top: "90vh" },   // row 1, col 3
+
+  { left: "15vw",  top: "165vh" },  // row 2, col 0 (corner)
+  { left: "60vw",  top: "125vh" },  // row 2, col 1
+  { left: "100vw", top: "175vh" },  // row 2, col 2
+  { left: "175vw", top: "160vh" },  // row 2, col 3 (corner)
 ] as const;
 
 // Mouse center (0.5, 0.5) → canvas center aligned to viewport center
 // Mouse top-right (1, 0)  → canvas top-right aligned to viewport top-right
-// offsetX = −mouseX × (140vw − 100vw) = −mouseX × 40vw
-// offsetY = −mouseY × (140vh − 100vh) = −mouseY × 40vh
-const CANVAS_W_VW = 140;
-const CANVAS_H_VH = 140;
+// offsetX = −mouseX × (200vw − 100vw) = −mouseX × 100vw
+// offsetY = −mouseY × (200vh − 100vh) = −mouseY × 100vh
+const CANVAS_W_VW = 200;
+const CANVAS_H_VH = 200;
 
 interface Props {
   containerRef: React.RefObject<HTMLElement | null>;
@@ -93,7 +103,7 @@ export function BackgroundLayer({ containerRef }: Props) {
               left:   IMAGE_POSITIONS[i].left,
               top:    IMAGE_POSITIONS[i].top,
               width:  "20vw",
-              height: "20vh",
+              height: "12.5vw",
             }}
           >
             <FloatingImage {...img} />

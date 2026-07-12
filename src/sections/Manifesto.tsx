@@ -5,7 +5,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { MANIFESTO_SVG_FONT_SIZE, MANIFESTO_SVG_FONT_WEIGHT } from "@/config/fonts";
+import { EASE } from "@/lib/motion";
 
 // Asymmetric cubic-Bézier measured off the reference: flat through the
 // first third, dipping to its lowest point around 65-70% across (roughly
@@ -48,7 +49,7 @@ export default function Manifesto() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white"
+            className="flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-white"
           >
             <Burst className="h-4 w-4 text-white" />
             Our manifesto
@@ -67,21 +68,27 @@ export default function Manifesto() {
                   ? undefined
                   : { x: headlineX, y: headlineY, rotate: headlineRotate }
               }
-              className="w-full max-w-5xl font-heading font-bold uppercase text-white"
+              className="w-full max-w-5xl font-heading text-white"
             >
               <span className="sr-only">Seeing what others miss</span>
               <svg viewBox={CURVE_VIEWBOX} aria-hidden className="h-auto w-full overflow-visible">
                 <defs>
                   <path id={curveId} d={CURVE_PATH_D} fill="none" />
                 </defs>
-                <text textAnchor="middle" fill="currentColor" fontSize="70" fontWeight="bold">
+                <text
+                  textAnchor="middle"
+                  fill="currentColor"
+                  fontSize={MANIFESTO_SVG_FONT_SIZE}
+                  fontWeight={MANIFESTO_SVG_FONT_WEIGHT}
+                  className="font-heading"
+                >
                   <textPath
                     href={`#${curveId}`}
                     startOffset="50%"
                     textLength={TEXT_LENGTH}
                     lengthAdjust="spacing"
                   >
-                    SEEING WHAT OTHERS MISS
+                    Seeing what others miss
                   </textPath>
                 </text>
               </svg>
@@ -91,7 +98,7 @@ export default function Manifesto() {
           <div className="absolute inset-0 flex items-center justify-center px-6">
             <motion.p
               style={prefersReducedMotion ? { opacity: 1 } : { opacity: paragraphOpacity }}
-              className="max-w-3xl text-center font-heading text-2xl font-bold uppercase leading-snug text-white sm:text-3xl lg:text-4xl"
+              className="max-w-3xl text-center font-heading text-heading-2xl leading-heading-loose text-white sm:text-heading-3xl lg:text-heading-4xl"
             >
               We bring strategy, creativity, and sharp perspective together to help
               brands see themselves clearly, and turn that clarity into real

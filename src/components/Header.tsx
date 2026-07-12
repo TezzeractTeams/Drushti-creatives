@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
 
 const LINKS = [
   { label: "About", href: "#about" },
@@ -54,11 +54,11 @@ export default function Header() {
       transition={{ duration: 0.4, ease: EASE }}
       // Transparent at the top of the page, solid once scrolled — the
       // color itself cross-fades via the transition-colors class below.
-      className={`fixed inset-x-0 top-0 z-20 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-[#284f9e]" : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-20 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-blue" : "bg-transparent"
         }`}
     >
       <Container className="flex items-center justify-between py-6">
-        <span className="font-heading text-lg font-bold text-white">Drushti</span>
+        <span className="font-heading text-heading-lg text-white">Drushti</span>
 
         <div className="flex items-center gap-3">
           <AnimatePresence>

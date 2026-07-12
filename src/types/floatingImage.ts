@@ -8,4 +8,12 @@ export interface FloatingImageConfig {
   /** Idle float amplitude in pixels */
   amplitude: number;
   priority?: boolean;
+  /** Where to navigate when clicked */
+  href?: string;
+  /** Next/Image `sizes` attribute */
+  sizes?: string;
+  /** Extra classes for the outer container (useful for positioning) */
+  className?: string;
+  /** Extra classes for the clickable link */
+  linkClassName?: string;
 }

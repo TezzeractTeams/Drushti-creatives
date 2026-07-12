@@ -1,12 +1,11 @@
 "use client";
 
-import { useId, useState } from "react";
-import type { SVGProps } from "react";
-import { motion } from "motion/react";
+import { useState } from "react";
+import { motion, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
 
 const LOGOS = Array.from({ length: 17 }, (_, i) => `/clients/${i + 1}.png`);
 
@@ -41,40 +40,47 @@ function ClientMarquee() {
   );
 }
 
-export default function OurClients() {
+type OurClientsProps = {
+  /** Scroll-driven opacity (1 → 0) passed from ClientAboutCurtain. */
+  contentFadeOpacity?: MotionValue<number>;
+};
+
+export default function OurClients({ contentFadeOpacity }: OurClientsProps) {
   return (
-    <section className="sticky top-0 z-0 flex min-h-screen flex-col justify-center bg-white py-28">
+    <section className="sticky top-0 z-0 flex min-h-[80vh] flex-col justify-center bg-white py-28">
       <Container>
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
+          style={contentFadeOpacity ? { opacity: contentFadeOpacity } : undefined}
         >
-          <Burst className="h-4 w-4 text-orange" />
-          Our clients
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+          >
+            <Burst className="h-4 w-4 text-orange" />
+            Our clients
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="relative max-w-3xl"
+          >
+            <h2 className="max-w-3xl font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl lg:text-heading-6xl">
+              We believe every great business deserves a voice as strong as its vision.
+            </h2>
+            <p>More than a service provider, we are your strategic partner. We combine creativity, strategy, and digital
+              expertise to help your business stand out. We strip away the noise to find the heart of your message, crafting visuals and narratives that don’t just look good. They actually move people.</p>
+          </motion.div>
+
+          <div className="mt-20">
+            <ClientMarquee />
+          </div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          className="relative max-w-3xl"
-        >
-          <h2 className="max-w-3xl font-heading text-4xl font-bold uppercase leading-[0.95] text-ink sm:text-5xl lg:text-6xl">
-            We believe every great business deserves a voice as strong as its vision.
-          </h2>
-          <p>More than a service provider, we are your strategic partner. We combine creativity, strategy, and digital
-            expertise to help your business stand out. We strip away the noise to find the heart of your message, crafting visuals and narratives that don’t just look good. They actually move people.</p>
-
-
-        </motion.div>
-
-        <div className="mt-20">
-          <ClientMarquee />
-        </div>
       </Container>
     </section>
   );

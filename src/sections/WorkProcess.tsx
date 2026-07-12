@@ -5,30 +5,9 @@ import { motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
+import { PROCESS_STEPS } from "@/data/workProcess";
 
-const PROCESS_STEPS = [
-  {
-    title: "The Immersion",
-    description: "We start with a conversation to understand your goals, your pressures, and your audience.",
-  },
-  {
-    title: "The Creative Crack",
-    description: "Our team finds the \"spark\". The specific creative idea that solves your business problem.",
-  },
-  {
-    title: "The Blueprint",
-    description: "We show you the roadmap so you know exactly what we’re building before we start.",
-  },
-  {
-    title: "The Craft",
-    description: "We bring the plan to life, whether it’s a design, a video, or a communication strategy, with a focus on quality.",
-  },
-  {
-    title: "The Evolution",
-    description: "We stay with you to see how the work performed, using those insights to help your brand keep growing.",
-  },
-];
 
 export default function WorkProcess() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,7 +36,12 @@ export default function WorkProcess() {
   });
 
   return (
-    <section ref={containerRef} className="relative h-[400vh] bg-[#284f9e]">
+    <section
+      ref={containerRef}
+      className="relative bg-[#77c26b]"
+      // Controls "how fast" we move through steps: smaller height => faster snapping.
+      style={{ height: `${PROCESS_STEPS.length * 55}vh` }}
+    >
       {/* Sticky container that stays in the viewport while we scroll through the 400vh */}
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-10 lg:py-20">
         <Container className="flex h-full w-full flex-col justify-center">
@@ -66,7 +50,7 @@ export default function WorkProcess() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white lg:mb-10"
+            className="mb-6 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-white lg:mb-10"
           >
             <Burst className="h-4 w-4 text-white" />
             Work Process
@@ -79,7 +63,7 @@ export default function WorkProcess() {
             transition={{ duration: 0.7, ease: EASE }}
             className="mb-8 max-w-4xl lg:mb-12"
           >
-            <h2 className="font-heading text-3xl font-bold uppercase leading-[0.95] text-white sm:text-4xl lg:text-5xl">
+            <h2 className="font-heading text-heading-3xl leading-heading text-white sm:text-heading-4xl lg:text-heading-5xl">
               We follow a structured approach to deliver consistent and effective results:
             </h2>
           </motion.div>
@@ -131,7 +115,7 @@ export default function WorkProcess() {
                     initial={false}
                     animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
                     transition={{ duration: 0.5, ease: EASE }}
-                    className="font-heading text-xl font-bold uppercase leading-tight sm:text-2xl"
+                    className="font-heading text-heading-xl leading-heading sm:text-heading-2xl"
                   >
                     {step.title}
                   </motion.h3>

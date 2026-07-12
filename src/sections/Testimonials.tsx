@@ -1,65 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
+import { TESTIMONIALS } from "@/data/testimonials";
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    name: "Venani Siriwardena",
-    role: "Talent Manager - Talent Engagement & Development",
-    company: "Norlanka",
-    text: "We highly appreciate the professionalism, creativity, and commitment demonstrated by Drushti Creatives as our social media creative partner. Their team consistently delivers high-quality creative solutions aligned with our brand expectations and timelines. The attention to detail, responsiveness, and ability to understand and translate concepts into impactful visual content have contributed significantly to enhancing our digital presence. It has been a pleasure working with a reliable and dedicated team, and we look forward to continuing this partnership.",
-  },
-  {
-    id: 2,
-    name: "Gihan De Silva",
-    role: "Business Development Manager",
-    company: "Wild Drift",
-    text: "We've been working with Drushti Creatives for over 2 years now, and it's been a great experience. They handle our social media and creative work, and they've always been reliable, easy to work with, and full of fresh ideas. The team understands our brand and brings it to life really well. Highly recommend them!",
-  },
-  {
-    id: 3,
-    name: "Shermi Herath",
-    role: "Managing Director",
-    company: "Skill Gate - Sri Lanka",
-    text: "We've worked with Drushti Creatives on multiple projects at Skill Gate Pvt. Ltd., and they've been a fantastic creative partner throughout. From our Lean Six Sigma campaigns to social media content and branding materials, the team has consistently delivered fresh, thoughtful designs that align perfectly with our vision. What really stood out was how easy they were to work with—always responsive, open to feedback, and committed to getting things just right. They understood our brand deeply and helped us present it in a more professional and engaging way. Highly recommend them if you're looking for a reliable and talented creative agency.",
-  },
-  {
-    id: 4,
-    name: "Fiyaz Izzeth",
-    role: "Manager - Marketing & Digital Solutions",
-    company: "Fairfirst Insurance Limited",
-    text: "A place full of creativity! I have worked with them on corporate projects and they consistently provide timely solutions, making it much easier to work with them. Highly recommended for getting your creative work done.",
-  },
-  {
-    id: 5,
-    name: "Amalka Ranasinghe",
-    role: "Owner",
-    company: "OM Ceylon",
-    text: "Great service. They are very responsive, supportive and the customer service is superb. Well communicate with customers and very thoughtful in getting the right content and visual direction and creating a remarkable outcome to meet customer expectations. Thank you very much Drushti Creatives. Look forward to work with you in the future.",
-  },
-  {
-    id: 6,
-    name: "Anuradha Ekanayake",
-    role: "Co Founder",
-    company: "Vision Volunteers",
-    text: "Great Service and best customer service I ever experienced. Thank you Drushti. Will continue to work with you guys.",
-  },
-];
 
-// Card width + gap in pixels (must match the CSS below)
-const CARD_WIDTH = 420;
+// Cards are min(420px, 85vw) wide so they never exceed the phone viewport;
+// the slide step is measured from the first card at runtime.
+const CARD_WIDTH = "min(420px, 85vw)";
 const CARD_GAP = 24;
-const STEP = CARD_WIDTH + CARD_GAP;
+const FALLBACK_STEP = 420 + CARD_GAP;
 
 function Initials({ name, className }: { name: string; className?: string }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full bg-orange/10 font-heading font-bold text-orange ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-orange/10 font-heading text-orange ${className}`}
     >
       {name
         .split(" ")
@@ -84,19 +42,31 @@ function LinkedInIcon() {
  *  screen edge; circular prev/next buttons beneath the cards. */
 export default function Testimonials() {
   const [index, setIndex] = useState(0);
+  const [step, setStep] = useState(FALLBACK_STEP);
+  const trackRef = useRef<HTMLDivElement>(null);
   const maxIndex = TESTIMONIALS.length - 1;
 
+  useEffect(() => {
+    const measure = () => {
+      const first = trackRef.current?.children[0] as HTMLElement | undefined;
+      if (first) setStep(first.offsetWidth + CARD_GAP);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
   return (
-    <section className="relative overflow-hidden bg-[#f4f3ef] py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-cream py-20 lg:py-32">
       <Container>
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Left column — heading, promise, Clutch rating */}
           <div className="shrink-0 lg:w-[340px]">
             <div className="flex flex-col items-start lg:sticky lg:top-32">
-              <h2 className="mb-6 font-heading text-4xl font-bold leading-[1.05] text-ink sm:text-5xl">
-                KIND WORDS FROM
+              <h2 className="mb-6 font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl">
+                Kind words from
                 <br />
-                OUR CLIENTS
+                our clients
               </h2>
               <p className="mb-12 max-w-sm text-sm text-ink/70 sm:text-base">
                 We won&apos;t just be executors. We&apos;ll be your partners, we
@@ -112,20 +82,21 @@ export default function Testimonials() {
           <div className="min-w-0 flex-1">
             <div className="overflow-hidden lg:[margin-right:calc(50%-50vw)]">
               <motion.div
+                ref={trackRef}
                 className="flex gap-6"
-                animate={{ x: -index * STEP }}
+                animate={{ x: -index * step }}
                 transition={{ duration: 0.6, ease: EASE }}
               >
                 {TESTIMONIALS.map((t) => (
                   <div
                     key={t.id}
-                    style={{ width: `${CARD_WIDTH}px`, minWidth: `${CARD_WIDTH}px` }}
-                    className="flex min-h-[440px] max-w-[85vw] flex-col rounded-3xl bg-white p-8 shadow-sm"
+                    style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH }}
+                    className="flex min-h-[440px] flex-col rounded-3xl bg-white p-8 shadow-sm"
                   >
                     {/* Header: avatar left, company wordmark right */}
                     <div className="mb-6 flex items-start justify-between gap-4">
-                      <Initials name={t.name} className="h-12 w-12 text-base" />
-                      <p className="pt-2 text-right font-heading text-sm font-bold uppercase tracking-wide text-ink">
+                      <Initials name={t.name} className="h-12 w-12 text-heading-base" />
+                      <p className="pt-2 text-right font-heading text-heading-sm tracking-wide text-ink">
                         {t.company}
                       </p>
                     </div>

@@ -6,25 +6,30 @@ import { FloatingImage } from "@/components/hero-local/FloatingImage";
 import { FLOATING_IMAGES } from "@/data/floatingImages";
 
 // Canvas: 150vw wide × 150vh tall
-// Image size: 20vw × 20vh
-// Gap between images: 30vw × 20vh
-// Col step: 20 + 30 = 50vw | Row step: 20 + 20 = 40vh
+// Image size: 20vw × 12.5vw (8:5 aspect ratio)
 //
-// 3×3 grid, center cell left empty (X = image, 0 = empty):
-//   X(0,0)  X(0,1)  X(0,2)   ← row 0
-//   X(1,0)  0(1,1)  X(1,2)   ← row 1
-//   X(2,0)  X(2,1)  X(2,2)   ← row 2
-//
-// Each position defined explicitly (col × 50vw, row × 40vh):
+// 3 cols × 4 rows = 12 total (row-major). Coordinates are explicit so
+// FLOATING_IMAGES[i] always has a matching IMAGE_POSITIONS[i].
 const IMAGE_POSITIONS = [
-  { left: "0vw",   top: "0vh"  },   // row 0, col 0
-  { left: "50vw",  top: "0vh"  },   // row 0, col 1
-  { left: "100vw", top: "0vh"  },   // row 0, col 2
-  { left: "0vw",   top: "40vh" },   // row 1, col 0
-  { left: "100vw", top: "40vh" },   // row 1, col 2
-  { left: "0vw",   top: "80vh" },   // row 2, col 0
-  { left: "50vw",  top: "80vh" },   // row 2, col 1
-  { left: "100vw", top: "80vh" },   // row 2, col 2
+  // row 0
+  { left: "0vw", top: "0vh" },
+  { left: "50vw", top: "0vh" },
+  { left: "100vw", top: "0vh" },
+
+  // row 1
+  { left: "0vw", top: "40vh" },
+  { left: "50vw", top: "40vh" },
+  { left: "100vw", top: "40vh" },
+
+  // row 2
+  { left: "0vw", top: "80vh" },
+  { left: "50vw", top: "80vh" },
+  { left: "100vw", top: "80vh" },
+
+  // row 3 (slightly tighter to stay within the 150vh canvas)
+  { left: "0vw", top: "100vh" },
+  { left: "50vw", top: "100vh" },
+  { left: "100vw", top: "100vh" },
 ] as const;
 
 // Mouse center (0.5, 0.5) → canvas center aligned to viewport center
@@ -92,7 +97,7 @@ export function BackgroundLayer({ containerRef }: Props) {
               left:   IMAGE_POSITIONS[i].left,
               top:    IMAGE_POSITIONS[i].top,
               width:  "20vw",
-              height: "20vh",
+              height: "12.5vw",
             }}
           >
             <FloatingImage {...img} />

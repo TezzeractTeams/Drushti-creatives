@@ -5,7 +5,18 @@ import Image from "next/image";
 import type { FloatingImageConfig } from "@/types/floatingImage";
 import { useAnimationFrame } from "@/hooks/useAnimationFrame";
 
-export function FloatingImage({ src, alt, speed, phase, amplitude, priority }: FloatingImageConfig) {
+export function FloatingImage({
+  src,
+  alt,
+  speed,
+  phase,
+  amplitude,
+  priority,
+  href,
+  sizes,
+  className,
+  linkClassName,
+}: FloatingImageConfig) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useAnimationFrame((time) => {
@@ -17,17 +28,23 @@ export function FloatingImage({ src, alt, speed, phase, amplitude, priority }: F
   });
 
   return (
-    <div ref={wrapRef} className="relative h-full w-full" style={{ willChange: "transform" }}>
+    <div
+      ref={wrapRef}
+      className={`relative h-full w-full rounded-2xl${className ? ` ${className}` : ""}`}
+      style={{ willChange: "transform" }}
+    >
       <a
-        href="#work"
-        className="block h-full w-full overflow-hidden rounded-2xl shadow-xl transition-all duration-[450ms] ease-[cubic-bezier(.22,.61,.36,1)] hover:scale-110 hover:shadow-2xl hover:brightness-110"
+        href={href ?? "#work"}
+        className={`block h-full w-full overflow-hidden rounded-2xl shadow-xl transform-gpu transition-transform duration-[450ms] ease-[cubic-bezier(.22,.61,.36,1)] hover:scale-[1.05]${
+          linkClassName ? ` ${linkClassName}` : ""
+        }`}
       >
         <Image
           src={src}
           alt={alt}
           fill
           className="object-cover"
-          sizes="20vw"
+          sizes={sizes ?? "20vw"}
           priority={priority}
         />
       </a>

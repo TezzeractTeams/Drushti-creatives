@@ -6,40 +6,9 @@ import { AnimatePresence, motion } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE } from "@/lib/motion";
+import { SERVICES } from "@/data/services";
 
-const SERVICES = [
-  {
-    name: "Digital Marketing & Social Media Marketing",
-    image: "/work/advantis.webp",
-    color: "#284f9e",
-  },
-  {
-    name: "Logo Design & Brand Identity",
-    image: "/work/ginger-fresh.webp",
-    color: "#db5b26",
-  },
-  {
-    name: "Graphic Designs",
-    image: "/work/softlogic.webp",
-    color: "#dfb623",
-  },
-  {
-    name: "Content Development",
-    image: "/work/norlanka.webp",
-    color: "#247ec1",
-  },
-  {
-    name: "Video Production",
-    image: "/work/advantis.webp",
-    color: "#77c16b",
-  },
-  {
-    name: "Website & UI Designing",
-    image: "/work/fairfirst.webp",
-    color: "#284f9e",
-  },
-];
 
 /** Hover-driven service list: the left preview card crossfades to the
  *  hovered service's image; non-hovered items fade out, the hovered one
@@ -56,7 +25,7 @@ export default function ServicePillars() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
+          className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
         >
           <Burst className="h-4 w-4 text-orange" />
           Our services
@@ -69,7 +38,7 @@ export default function ServicePillars() {
           transition={{ duration: 0.7, ease: EASE }}
           className="mb-16 max-w-3xl"
         >
-          <h2 className="font-heading text-4xl font-bold uppercase leading-[0.95] text-ink sm:text-5xl lg:text-6xl">
+          <h2 className="font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl lg:text-heading-6xl">
             The navigational pillars
           </h2>
           <p className="mt-6 max-w-xl text-sm text-ink/70 sm:text-base">
@@ -122,7 +91,7 @@ export default function ServicePillars() {
                         ({i + 1})
                       </span>
                       <span
-                        className={`font-heading text-2xl font-bold uppercase tracking-tight transition-colors duration-300 sm:text-3xl lg:text-4xl ${
+                        className={`font-heading text-heading-2xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-3xl lg:text-heading-4xl ${
                           dimmed ? "text-ink/25" : "text-ink"
                         }`}
                         style={{ color: hovered === i ? service.color : undefined }}
