@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -28,7 +29,7 @@ const CATEGORIES = [
       "Web design & development",
     ],
     Shape: Circle,
-    color: "text-blue",
+    color: "text-sky",
   },
   {
     name: "Creative Solutions",
@@ -42,7 +43,8 @@ const CATEGORIES = [
       "Illustration",
     ],
     Shape: Burst,
-    color: "text-sky",
+    color: "text-orange",
+    image: "/orange.png",
   },
   {
     name: "Digital Presence",
@@ -74,6 +76,7 @@ export default function Services() {
   const prefersReducedMotion = useReducedMotion();
   const wrapperRef = useRef<HTMLElement | null>(null);
   const ActiveShape = CATEGORIES[active].Shape;
+  const activeCategory = CATEGORIES[active];
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
@@ -127,9 +130,8 @@ export default function Services() {
                       type="button"
                       onClick={() => setActive(i)}
                       aria-expanded={isActive}
-                      className={`text-left font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-4xl lg:text-heading-5xl ${
-                        isActive ? cat.color : "text-ink/25 hover:text-ink/50"
-                      }`}
+                      className={`text-left font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-4xl lg:text-heading-5xl ${isActive ? cat.color : "text-ink/25 hover:text-ink/50"
+                        }`}
                     >
                       {cat.name}
                     </button>
@@ -176,9 +178,19 @@ export default function Services() {
                   animate={{ opacity: 1, scale: 1, rotate: 0 }}
                   exit={{ opacity: 0, scale: 0.7, rotate: 8 }}
                   transition={{ duration: 0.45, ease: EASE }}
-                  className={`flex h-full w-full items-center justify-center ${CATEGORIES[active].color}`}
+                  className={`flex h-full w-full items-center justify-center ${activeCategory.color}`}
                 >
-                  <ActiveShape className="h-full w-full" />
+                  {"image" in activeCategory && activeCategory.image ? (
+                    <Image
+                      src={activeCategory.image}
+                      alt={activeCategory.name}
+                      width={288}
+                      height={288}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <ActiveShape className="h-full w-full" />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </motion.div>

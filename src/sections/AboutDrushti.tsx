@@ -1,0 +1,59 @@
+"use client";
+
+import { motion, type MotionValue } from "motion/react";
+import Container from "@/components/Container";
+import { Burst } from "@/components/HeroShapes";
+import { EASE } from "@/lib/motion";
+
+type AboutDrushtiProps = {
+    /** Scroll-driven opacity (1 → 0) passed from ClientAboutCurtain. */
+    contentFadeOpacity?: MotionValue<number>;
+};
+
+export default function AboutDrushti({ contentFadeOpacity }: AboutDrushtiProps) {
+    return (
+        <section className="sticky top-0 z-0 flex min-h-[80vh] flex-col justify-center bg-white py-28">
+            <Container>
+                <motion.div style={contentFadeOpacity ? { opacity: contentFadeOpacity } : undefined}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 14 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ duration: 0.6, ease: EASE }}
+                        className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+                    >
+                        <Burst className="h-4 w-4 text-orange" />
+                        About Drushti
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.7, ease: EASE }}
+                        className="relative max-w-3xl"
+                    >
+                        <h2 className="font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl lg:text-heading-6xl">
+                            More Strategy. More Connection.
+                        </h2>
+
+                        <p className="mt-6 text-base leading-relaxed text-ink/70">
+                            Born from the belief that a great business deserves a voice as strong as its
+                            vision, we evolved into a dedicated creative partner for brands that want to
+                            lead. We are a team of strategists and creators who prioritize clarity over
+                            noise and connection over clicks.
+                        </p>
+
+                        <p className="mt-4 text-base leading-relaxed text-ink/70">
+                            For us, creativity isn&apos;t just a service — it&apos;s our mindset. We
+                            believe your business objectives deserve to be translated into authentic
+                            communication that people actually want to follow. We step into your shoes
+                            to ensure every visual, strategy, and digital experience we build is rooted
+                            in your specific culture and goals.
+                        </p>
+                    </motion.div>
+                </motion.div>
+            </Container>
+        </section>
+    );
+}

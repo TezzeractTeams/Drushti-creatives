@@ -151,7 +151,7 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
 
             <div className="flex-1 max-w-3xl">
               <p className="font-heading text-heading-sub leading-heading-loose text-white/90 mb-12">
-              We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
+                We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
               </p>
 
               <div className="group inline-flex items-center gap-4 cursor-pointer">

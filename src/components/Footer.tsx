@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
 import Image from "next/image";
+import PillButton from "@/components/PillButton";
 import { EASE } from "@/lib/motion";
 
 const WORDS = ["Exceptional", "Innovative", "Impactful", "Memorable", "Remarkable"];
@@ -93,28 +94,12 @@ export default function Footer() {
             <p className="mb-10 text-base text-ink/60">Kick start a project with us today</p>
 
             <div className="flex flex-wrap gap-4">
-              <a
-                href="mailto:collabs@drushticreatives.com"
-                className="inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-sm font-semibold tracking-widest text-white transition-transform hover:scale-105"
-              >
+              <PillButton href="mailto:collabs@drushticreatives.com">
                 Discuss a project
-                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/30">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </a>
-              <a
-                href="https://wa.me/94768519161"
-                className="inline-flex items-center gap-3 rounded-full border border-ink/20 bg-white px-7 py-4 text-sm font-semibold tracking-widest text-ink transition-transform hover:scale-105"
-              >
+              </PillButton>
+              <PillButton href="https://wa.me/94768519161" variant="light">
                 Schedule a call
-                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-ink/20">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </a>
+              </PillButton>
             </div>
           </div>
         </Container>

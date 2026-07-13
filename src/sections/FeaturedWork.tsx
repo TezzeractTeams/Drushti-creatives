@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
+import PillButton from "@/components/PillButton";
 
 import { EASE } from "@/lib/motion";
 import { PROJECTS } from "@/data/projects";
@@ -77,13 +78,13 @@ export default function FeaturedWork() {
               const isActive = i === active;
               return (
                 <div key={project.name} className="border-b border-ink/10 py-3 first:pt-0">
-                  {/* Title row: name left; tags right while the row is inactive */}
-                  <button
-                    type="button"
-                    onClick={() => scrollToProject(i)}
-                    className="flex w-full flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <span className="flex items-center gap-4">
+                  {/* Title row: name left; tags right */}
+                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      type="button"
+                      onClick={() => scrollToProject(i)}
+                      className="flex items-center gap-4 text-left"
+                    >
                       <span
                         className={`hidden text-xl text-ink/40 transition-transform duration-300 sm:inline-block ${isActive ? "-rotate-90" : ""
                           }`}
@@ -97,22 +98,19 @@ export default function FeaturedWork() {
                       >
                         {project.name}
                       </span>
-                    </span>
+                    </button>
 
-                    <span
-                      className={`flex flex-wrap gap-2 transition-opacity duration-300 sm:shrink-0 sm:justify-end ${isActive ? "pointer-events-none opacity-0" : "opacity-100"
-                        }`}
-                    >
+                    <span className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
                       {project.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink/60"
+                          className="inline-flex h-9 items-center rounded-full border-[0.5px] border-ink px-3 text-xs uppercase text-ink"
                         >
                           {tag}
                         </span>
                       ))}
                     </span>
-                  </button>
+                  </div>
 
                   <AnimatePresence initial={false}>
                     {isActive && (
@@ -124,7 +122,7 @@ export default function FeaturedWork() {
                         className="overflow-hidden"
                       >
                         <div className="mt-4 grid gap-6 sm:grid-cols-[1fr_1.2fr] sm:items-center">
-                          {/* The Challenge + results + case-study link */}
+                          {/* The Challenge + results */}
                           <div>
                             <h3 className="text-xs font-semibold tracking-[0.32em] text-ink">
                               The Challenge
@@ -149,12 +147,9 @@ export default function FeaturedWork() {
                               ))}
                             </ul>
 
-                            <a
-                              href={project.href}
-                              className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-2.5 text-xs font-semibold tracking-[0.2em] text-white transition-transform hover:scale-105"
-                            >
+                            <PillButton href={project.href} className="mt-4 px-6 py-2.5">
                               View more
-                            </a>
+                            </PillButton>
                           </div>
 
                           <div className="relative aspect-[16/10] max-h-[40vh] w-full overflow-hidden rounded-3xl">
