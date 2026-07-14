@@ -12,6 +12,11 @@ import {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+// Brand palette used for each card's frame fill, cycled across members.
+// Blue/sky are excluded here since the section background is now blue —
+// using them for the frames too would blend in instead of standing out.
+const FRAME_COLORS = ["bg-orange", "bg-yellow", "bg-green"] as const;
+
 // TODO: replace placeholder members/photos with the real Drushti team
 const TEAM = [
   {
@@ -44,7 +49,7 @@ const TEAM = [
     role: "Motion Designer",
     photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600",
   },
-];
+].map((member, i) => ({ ...member, frameColor: FRAME_COLORS[i % FRAME_COLORS.length] }));
 
 // Original arrangement: two columns, alternating members left/right
 const LEFT_COLUMN = TEAM.filter((_, i) => i % 2 === 0);
@@ -109,25 +114,9 @@ function TeamCard({ member }: { member: (typeof TEAM)[number] }) {
             ? undefined
             : { x: imgX, y: imgY, rotate }
         }
-        className="relative overflow-hidden p-3"
+        className={`relative overflow-hidden rounded-2xl p-3 ${member.frameColor}`}
       >
-        {/* Blurred glow spanning the WHOLE card frame — photo and the
-            name/role/LinkedIn block are both inside it. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={member.photo}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-        />
-
-        {/* Corner brackets on the full frame */}
-        <span aria-hidden className="absolute left-0 top-0 z-10 h-4 w-4 border-l border-t border-white/40" />
-        <span aria-hidden className="absolute right-0 top-0 z-10 h-4 w-4 border-r border-t border-white/40" />
-        <span aria-hidden className="absolute bottom-0 left-0 z-10 h-4 w-4 border-b border-l border-white/40" />
-        <span aria-hidden className="absolute bottom-0 right-0 z-10 h-4 w-4 border-b border-r border-white/40" />
-
-        <div className="relative aspect-[3/4] w-full overflow-hidden">
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl">
           <img src={member.photo} alt={member.name} className="h-full w-full object-cover" />
         </div>
 
@@ -164,7 +153,7 @@ export default function TeamSection() {
   const rightY = useTransform(scrollYProgress, [0, 1], ["140vh", "-150vh"]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh] bg-[#1c1c1c]">
+    <section ref={sectionRef} className="relative h-[300vh] bg-blue">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         {/* Pinned center content */}
         <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
