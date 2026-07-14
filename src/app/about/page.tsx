@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import AboutHero from "@/sections/AboutHero";
 import TeamSection from "@/sections/TeamSection";
 import AboutDrushti from "@/sections/AboutDrushti";
+import WhyWeExist from "@/sections/WhyWeExist";
 
 export const metadata: Metadata = {
   title: "About | Drushti Creatives",
@@ -12,9 +13,10 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main>
+      <TeamSection />
       <AboutHero />
       <AboutDrushti />
-      <TeamSection />
+      <WhyWeExist />
     </main>
   );
 }

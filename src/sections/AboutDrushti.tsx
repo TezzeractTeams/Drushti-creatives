@@ -34,14 +34,11 @@ export default function AboutDrushti({ contentFadeOpacity }: AboutDrushtiProps) 
                         className="relative max-w-3xl"
                     >
                         <h2 className="font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl lg:text-heading-6xl">
-                            More Strategy. More Connection.
+                             Flexible Strategy for Your Vision
                         </h2>
 
                         <p className="mt-6 text-base leading-relaxed text-ink/70">
-                            Born from the belief that a great business deserves a voice as strong as its
-                            vision, we evolved into a dedicated creative partner for brands that want to
-                            lead. We are a team of strategists and creators who prioritize clarity over
-                            noise and connection over clicks.
+                        We don’t force your brand into a pre define structure. We adapt our tools to fit your unique culture, building a visual and verbal identity that belongs solely to you.
                         </p>
 
                         <p className="mt-4 text-base leading-relaxed text-ink/70">
