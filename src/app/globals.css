@@ -6,6 +6,7 @@
   /* Brand colors — stored as space-separated RGB so Tailwind's
      text-white/80 style opacity modifiers can slot in an alpha value. */
   --blue: 40 79 159;
+  --light-blue: 36 127 195;
   --orange: 220 92 38;
   --yellow: 224 182 36;
   --sky: 37 127 194;

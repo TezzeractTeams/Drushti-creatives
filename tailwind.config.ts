@@ -75,6 +75,7 @@ const config: Config = {
     extend: {
       colors: {
         blue: "rgb(var(--blue) / <alpha-value>)",
+        "light-blue": "rgb(var(--light-blue) / <alpha-value>)",
         orange: "rgb(var(--orange) / <alpha-value>)",
         yellow: "rgb(var(--yellow) / <alpha-value>)",
         sky: "rgb(var(--sky) / <alpha-value>)",
@@ -100,6 +101,10 @@ const config: Config = {
         ...scaledHeadingSteps,
         "heading-hero": [
           headingClamp(4, 18, 20),
+          { lineHeight: HEADING_LINE_HEIGHTS.display, letterSpacing: "-0.02em" },
+        ],
+        "heading-hero-half": [
+          headingClamp(1.584, 7.128, 7.92),
           { lineHeight: HEADING_LINE_HEIGHTS.display, letterSpacing: "-0.02em" },
         ],
         "heading-hero-compact": [

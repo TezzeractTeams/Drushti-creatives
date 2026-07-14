@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import Container from "@/components/Container";
 import Image from "next/image";
 import PillButton from "@/components/PillButton";
@@ -55,8 +61,20 @@ const SOCIAL_LINKS = [
   },
 ];
 
+// Bottom edge: 5 sharp peaks, uneven spacing/heights.
+const CTA_PEAK_CLIP =
+  "polygon(0 0, 100% 0, 100% 97%, 94% 100%, 87% 86%, 79% 100%, 66% 88%, 42% 100%, 32% 89%, 22% 100%, 14% 90%, 6% 100%, 0 94%)";
+
 export default function Footer() {
   const [wordIndex, setWordIndex] = useState(0);
+  const ctaRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: ctaRef,
+    offset: ["start end", "end start"],
+  });
+  const cornerImageScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -68,14 +86,36 @@ export default function Footer() {
   return (
     <>
       {/* ── CTA SECTION ─────────────────────────────────────────
-          The "sheet": opaque, rounded bottom, stacked above the pinned
-          footer. As the page ends it lifts away, uncovering the footer. */}
-      <section className="bg-orange py-20 lg:py-32 relative z-10 overflow-hidden rounded-b-3xl">
+          The "sheet": opaque, sharp peak divider at bottom, stacked above
+          the pinned footer. As the page ends it lifts away, uncovering it. */}
+      <section
+        ref={ctaRef}
+        className="relative z-10 overflow-hidden bg-orange py-[5.6rem] pb-[7.2rem] lg:py-[8.8rem] lg:pb-[9.6rem]"
+        style={{ clipPath: CTA_PEAK_CLIP }}
+      >
+        <div
+          className="pointer-events-none absolute inset-y-0 -right-[10%] z-0 flex justify-end"
+          aria-hidden
+        >
+          <motion.div
+            className="h-full origin-top-right will-change-transform"
+            style={prefersReducedMotion ? undefined : { scale: cornerImageScale }}
+          >
+            <Image
+              src="/cta-corner-shapes.jpg"
+              alt=""
+              width={888}
+              height={1024}
+              className="-my-[2.5px] h-[calc(100%+5px)] w-auto max-w-[min(72vw,720px)] object-contain object-right-top sm:max-w-[min(62vw,780px)] lg:max-w-[min(52vw,860px)]"
+              priority={false}
+            />
+          </motion.div>
+        </div>
         <Container>
-          <div className="max-w-xl relative z-10">
-            <h2 className="mb-4 font-heading text-heading-5xl leading-heading text-ink sm:text-heading-6xl lg:text-heading-7xl">
+          <div className="relative z-10 max-w-xl py-[1.2rem] sm:py-[1.6rem] lg:py-[2.4rem]">
+            <h2 className="mb-4 font-heading text-heading-5xl leading-heading text-white sm:text-heading-6xl lg:text-heading-7xl">
               Let&apos;s make<br />something{" "}
-              <span className="relative inline-block">
+              <span className="relative inline-block text-ink">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={wordIndex}
@@ -83,7 +123,7 @@ export default function Footer() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4, ease: EASE }}
-                    className="text-white inline-block"
+                    className="inline-block !text-ink"
                   >
                     {WORDS[wordIndex]}
                   </motion.span>
@@ -91,7 +131,7 @@ export default function Footer() {
               </span>
             </h2>
 
-            <p className="mb-10 text-base text-ink/60">Kick start a project with us today</p>
+            <p className="mb-10 text-base text-white">Kick start a project with us today</p>
 
             <div className="flex flex-wrap gap-4">
               <PillButton href="mailto:collabs@drushticreatives.com">
@@ -108,20 +148,23 @@ export default function Footer() {
       {/* ── DARK FOOTER ─────────────────────────────────────────
           Pinned at the viewport bottom (sticky bottom-0, z-0 under the
           page's z-10 wrapper): revealed as the CTA sheet lifts away.
-          -mt-8 pulls it up underneath the CTA section above so the two
-          overlap slightly instead of leaving a seam/gap between them
-          before the sticky reveal kicks in. Adjust the value (e.g. -mt-4
-          or -mt-16) depending on how much overlap you actually want. */}
-      <footer className="sticky bottom-0 z-0 -mt-8 h-[70vh] overflow-hidden bg-ink">
-        <Container className="relative flex h-full flex-col justify-center gap-12 py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+          -mt-[25vh] pulls it up underneath the CTA section above so the two
+          overlap instead of leaving a seam/gap between them
+          before the sticky reveal kicks in. */}
+      <footer className="sticky bottom-0 z-0 -mt-[25vh] flex h-[90vh] flex-col overflow-hidden bg-ink">
+        <div className="h-[20vh] shrink-0" aria-hidden />
+        <Container className="relative flex min-h-0 flex-1 flex-col justify-center gap-12 py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           {/* Giant lowercase wordmark, left — sized up from the original
               (which had no explicit width, so it rendered at the image's
               small natural/intrinsic size). Bumped through breakpoints so
               it stays proportionally large on bigger screens too. */}
           <div className="relative flex items-center justify-center overflow-hidden">
-            <img
-              src="work/drushtiwhitecopy.png"
+            <Image
+              src="/work/drushtiwhitecopy-trimmed.png"
               alt="Drushti Creatives"
+              width={318}
+              height={199}
+              loading="lazy"
               className="w-64 sm:w-80 lg:w-[28rem] xl:w-[32rem] h-auto"
             />
           </div>

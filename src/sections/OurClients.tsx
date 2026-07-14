@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 
 import { EASE } from "@/lib/motion";
 
-const LOGOS = Array.from({ length: 17 }, (_, i) => `/clients/${i + 1}.png`);
+import { CLIENT_LOGOS } from "@/data/clientLogos";
 
 /** Even 9-petal flower, local to this badge only — not the shared
  *  ScallopBadge (which stays untouched for the Hero/CTA buttons). */
@@ -29,11 +30,21 @@ function ClientMarquee() {
         className={`flex w-max items-center gap-6 animate-marquee ${paused ? "animate-marquee-paused" : ""
           }`}
       >
-        {[...LOGOS, ...LOGOS].map((src, i) => (
-          // Fixed height, natural (auto) width per logo — no internal
-          // letterbox padding, so the only space between logos is the gap.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={i} src={src} alt="" className="h-40 w-auto shrink-0 object-contain" />
+        {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((src, i) => (
+          // Fixed slot per logo so portrait, landscape, and square marks
+          // normalize to a similar visual footprint in the marquee.
+          <div
+            key={i}
+            className="relative h-24 w-40 shrink-0 sm:h-28 sm:w-44"
+          >
+            <Image
+              src={src}
+              alt=""
+              fill
+              sizes="176px"
+              className="object-contain"
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -57,7 +68,7 @@ export default function OurClients({ contentFadeOpacity }: OurClientsProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+            className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
           >
             <Burst className="h-4 w-4 text-orange" />
             Our clients

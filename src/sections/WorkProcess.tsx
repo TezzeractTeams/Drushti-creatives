@@ -9,6 +9,145 @@ import { EASE } from "@/lib/motion";
 import { PROCESS_STEPS } from "@/data/workProcess";
 
 
+// Tailwind rem scale: 7xl=4.5rem, 12xl=12rem, 14xl=14rem
+const CONTRACTED_SIZE_PX = 72; // text-7xl (4.5rem)
+const EXPANDED_SIZE_MIN_PX = 192;
+const EXPANDED_SIZE_MAX_PX = 224;
+
+function ProcessStepNumber({
+  step,
+  strokeColor,
+  isActive,
+  cardRef,
+}: {
+  step: number;
+  strokeColor: string;
+  isActive: boolean;
+  cardRef: React.RefObject<HTMLElement | null>;
+}) {
+  const [fontSize, setFontSize] = useState(0);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const updateSize = () => {
+      const { width: cardWidth } = card.getBoundingClientRect();
+
+      if (cardWidth < 48) {
+        setFontSize(0);
+        return;
+      }
+
+      const widthTarget = isActive
+        ? EXPANDED_SIZE_MIN_PX +
+          (EXPANDED_SIZE_MAX_PX - EXPANDED_SIZE_MIN_PX) *
+            Math.min(1, Math.max(0, (cardWidth - 64) / (560 - 64)))
+        : CONTRACTED_SIZE_PX;
+
+      const fitByCardWidth = cardWidth * 0.82;
+      const size = Math.min(widthTarget, fitByCardWidth);
+      setFontSize(size < 40 ? 0 : Math.round(size));
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [cardRef, isActive]);
+
+  return (
+    <motion.span
+      initial={false}
+      animate={{
+        fontSize,
+        opacity: fontSize > 0 ? 1 : 0,
+      }}
+      transition={{ duration: 0.5, ease: EASE }}
+      aria-hidden={fontSize === 0}
+      className="shrink-0 font-heading leading-none select-none"
+      style={{
+        color: "transparent",
+        WebkitTextFillColor: "transparent",
+        WebkitTextStroke: `1px ${strokeColor}`,
+      }}
+    >
+      {step}
+    </motion.span>
+  );
+}
+
+function ProcessCard({
+  step,
+  index,
+  isActive,
+  onActivate,
+}: {
+  step: (typeof PROCESS_STEPS)[number];
+  index: number;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={false}
+      animate={{
+        flex: isActive ? 4 : 1,
+        padding: "1.5rem",
+        backgroundColor: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.15)",
+      }}
+      transition={{ duration: 0.5, ease: EASE }}
+      style={{
+        overflow: "hidden",
+        borderRadius: "1.5rem",
+      }}
+      onClick={onActivate}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onActivate();
+        }
+      }}
+      aria-pressed={isActive}
+      className="relative flex cursor-pointer flex-col justify-between"
+    >
+      <div className="flex flex-col">
+        <ProcessStepNumber
+          step={index + 1}
+          strokeColor={isActive ? "rgb(var(--ink))" : "#ffffff"}
+          isActive={isActive}
+          cardRef={cardRef}
+        />
+
+        <motion.h3
+          initial={false}
+          animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="mt-2 shrink-0 font-heading text-heading-xl leading-heading sm:text-heading-2xl"
+        >
+          {step.title}
+        </motion.h3>
+      </div>
+
+      <motion.p
+        initial={false}
+        animate={{
+          color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
+        }}
+        transition={{ duration: 0.5, ease: EASE }}
+        className="shrink-0 text-xs sm:text-sm"
+      >
+        {step.description}
+      </motion.p>
+    </motion.div>
+  );
+}
+
 export default function WorkProcess() {
   const containerRef = useRef<HTMLDivElement>(null);
   // Start at 0 so "The Immersion" is the active/white card before any scrolling happens.
@@ -50,7 +189,7 @@ export default function WorkProcess() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-white lg:mb-10"
+            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white lg:mb-10"
           >
             <Burst className="h-4 w-4 text-white" />
             Work Process
@@ -69,69 +208,20 @@ export default function WorkProcess() {
           </motion.div>
 
           {/* The Horizontal Expanding Cards */}
-          <div className="flex flex-1 w-full min-h-[300px] max-h-[500px]">
+          <div className="flex flex-1 w-full min-h-[300px] max-h-[500px] gap-2">
             {PROCESS_STEPS.map((step, i) => {
               const isActive = activeIndex === i;
               // All cards are visible from the very start now — only their
               // width/color changes as scroll moves the active card along.
 
               return (
-                <motion.div
+                <ProcessCard
                   key={step.title}
-                  // initial={false} tells Framer Motion to render directly at the
-                  // "animate" values on mount instead of transitioning in from a
-                  // default state. This is what guarantees card 0 (The Immersion)
-                  // shows up already big and white on first paint, with no flash.
-                  initial={false}
-                  animate={{
-                    flex: isActive ? 4 : 1,
-                    padding: "1.5rem", // sm:p-8 is 2rem, p-6 is 1.5rem. We will just use padding based on viewport via classes if possible, but animate overrides it. Let's use padding in animate.
-                    marginLeft: i > 0 ? "1rem" : "0",
-                    backgroundColor: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.15)",
-                  }}
-                  transition={{ duration: 0.5, ease: EASE }}
-                  style={{
-                    overflow: "hidden",
-                    borderRadius: "1.5rem", // rounded-3xl
-                  }}
-                  // Clicking a card manually sets it as the active/expanded one.
-                  // This just calls the same setActiveIndex that scroll uses, so
-                  // scrolling afterwards will naturally take over again once the
-                  // scroll position moves past this card's range.
-                  onClick={() => setActiveIndex(i)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setActiveIndex(i);
-                    }
-                  }}
-                  aria-pressed={isActive}
-                  className="relative flex cursor-pointer flex-col justify-between"
-                >
-                  {/* Title is always visible and wraps normally. Changes color based on state */}
-                  <motion.h3
-                    initial={false}
-                    animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                    className="font-heading text-heading-xl leading-heading sm:text-heading-2xl"
-                  >
-                    {step.title}
-                  </motion.h3>
-
-                  {/* Description is always visible, but changes color based on state */}
-                  <motion.p
-                    initial={false}
-                    animate={{
-                      color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
-                    }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                    className="mt-4 text-xs sm:text-sm"
-                  >
-                    {step.description}
-                  </motion.p>
-                </motion.div>
+                  step={step}
+                  index={i}
+                  isActive={isActive}
+                  onActivate={() => setActiveIndex(i)}
+                />
               );
             })}
           </div>

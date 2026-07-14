@@ -2,7 +2,6 @@ import { Montserrat, Space_Grotesk } from "next/font/google";
 import {
   ACTIVE_FONT_SYSTEM,
   activeFontSystem,
-  FONT_CSS_VARS,
   type FontSystemId,
 } from "./fontSystems";
 

@@ -29,9 +29,9 @@ const VARIANT_ANIMATION = {
       borderColor: "rgb(26, 26, 26)",
     },
     hover: {
-      backgroundColor: "rgb(220, 92, 38)",
+      backgroundColor: "rgb(40, 79, 159)",
       color: "rgb(255, 255, 255)",
-      borderColor: "rgb(220, 92, 38)",
+      borderColor: "rgb(40, 79, 159)",
     },
   },
   light: {
@@ -83,24 +83,24 @@ export default function PillButton({
       animate="rest"
       variants={VARIANT_ANIMATION[variant]}
       transition={COLOR_TRANSITION}
-      className={`font-heading inline-flex items-center rounded-lg px-7 py-3.5 text-xs !uppercase ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`font-heading inline-flex items-center rounded-lg px-7 py-3.5 text-xs leading-5 !uppercase ${VARIANT_CLASSES[variant]} ${className}`}
     >
-      {/* Mask: fixed to exactly one line (h-4 = 16px = text-xs line-height),
+      {/* Mask: fixed to exactly one line (h-5 = 20px = text-xs leading-5),
           clipping the two stacked copies below regardless of the button's
           own padding — the earlier "top-full" version measured the offset
           from the unpadded text row instead of the full button box, so the
           duplicate barely cleared the fold and both copies showed at rest. */}
-      <span className="relative h-4 overflow-hidden">
+      <span className="relative h-5 overflow-hidden">
         <motion.span
           className="flex flex-col"
           variants={{ rest: { y: "0%" }, hover: { y: "-50%" } }}
           transition={{ duration: 0.4, ease: EASE }}
         >
-          <span className="flex h-4 items-center gap-2">
+          <span className="flex h-5 items-center gap-2 leading-5">
             {children}
             <ArrowIcon />
           </span>
-          <span className="flex h-4 items-center gap-2">
+          <span className="flex h-5 items-center gap-2 leading-5">
             {children}
             <ArrowIcon />
           </span>

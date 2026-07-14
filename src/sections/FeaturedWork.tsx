@@ -12,6 +12,7 @@ import {
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 import PillButton from "@/components/PillButton";
+import Tag from "@/components/Tag";
 
 import { EASE } from "@/lib/motion";
 import { PROJECTS } from "@/data/projects";
@@ -67,7 +68,7 @@ export default function FeaturedWork() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
           >
             <Burst className="h-4 w-4 text-orange" />
             Featured work
@@ -78,36 +79,33 @@ export default function FeaturedWork() {
               const isActive = i === active;
               return (
                 <div key={project.name} className="border-b border-ink/10 py-3 first:pt-0">
-                  {/* Title row: name left; tags right */}
-                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <button
-                      type="button"
-                      onClick={() => scrollToProject(i)}
-                      className="flex items-center gap-4 text-left"
-                    >
+                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="grid min-w-0 flex-1 grid-cols-1 gap-x-4 sm:grid-cols-[auto_1fr]">
                       <span
-                        className={`hidden text-xl text-ink/40 transition-transform duration-300 sm:inline-block ${isActive ? "-rotate-90" : ""
+                        className={`hidden text-[2.5rem] leading-none text-ink/40 transition-transform duration-300 sm:inline-block sm:self-center ${isActive ? "-rotate-90" : ""
                           }`}
                         aria-hidden
                       >
                         ↓
                       </span>
-                      <span
-                        className={`font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-4xl lg:text-heading-5xl ${isActive ? "text-ink" : "text-ink/25"
-                          }`}
+
+                      <button
+                        type="button"
+                        onClick={() => scrollToProject(i)}
+                        className="text-left sm:col-start-2"
                       >
-                        {project.name}
-                      </span>
-                    </button>
+                        <span
+                          className={`font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 ${isActive ? "text-ink" : "text-ink/25"
+                            }`}
+                        >
+                          {project.name}
+                        </span>
+                      </button>
+                    </div>
 
                     <span className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
                       {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex h-9 items-center rounded-full border-[0.5px] border-ink px-3 text-xs uppercase text-ink"
-                        >
-                          {tag}
-                        </span>
+                        <Tag key={tag}>{tag}</Tag>
                       ))}
                     </span>
                   </div>
@@ -121,44 +119,47 @@ export default function FeaturedWork() {
                         transition={{ duration: 0.4, ease: EASE }}
                         className="overflow-hidden"
                       >
-                        <div className="mt-4 grid gap-6 sm:grid-cols-[1fr_1.2fr] sm:items-center">
-                          {/* The Challenge + results */}
-                          <div>
-                            <h3 className="text-xs font-semibold tracking-[0.32em] text-ink">
-                              The Challenge
-                            </h3>
-                            <p className="mt-3 max-w-md text-sm text-ink/70">
-                              {project.challenge}
-                            </p>
+                        <div className="mt-4 grid gap-6 sm:grid-cols-[3fr_2fr] sm:items-start">
+                          <div className="grid min-w-0 grid-cols-1 gap-x-4 sm:grid-cols-[auto_1fr]">
+                            <span className="invisible hidden text-[2.5rem] leading-none sm:inline-block" aria-hidden>
+                              ↓
+                            </span>
+                            <div className="min-w-0 sm:col-start-2">
+                              <p className="text-sm text-ink/70">
+                                {project.challenge}
+                              </p>
 
-                            <ul className="mt-4 space-y-2">
-                              {project.results.map((result, ri) => (
-                                <li
-                                  key={ri}
-                                  className="flex items-baseline gap-3 text-sm text-ink/70"
-                                >
-                                  {result.metric && (
-                                    <span className="font-heading text-heading-2xl leading-heading text-ink">
-                                      {result.metric}
-                                    </span>
-                                  )}
-                                  <span className="max-w-sm">{result.text}</span>
-                                </li>
-                              ))}
-                            </ul>
+                              <ul className="mt-4 space-y-2">
+                                {project.results.map((result, ri) => (
+                                  <li
+                                    key={ri}
+                                    className="flex items-baseline gap-3 text-sm text-ink/70"
+                                  >
+                                    {result.metric && (
+                                      <span className="font-heading text-heading-2xl leading-heading text-ink">
+                                        {result.metric}
+                                      </span>
+                                    )}
+                                    <span className="min-w-0 flex-1">{result.text}</span>
+                                  </li>
+                                ))}
+                              </ul>
 
-                            <PillButton href={project.href} className="mt-4 px-6 py-2.5">
-                              View more
-                            </PillButton>
+                              <PillButton href={project.href} className="mt-4 px-6 py-2.5">
+                                View more
+                              </PillButton>
+                            </div>
                           </div>
 
-                          <div className="relative aspect-[16/10] max-h-[40vh] w-full overflow-hidden rounded-3xl">
-                            <Image
-                              src={project.image}
-                              alt={project.name}
-                              fill
-                              className="object-cover"
-                            />
+                          <div className="my-4 flex min-w-0 w-full">
+                            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-3xl">
+                              <Image
+                                src={project.image}
+                                alt={project.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                           </div>
                         </div>
                       </motion.div>

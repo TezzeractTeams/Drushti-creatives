@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
 
 import { EASE } from "@/lib/motion";
 import { TESTIMONIALS } from "@/data/testimonials";
+import { getCompanyLogo } from "@/data/clientLogos";
 
 
 // Cards are min(420px, 85vw) wide so they never exceed the phone viewport;
@@ -13,18 +15,43 @@ import { TESTIMONIALS } from "@/data/testimonials";
 const CARD_WIDTH = "min(420px, 85vw)";
 const CARD_GAP = 24;
 const FALLBACK_STEP = 420 + CARD_GAP;
+const LOGO_FRAME = "h-[5.6rem] w-[5.6rem] sm:h-[6.4rem] sm:w-[6.4rem]";
+/** Inner bounds so portrait, landscape, and square marks read at similar visual weight. */
+const LOGO_INNER = "h-[3.75rem] w-[3.75rem] sm:h-[4.25rem] sm:w-[4.25rem]";
 
-function Initials({ name, className }: { name: string; className?: string }) {
+function CompanyLogo({
+  company,
+  className,
+}: {
+  company: string;
+  className?: string;
+}) {
+  const src = getCompanyLogo(company);
+
+  if (!src) {
+    return (
+      <div
+        className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white p-3 text-center ${className ?? LOGO_FRAME}`}
+      >
+        <motion.p
+          initial={false}
+          animate={{ color: "rgb(var(--ink))" }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="font-heading text-xs leading-tight tracking-wide sm:text-sm"
+        >
+          {company}
+        </motion.p>
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full bg-orange/10 font-heading text-orange ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-white ${className ?? LOGO_FRAME}`}
     >
-      {name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()}
+      <div className={`relative ${LOGO_INNER}`}>
+        <Image src={src} alt={company} fill sizes="68px" className="object-contain" />
+      </div>
     </div>
   );
 }
@@ -57,18 +84,18 @@ export default function Testimonials() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-cream py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-light-blue py-20 lg:py-32">
       <Container>
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Left column — heading, promise, Clutch rating */}
           <div className="shrink-0 lg:w-[340px]">
             <div className="flex flex-col items-start lg:sticky lg:top-32">
-              <h2 className="mb-6 font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl">
+              <h2 className="mb-6 font-heading text-heading-4xl leading-heading text-white sm:text-heading-5xl">
                 Kind words from
                 <br />
                 our clients
               </h2>
-              <p className="mb-12 max-w-sm text-sm text-ink/70 sm:text-base">
+              <p className="mb-12 max-w-sm text-sm text-white/80 sm:text-base">
                 We won&apos;t just be executors. We&apos;ll be your partners, we
                 promise. If you&apos;re not convinced, check out our verified
                 testimonials from around the world about working with us.
@@ -87,36 +114,66 @@ export default function Testimonials() {
                 animate={{ x: -index * step }}
                 transition={{ duration: 0.6, ease: EASE }}
               >
-                {TESTIMONIALS.map((t) => (
-                  <div
+                {TESTIMONIALS.map((t, i) => {
+                  const isActive = i === index;
+
+                  return (
+                  <motion.div
                     key={t.id}
-                    style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH }}
-                    className="flex min-h-[440px] flex-col rounded-3xl bg-white p-8 shadow-sm"
+                    initial={false}
+                    animate={{
+                      backgroundColor: isActive
+                        ? "rgba(255, 255, 255, 0.9)"
+                        : "rgba(255, 255, 255, 0.15)",
+                    }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    style={{
+                      width: CARD_WIDTH,
+                      minWidth: CARD_WIDTH,
+                      borderRadius: "1.5rem",
+                      overflow: "hidden",
+                    }}
+                    className="flex min-h-[440px] flex-col justify-between p-12"
                   >
-                    {/* Header: avatar left, company wordmark right */}
-                    <div className="mb-6 flex items-start justify-between gap-4">
-                      <Initials name={t.name} className="h-12 w-12 text-heading-base" />
-                      <p className="pt-2 text-right font-heading text-heading-sm tracking-wide text-ink">
-                        {t.company}
-                      </p>
-                    </div>
-
-                    <p className="text-sm leading-relaxed text-ink/80 sm:text-base">
+                    <motion.p
+                      initial={false}
+                      animate={{
+                        color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
+                      }}
+                      transition={{ duration: 0.5, ease: EASE }}
+                      className="text-sm leading-relaxed sm:text-base"
+                    >
                       {t.text}
-                    </p>
+                    </motion.p>
 
-                    {/* Footer pinned to the card bottom */}
-                    <div className="mt-auto pt-8">
-                      <p className="flex items-center gap-2 font-bold text-ink">
-                        {t.name}
-                        <LinkedInIcon />
-                      </p>
-                      <p className="mt-1 text-sm text-ink/50">
-                        {t.role} at {t.company}
-                      </p>
+                    <div className="mt-8 flex items-center gap-6">
+                      <CompanyLogo company={t.company} />
+
+                      <div className="min-w-0 flex-1">
+                        <motion.p
+                          initial={false}
+                          animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
+                          transition={{ duration: 0.5, ease: EASE }}
+                          className="flex items-center gap-2 font-bold"
+                        >
+                          {t.name}
+                          <LinkedInIcon />
+                        </motion.p>
+                        <motion.p
+                          initial={false}
+                          animate={{
+                            color: isActive ? "rgba(var(--ink) / 0.5)" : "rgba(255, 255, 255, 0.7)",
+                          }}
+                          transition={{ duration: 0.5, ease: EASE }}
+                          className="mt-1 text-sm"
+                        >
+                          {t.role} at {t.company}
+                        </motion.p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  </motion.div>
+                  );
+                })}
               </motion.div>
             </div>
 
@@ -125,7 +182,7 @@ export default function Testimonials() {
               <button
                 onClick={() => setIndex((prev) => Math.max(prev - 1, 0))}
                 disabled={index === 0}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white transition-all hover:scale-105 hover:bg-white/25 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
                 aria-label="Previous testimonial"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -135,7 +192,7 @@ export default function Testimonials() {
               <button
                 onClick={() => setIndex((prev) => Math.min(prev + 1, maxIndex))}
                 disabled={index === maxIndex}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-orange text-white shadow-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-light-blue transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
                 aria-label="Next testimonial"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

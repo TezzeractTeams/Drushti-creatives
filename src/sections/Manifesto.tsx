@@ -49,7 +49,7 @@ export default function Manifesto() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-white"
+            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white"
           >
             <Burst className="h-4 w-4 text-white" />
             Our manifesto

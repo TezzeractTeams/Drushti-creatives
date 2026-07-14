@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
@@ -12,6 +13,9 @@ const LINKS = [
   { label: "Blog", href: "#blog" },
   { label: "Contact", href: "#contact" },
 ];
+
+const MENU_BUTTON_CLASSES =
+  "rounded-full bg-white font-heading text-xs uppercase text-ink transition-colors duration-300 hover:bg-ink hover:text-white";
 
 /** Top-right + expands into a row of nav pills, morphing to × — matching
  *  the reference site's header interaction. Hides on scroll down, shows on
@@ -57,8 +61,17 @@ export default function Header() {
       className={`fixed inset-x-0 top-0 z-20 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-blue" : "bg-transparent"
         }`}
     >
-      <Container className="flex items-center justify-between py-6">
-        <span className="font-heading text-heading-lg text-white">Drushti</span>
+      <Container className="flex items-center justify-between py-0">
+        <div className="px-[0.45rem] py-[0.9rem]">
+          <Image
+            src="/work/drushtiwhitecopy-trimmed.png"
+            alt="Drushti Creatives"
+            width={318}
+            height={199}
+            priority
+            className="block h-12 w-auto"
+          />
+        </div>
 
         <div className="flex items-center gap-3">
           <AnimatePresence>
@@ -72,7 +85,7 @@ export default function Header() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 16 }}
                     transition={{ duration: 0.45, ease: EASE, delay: i * 0.06 }}
-                    className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-blue hover:text-white"
+                    className={`inline-flex h-12 items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
                   >
                     {link.label}
                   </motion.a>
@@ -88,9 +101,9 @@ export default function Header() {
             aria-expanded={open}
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.45, ease: EASE }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white"
+            className={`flex h-12 w-12 items-center justify-center ${MENU_BUTTON_CLASSES}`}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" aria-hidden>
               <path
                 d="M8 1v14M1 8h14"
                 stroke="currentColor"

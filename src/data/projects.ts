@@ -18,73 +18,9 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
-    name: "Softlogic",
+    name: "Advantis Project Logistics | Building B2B Authority",
     description:
-      "A “Fight Against Fire” brand campaign for Softlogic's fire detection systems — brochure design, system-design diagrams, and a bold shield identity that makes safety feel approachable.",
-    tags: ["Brochure Design", "Brand Identity", "Print Collateral"],
-    image: "/work/softlogic.webp",
-    // TODO: replace placeholder challenge/results with real case-study copy
-    challenge:
-      "Softlogic needed its fire detection systems to feel approachable without losing technical authority across its printed collateral.",
-    results: [
-      { metric: "1x", text: "Placeholder result — replace with real metric." },
-      { metric: "10%", text: "Placeholder result — replace with real metric." },
-      { text: "Placeholder outcome statement — replace with real result." },
-    ],
-    href: "/work/softlogic",
-  },
-  {
-    name: "Ginger Fresh",
-    description:
-      "Can packaging design for Ginger Fresh, a beverage brand built around bold contrast and refreshment — two variants sharing one confident identity.",
-    tags: ["Packaging Design", "Brand Identity", "Product Design"],
-    image: "/work/ginger-fresh.webp",
-    // TODO: replace placeholder challenge/results with real case-study copy
-    challenge:
-      "Ginger Fresh needed packaging bold enough to stand out on shelf while keeping two product variants under one identity.",
-    results: [
-      { metric: "1x", text: "Placeholder result — replace with real metric." },
-      { metric: "10%", text: "Placeholder result — replace with real metric." },
-      { text: "Placeholder outcome statement — replace with real result." },
-    ],
-    href: "/work/ginger-fresh",
-  },
-  {
-    name: "Norlanka",
-    description:
-      "Ongoing social media and employer-branding content for Norlanka — hiring campaigns, award features, festival greetings, and the “HERIZON” women-in-leadership initiative.",
-    tags: ["Social Media Design", "Employer Branding", "Content Creation"],
-    image: "/work/norlanka.webp",
-    // TODO: replace placeholder challenge/results with real case-study copy
-    challenge:
-      "Norlanka needed a consistent employer-brand voice across hiring campaigns, award features, and initiatives like HERIZON.",
-    results: [
-      { metric: "12%", text: "Organic Follower Growth on LinkedIn." },
-      { metric: "3x", text: "Engagement Rate Increase." },
-      { text: "Rise in Job Inquiries, directly fulfilling the goal of attracting talent through trust and authenticity." },
-    ],
-    href: "/work/norlanka",
-  },
-  {
-    name: "Fairfirst Insurance",
-    description:
-      "Product brochure design for Fairfirst's Smart House Insurance — translating a technical policy into a clear, homeowner-friendly story.",
-    tags: ["Brochure Design", "Print Collateral", "Brand Identity"],
-    image: "/work/fairfirst.webp",
-    // TODO: replace placeholder challenge/results with real case-study copy
-    challenge:
-      "Fairfirst needed its Smart House Insurance policy translated into a story homeowners could actually understand.",
-    results: [
-      { metric: "1x", text: "Placeholder result — replace with real metric." },
-      { metric: "10%", text: "Placeholder result — replace with real metric." },
-      { text: "Placeholder outcome statement — replace with real result." },
-    ],
-    href: "/work/fairfirst",
-  },
-  {
-    name: "Advantis",
-    description:
-      "Social content for Advantis Project Logistics — sustainability messaging, hiring campaigns, and equipment promotion for a heavy-logistics audience.",
+      "Strategic LinkedIn and Facebook management for Advantis Project Logistics — building B2B authority through consistent, trust-based organic engagement.",
     tags: ["Social Media Design", "Content Creation", "Digital Advertising"],
     image: "/work/advantis.webp",
     challenge:
@@ -97,5 +33,71 @@ export const PROJECTS: Project[] = [
       },
     ],
     href: "/work/advantis",
+  },
+  {
+    name: "Norlanka | Organic Advocacy & Employer Branding",
+    description:
+      "Organic advocacy and employer branding for Norlanka — building community awareness and attracting the right talent through authentic content.",
+    tags: ["Social Media Design", "Employer Branding", "Content Creation"],
+    image: "/work/norlanka.webp",
+    challenge:
+      "Norlanka aimed to build organic awareness within the local community, specifically to attract the right talent for their",
+    results: [
+      { metric: "12%", text: "Organic Follower Growth on LinkedIn." },
+      { metric: "3x", text: "Engagement Rate Increase." },
+      {
+        text: "Rise in Job Inquiries, directly fulfilling the goal of attracting talent through trust and authenticity.",
+      },
+    ],
+    href: "/work/norlanka",
+  },
+  {
+    name: "Uber Sri Lanka | Driver Onboarding Campaign",
+    description:
+      "Driver onboarding campaign for Uber Sri Lanka — reducing cost per result while increasing inquiry rates across driver and rider segments.",
+    tags: ["Digital Advertising", "Driver Onboarding", "Social Media Marketing"],
+    image: "/work/softlogic.webp",
+    challenge:
+      "The objective was to onboard driver partners to the Uber rider network. While initial advertising was managed by",
+    results: [
+      { metric: "40%", text: "Reduction in cost per results." },
+      { text: "Increased Inquiry Rate across both driver and rider segments." },
+      {
+        text: "High Brand Awareness established among the specific target audiences regarding the opportunity.",
+      },
+    ],
+    href: "/work/uber-sri-lanka",
+  },
+  {
+    name: "Uber Eats | Rider Onboarding Campaign",
+    description:
+      "Rider onboarding campaign for Uber Eats — expanding the local delivery rider network with highly targeted, local communication.",
+    tags: ["Digital Advertising", "Lead Generation", "Social Media Marketing"],
+    image: "/work/ginger-fresh.webp",
+    challenge:
+      "Uber Eats needed to expand its local delivery rider network. Their existing campaigns, managed by a regional team",
+    results: [
+      { metric: "75%", text: "Reduction in Cost Per Lead (CPL)." },
+      { metric: "25%", text: "Increase in lead-to-conversion ratio." },
+      { text: "Optimized ROAS through highly targeted, local communication." },
+    ],
+    href: "/work/uber-eats",
+  },
+  {
+    name: "Wild Drift | Humanizing Experiential Learning",
+    description:
+      "Social content for Wild Drift — establishing a trusted authority in experiential learning and driving B2B lead generation.",
+    tags: ["Social Media Design", "Content Creation", "B2B Marketing"],
+    image: "/work/fairfirst.webp",
+    challenge:
+      "Wild Drift needed to move beyond a basic online presence to establish themselves as a trusted authority in",
+    results: [
+      { metric: "80%", text: "increase in organic page reach." },
+      { metric: "50%", text: "boost in page visits through interactive and engaging content." },
+      {
+        text: "Generating B2B new leads, delivering a more efficient path for business growth.",
+      },
+    ],
+    href: "/work/wild-drift",
   },
 ];

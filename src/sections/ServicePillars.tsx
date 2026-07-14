@@ -25,7 +25,7 @@ export default function ServicePillars() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+          className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
         >
           <Burst className="h-4 w-4 text-orange" />
           Our services

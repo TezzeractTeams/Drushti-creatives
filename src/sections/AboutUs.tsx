@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef, type RefObject } from "react";
-import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent } from "motion/react";
+import { AnimatePresence, motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
+import PillButton from "@/components/PillButton";
 import { ABOUT_SCROLL_VH, SHAPE_CLOSED_AT } from "@/config/clientCurtain";
 
 const IMAGES = [
-  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=800"
+  "/team-member-1.png",
+  "/team-member-2.png",
 ];
+
+const IMAGE_ROTATE_MS = 2500;
 
 type AboutUsProps = {
   scrollRef?: RefObject<HTMLElement | null>;
@@ -66,6 +67,27 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
     const isScrollingDown = latest >= prevProgress.current;
     prevProgress.current = latest;
     titleOpacity.set(isScrollingDown ? closingOpacity.get() : openingOpacity.get());
+
+    if (latest < CONTENT_FADE_START) {
+      contentOpacity.set(0);
+      contentY.set("50px");
+      return;
+    }
+
+    if (latest >= CONTENT_FADE_END) {
+      contentOpacity.set(1);
+      contentY.set("0px");
+      return;
+    }
+
+    if (isScrollingDown) {
+      const t = (latest - CONTENT_FADE_START) / (CONTENT_FADE_END - CONTENT_FADE_START);
+      contentOpacity.set(t);
+      contentY.set(`${50 * (1 - t)}px`);
+    } else {
+      contentOpacity.set(1);
+      contentY.set("0px");
+    }
   });
 
   const titleScale = useTransform(
@@ -75,16 +97,20 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
   );
   const titleY = useTransform(scrollYProgress, [0.35, 0.45], ["0%", "-20%"]);
 
-  const contentY = useTransform(scrollYProgress, [0.45, 0.65], ["50px", "0px"]);
-  const contentOpacity = useTransform(scrollYProgress, [0.45, 0.65], [0, 1]);
+  const CONTENT_FADE_START = 0.45;
+  const CONTENT_FADE_END = 0.5;
+
+  const contentY = useMotionValue("50px");
+  const contentOpacity = useMotionValue(0);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 1500);
-    return () => clearInterval(interval);
+    }, IMAGE_ROTATE_MS);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
@@ -124,7 +150,7 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
         </svg>
 
         {/*<Container className="relative z-10 pt-8 sm:pt-12">
-          <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink mix-blend-difference invert">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink mix-blend-difference invert">
             <Burst className="h-4 w-4" />
             About us
           </div>
@@ -137,7 +163,7 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
               scale: titleScale,
               y: titleY
             }}
-            className="text-center font-heading text-heading-hero-compact leading-heading text-white px-4"
+            className="text-center font-heading text-heading-hero-half leading-[0.88] tracking-tighter text-white px-4"
           >
             More strategy.<br />More connection.<br />
           </motion.h2>
@@ -149,36 +175,29 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
         >
           <Container className="flex w-full flex-col lg:flex-row items-center justify-between gap-12">
 
-            <div className="flex-1 max-w-3xl">
+            <div className="flex-1 max-w-[50.4rem]">
               <p className="font-heading text-heading-sub leading-heading-loose text-white/90 mb-12">
-                We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
+                Born from the belief that a great business deserves a voice as strong as its vision, we evolved into a dedicated creative partner for brands that want to lead. We are a team of strategists and creators who prioritize clarity over noise and connection over clicks.
               </p>
 
-              <div className="group inline-flex items-center gap-4 cursor-pointer">
-                <span className="text-sm font-semibold tracking-wider text-white border-b border-white pb-1">
-                  About Us
-                </span>
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green transition-transform group-hover:scale-110">
-                  <span className="sr-only">Go</span>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 11L11 1M11 1H3.5M11 1V8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </div>
+              <PillButton href="/about" variant="light">
+                About Us
+              </PillButton>
             </div>
 
             <div className="w-64 h-80 lg:w-80 lg:h-[450px] relative shrink-0 rounded-full overflow-hidden">
-              {IMAGES.map((src, index) => (
+              <AnimatePresence mode="sync">
                 <motion.img
-                  key={src}
-                  src={src}
+                  key={currentImageIndex}
+                  src={IMAGES[currentImageIndex]}
                   alt="Team member"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: currentImageIndex === index ? 1 : 0 }}
-                  transition={{ duration: 0.5 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-              ))}
+              </AnimatePresence>
             </div>
 
           </Container>

@@ -98,7 +98,7 @@ export function BackgroundLayer({ containerRef }: Props) {
         {FLOATING_IMAGES.map((img, i) => (
           <div
             key={i}
-            className="absolute"
+            className="absolute z-0 hover:z-20"
             style={{
               left:   IMAGE_POSITIONS[i].left,
               top:    IMAGE_POSITIONS[i].top,

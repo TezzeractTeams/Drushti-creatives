@@ -12,8 +12,11 @@ import {
 } from "motion/react";
 import Container from "@/components/Container";
 import { Burst, Circle, HalfCircle } from "@/components/HeroShapes";
+import Tag from "@/components/Tag";
 
 import { EASE } from "@/lib/motion";
+
+const SERVICE_ICON_SIZE = 500;
 
 const CATEGORIES = [
   {
@@ -30,6 +33,7 @@ const CATEGORIES = [
     ],
     Shape: Circle,
     color: "text-sky",
+    image: "/performance-growth-icon.png",
   },
   {
     name: "Creative Solutions",
@@ -44,7 +48,7 @@ const CATEGORIES = [
     ],
     Shape: Burst,
     color: "text-orange",
-    image: "/orange.png",
+    image: "/creative-solutions-icon.png",
   },
   {
     name: "Digital Presence",
@@ -59,6 +63,7 @@ const CATEGORIES = [
     ],
     Shape: HalfCircle,
     color: "text-green",
+    image: "/digital-presence-icon.png",
   },
 ];
 
@@ -109,7 +114,7 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-10 flex items-center gap-2 text-xs font-semibold tracking-[0.32em] text-ink"
+            className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
           >
             <Burst className="h-4 w-4 text-orange" />
             Services
@@ -146,14 +151,9 @@ export default function Services() {
                           className="overflow-hidden"
                         >
                           <p className="mt-4 max-w-xl text-base text-ink/70">{cat.description}</p>
-                          <div className="mt-5 flex flex-wrap gap-3">
+                          <div className="mt-5 flex flex-wrap gap-2">
                             {cat.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/80"
-                              >
-                                {tag}
-                              </span>
+                              <Tag key={tag}>{tag}</Tag>
                             ))}
                           </div>
                         </motion.div>
@@ -169,7 +169,7 @@ export default function Services() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.7, ease: EASE }}
-              className="mx-auto flex h-64 w-64 items-center justify-center sm:h-72 sm:w-72"
+              className="mx-auto flex size-[500px] items-center justify-center"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -184,9 +184,10 @@ export default function Services() {
                     <Image
                       src={activeCategory.image}
                       alt={activeCategory.name}
-                      width={288}
-                      height={288}
-                      className="h-full w-full object-contain"
+                      width={SERVICE_ICON_SIZE}
+                      height={SERVICE_ICON_SIZE}
+                      sizes="500px"
+                      className="size-[500px] object-contain"
                     />
                   ) : (
                     <ActiveShape className="h-full w-full" />
