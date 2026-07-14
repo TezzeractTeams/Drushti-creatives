@@ -13,7 +13,7 @@ export default function AboutHero() {
   return (
     <section className="relative flex min-h-screen items-end bg-orange pb-16 pt-32 sm:pb-24">
       <Container>
-        <h1 className="font-heading text-[clamp(3.25rem,9vw,9rem)] font-bold leading-[1.02] text-white">
+        <h2 className="font-heading text-[clamp(3.25rem,9vw,9rem)] font-bold leading-[1.02] text-white">
           {LINES.map((line, i) => (
             <span key={line} className="block overflow-hidden">
               <motion.span
@@ -26,7 +26,7 @@ export default function AboutHero() {
               </motion.span>
             </span>
           ))}
-        </h1>
+        </h2>
       </Container>
     </section>
   );
