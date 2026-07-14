@@ -9,6 +9,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
+import PillButton from "@/components/PillButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -175,17 +176,14 @@ export default function TeamSection() {
           >
             Creative minds
           </motion.h2>
-          <motion.a
-            href="#contact"
+          <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
-            whileHover={{ scale: 1.05 }}
-            className="bg-orange px-7 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
           >
-            Meet team
-          </motion.a>
+            <PillButton href="#contact">Meet team</PillButton>
+          </motion.div>
         </div>
 
         {prefersReducedMotion ? (
