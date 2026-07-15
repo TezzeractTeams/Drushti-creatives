@@ -82,7 +82,7 @@ export default function WhatWeDo() {
           transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
           className="mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
         >
-          We Build on "Deep Strategic Thinking"
+          We Build on &ldquo;Deep Strategic Thinking&rdquo;
         </motion.h2>
 
         <div className="flex flex-wrap items-center justify-center gap-y-10 pl-6 sm:justify-start sm:pl-10">
