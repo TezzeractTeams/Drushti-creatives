@@ -28,6 +28,17 @@
   scroll-behavior: auto;
 }
 
+/* Hide the native scrollbar track site-wide (Lenis provides the scroll UX,
+   so the browser's default bar is redundant visual clutter). */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/WebKit */
+}
+
 html.lenis {
   height: auto;
 }
