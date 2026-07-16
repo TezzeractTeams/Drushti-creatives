@@ -12,7 +12,7 @@ type AboutDrushtiProps = {
 
 export default function AboutDrushti({ contentFadeOpacity }: AboutDrushtiProps) {
     return (
-        <section className="sticky top-0 z-0 flex min-h-[80vh] flex-col justify-center bg-white py-28">
+        <section className="relative flex min-h-[80vh] flex-col justify-center bg-white py-28">
             <Container>
                 <motion.div style={contentFadeOpacity ? { opacity: contentFadeOpacity } : undefined}>
                     <motion.div

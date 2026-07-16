@@ -56,9 +56,7 @@ export default function Header() {
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: EASE }}
-      // Transparent at the top of the page, solid once scrolled — the
-      // color itself cross-fades via the transition-colors class below.
-      className={`fixed inset-x-0 top-0 z-20 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-blue" : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-40 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-blue" : "bg-transparent"
         }`}
     >
       <Container className="flex items-center justify-between py-0">

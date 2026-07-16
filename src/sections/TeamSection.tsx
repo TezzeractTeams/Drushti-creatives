@@ -159,7 +159,7 @@ export default function TeamSection() {
     <section ref={sectionRef} className="relative h-[300vh] bg-blue">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         {/* Pinned center content */}
-        <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
+        <div className="relative z-20 flex flex-col items-center gap-6 px-6 text-center">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -167,14 +167,14 @@ export default function TeamSection() {
             transition={{ duration: 0.6, ease: EASE }}
             className="text-xs font-semibold uppercase tracking-[0.32em] text-orange"
           >
-            Our team
+            About Us
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="max-w-5xl font-heading text-[clamp(2.25rem,7vw,7rem)] font-bold leading-none text-white"
+            className="max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[1.1] text-white"
           >
             We build the voice your vision deserves.
           </motion.h2>
@@ -200,7 +200,7 @@ export default function TeamSection() {
             {/* Cards float up past the pinned heading, in front of it */}
             <motion.div
               style={{ y: leftY }}
-              className="absolute left-[4%] top-0 z-20 flex flex-col gap-[26vh] sm:left-[7%]"
+              className="absolute left-[4%] top-0 z-10 flex flex-col gap-[26vh] sm:left-[7%]"
             >
               {LEFT_COLUMN.map((m) => (
                 <TeamCard key={m.name} member={m} />
@@ -208,7 +208,7 @@ export default function TeamSection() {
             </motion.div>
             <motion.div
               style={{ y: rightY }}
-              className="absolute right-[4%] top-0 z-20 flex flex-col gap-[26vh] sm:right-[7%]"
+              className="absolute right-[4%] top-0 z-10 flex flex-col gap-[26vh] sm:right-[7%]"
             >
               {RIGHT_COLUMN.map((m) => (
                 <TeamCard key={m.name} member={m} />
