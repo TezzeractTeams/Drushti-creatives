@@ -148,10 +148,12 @@ export default function TeamSection() {
     offset: ["start start", "end end"],
   });
 
-  // Original travel ranges: the columns stream up past the pinned heading,
-  // right column offset ~40vh behind the left so cards arrive alternately.
-  const leftY = useTransform(scrollYProgress, [0, 1], ["100vh", "-190vh"]);
-  const rightY = useTransform(scrollYProgress, [0, 1], ["140vh", "-150vh"]);
+  // Travel ranges: columns start already on-screen (matching the reference
+  // position at load) and stream further up past the pinned heading as the
+  // user scrolls — right column stays ~40vh behind the left so cards arrive
+  // staggered instead of in lockstep.
+  const leftY = useTransform(scrollYProgress, [0, 1], ["6vh", "-190vh"]);
+  const rightY = useTransform(scrollYProgress, [0, 1], ["46vh", "-150vh"]);
 
   return (
     <section ref={sectionRef} className="relative h-[300vh] bg-blue">
@@ -172,9 +174,9 @@ export default function TeamSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="font-heading text-[clamp(3rem,10vw,10rem)] font-bold leading-none text-white"
+            className="max-w-5xl font-heading text-[clamp(2.25rem,7vw,7rem)] font-bold leading-none text-white"
           >
-            Creative minds
+            We build the voice your vision deserves.
           </motion.h2>
           <motion.div
             initial={{ opacity: 0, y: 14 }}

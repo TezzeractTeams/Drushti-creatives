@@ -41,13 +41,7 @@ export default function AboutDrushti({ contentFadeOpacity }: AboutDrushtiProps) 
                         We don’t force your brand into a pre define structure. We adapt our tools to fit your unique culture, building a visual and verbal identity that belongs solely to you.
                         </p>
 
-                        <p className="mt-4 text-base leading-relaxed text-ink/70">
-                            For us, creativity isn&apos;t just a service — it&apos;s our mindset. We
-                            believe your business objectives deserve to be translated into authentic
-                            communication that people actually want to follow. We step into your shoes
-                            to ensure every visual, strategy, and digital experience we build is rooted
-                            in your specific culture and goals.
-                        </p>
+                    
                     </motion.div>
                 </motion.div>
             </Container>

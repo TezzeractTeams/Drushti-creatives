@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 import { EASE } from "@/lib/motion";
@@ -36,61 +37,97 @@ const CARDS = [
   },
 ] as const;
 
-/** One card in the overlapping row — rests at its own tilt angle, and
- *  straightens + lifts on hover, traced from the reference's card-shuffle
- *  treatment ("the way the sides of the cards change when hovering"). */
-function ContentCard({ card, index }: { card: (typeof CARDS)[number]; index: number }) {
+const TOTAL = CARDS.length;
+
+/** One card in the overlapping row. Rotate/scale/lift are driven directly
+ *  by scroll progress (own segment of the shared track), so each card
+ *  "pops" — straightening, growing, lifting, coming to front — in turn as
+ *  you scroll, the same visual as the old hover effect but scroll-gated.
+ *  Hover still adds a small extra bump via a nested wrapper, so it doesn't
+ *  fight the scroll-driven transform on the outer element. */
+function ContentCard({
+  card,
+  index,
+  scrollYProgress,
+}: {
+  card: (typeof CARDS)[number];
+  index: number;
+  scrollYProgress: MotionValue<number>;
+}) {
+  const start = index / TOTAL;
+  const end = (index + 1) / TOTAL;
+
+  const rotate = useTransform(scrollYProgress, [start, end], [card.rotate, 0], {
+    clamp: true,
+  });
+  const scale = useTransform(scrollYProgress, [start, end], [1, 1.08], { clamp: true });
+  const y = useTransform(scrollYProgress, [start, end], [0, -20], { clamp: true });
+  const z = useTransform(scrollYProgress, [start, end], [index, TOTAL + index], {
+    clamp: true,
+  });
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24, rotate: card.rotate }}
-      whileInView={{ opacity: 1, y: 0, rotate: card.rotate }}
-      viewport={{ once: true, amount: 0.3 }}
-      whileHover={{ rotate: 0, scale: 1.06, zIndex: 20 }}
-      transition={{ duration: 0.5, ease: EASE, delay: index * 0.08 }}
-      style={{ backgroundColor: card.color, zIndex: index }}
-      className="relative -ml-6 flex h-72 w-52 shrink-0 flex-col justify-end rounded-2xl p-5 shadow-xl first:ml-0 sm:h-80 sm:w-60 sm:p-6"
+      style={{ rotate, scale, y, zIndex: z }}
+      className="relative -ml-8 h-80 w-64 shrink-0 first:ml-0 sm:-ml-10 sm:h-96 sm:w-72 md:h-[28rem] md:w-80"
     >
-      <h3 className="font-heading text-lg font-bold leading-tight text-white sm:text-xl">
-        {card.title}
-      </h3>
-      <p className="mt-2 text-xs leading-relaxed text-white/85 sm:text-sm">
-        {card.description}
-      </p>
+      <motion.div
+        whileHover={{ scale: 1.04 }}
+        transition={{ duration: 0.3, ease: EASE }}
+        style={{ backgroundColor: card.color }}
+        className="flex h-full w-full flex-col justify-end rounded-2xl p-6 shadow-xl sm:p-7"
+      >
+        <h3 className="font-heading text-xl font-bold leading-tight text-white sm:text-2xl">
+          {card.title}
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-white/85 sm:text-base">
+          {card.description}
+        </p>
+      </motion.div>
     </motion.div>
   );
 }
 
 export default function WhatWeDo() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
   return (
-    <section className="relative bg-green py-24 sm:py-32">
-      <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70"
-        >
-          <Burst className="h-4 w-4 text-orange" />
-          Why We Exist
-        </motion.div>
+    <section ref={sectionRef} className="relative h-[220vh] bg-green">
+      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-16">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70"
+          >
+            <Burst className="h-4 w-4 text-orange" />
+            Why We Exist
+          </motion.div>
 
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
-          className="mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
-        >
-          We Build on &ldquo;Deep Strategic Thinking&rdquo;
-        </motion.h2>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
+            className="mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
+          >
+            We Build on &ldquo;Deep Strategic Thinking&rdquo;
+          </motion.h2>
 
-        <div className="flex flex-wrap items-center justify-center gap-y-10 pl-6 sm:justify-start sm:pl-10">
-          {CARDS.map((card, i) => (
-            <ContentCard key={card.title} card={card} index={i} />
-          ))}
-        </div>
-      </Container>
+          <div className="flex w-full justify-center">
+            {CARDS.map((card, i) => (
+              <ContentCard key={card.title} card={card} index={i} scrollYProgress={scrollYProgress} />
+            ))}
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }
