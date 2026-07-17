@@ -4,10 +4,24 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 
-const TEXT =
-  "For us creativity isn't just a service. it's our mindset. We believe your business objectives deserve to be translated into authentic communication that people actually want to follow. We step into your shoes to ensure every visual, strategy, and digital experience we build is rooted in your specific culture and goals.";
+const SENTENCES = [
+  "For us creativity isn't just a service.",
+  "It's our mindset.",
+  "We believe your business objectives deserve to be translated into authentic communication that people actually want to follow.",
+  "We step into your shoes to ensure every visual, strategy, and digital experience we build is rooted in your specific culture and goals.",
+];
 
-const WORDS = TEXT.split(" ");
+let globalWordIndex = 0;
+const FORMATTED_SENTENCES = SENTENCES.map((sentence) => {
+  const words = sentence.trim().split(/\s+/);
+  return words.map((word) => {
+    const index = globalWordIndex;
+    globalWordIndex += 1;
+    return { word, index };
+  });
+});
+
+const TOTAL_WORDS = globalWordIndex;
 
 /** One word, lit from dim to full white as scroll progress passes its
  *  index-based gate — no per-word animation, just a direct scroll-linked
@@ -30,9 +44,7 @@ function RevealWord({
   );
 
   // Plain inline (not inline-block) so the trailing space stays in the same
-  // inline formatting context as the surrounding text — inline-block would
-  // trim it as trailing whitespace at the end of its own box, collapsing
-  // every word together with no visible gap.
+  // inline formatting context as the surrounding text.
   return (
     <motion.span style={{ color }}>
       {word}{" "}
@@ -53,19 +65,23 @@ export default function AboutTextReveal() {
 
   return (
     <section ref={sectionRef} className="relative h-[250vh] bg-orange">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden py-20">
         <Container>
-          <p className="font-heading text-[clamp(1.5rem,3.4vw,3rem)] font-bold uppercase leading-[1.25]">
-            {WORDS.map((word, i) => (
-              <RevealWord
-                key={i}
-                word={word}
-                start={i / WORDS.length}
-                end={(i + 1) / WORDS.length}
-                progress={scrollYProgress}
-              />
+          <div className="flex flex-col gap-4 font-heading text-[clamp(1.2rem,2.8vw,2.5rem)] font-bold uppercase leading-[1.2] md:gap-6">
+            {FORMATTED_SENTENCES.map((sentenceWords, sIdx) => (
+              <span key={sIdx} className="block">
+                {sentenceWords.map(({ word, index }) => (
+                  <RevealWord
+                    key={index}
+                    word={word}
+                    start={index / TOTAL_WORDS}
+                    end={(index + 1) / TOTAL_WORDS}
+                    progress={scrollYProgress}
+                  />
+                ))}
+              </span>
             ))}
-          </p>
+          </div>
         </Container>
       </div>
     </section>

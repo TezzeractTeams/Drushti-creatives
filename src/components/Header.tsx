@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
 import { EASE } from "@/lib/motion";
 
 const LINKS = [
-  { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "Blog", href: "#blog" },
-  { label: "Contact", href: "#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const MENU_BUTTON_CLASSES =
@@ -60,7 +61,7 @@ export default function Header() {
         }`}
     >
       <Container className="flex items-center justify-between py-0">
-        <div className="px-[0.45rem] py-[0.9rem]">
+        <Link href="/" className="block px-[0.45rem] py-[0.9rem]">
           <Image
             src="/work/drushtiwhitecopy-trimmed.png"
             alt="Drushti Creatives"
@@ -69,24 +70,24 @@ export default function Header() {
             priority
             className="block h-12 w-auto"
           />
-        </div>
+        </Link>
 
         <div className="flex items-center gap-3">
           <AnimatePresence>
             {open && (
               <motion.nav className="flex items-center gap-2">
                 {LINKS.map((link, i) => (
-                  <motion.a
-                    key={link.href}
-                    href={link.href}
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 16 }}
-                    transition={{ duration: 0.45, ease: EASE, delay: i * 0.06 }}
-                    className={`inline-flex h-12 items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
-                  >
-                    {link.label}
-                  </motion.a>
+                  <Link key={link.href} href={link.href} passHref legacyBehavior>
+                    <motion.a
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 16 }}
+                      transition={{ duration: 0.45, ease: EASE, delay: i * 0.06 }}
+                      className={`inline-flex h-12 items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
+                    >
+                      {link.label}
+                    </motion.a>
+                  </Link>
                 ))}
               </motion.nav>
             )}

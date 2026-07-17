@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
@@ -54,26 +54,30 @@ function ContentCard({
   index: number;
   scrollYProgress: MotionValue<number>;
 }) {
+  const [hovered, setHovered] = useState(false);
   const start = index / TOTAL;
   const end = (index + 1) / TOTAL;
+  const mid = (start + end) / 2;
 
-  const rotate = useTransform(scrollYProgress, [start, end], [card.rotate, 0], {
+  const rotate = useTransform(scrollYProgress, [start, mid, end], [card.rotate, 0, card.rotate], {
     clamp: true,
   });
-  const scale = useTransform(scrollYProgress, [start, end], [1, 1.08], { clamp: true });
-  const y = useTransform(scrollYProgress, [start, end], [0, -20], { clamp: true });
-  const z = useTransform(scrollYProgress, [start, end], [index, TOTAL + index], {
+  const scale = useTransform(scrollYProgress, [start, mid, end], [1, 1.08, 1], { clamp: true });
+  const y = useTransform(scrollYProgress, [start, mid, end], [0, -20, 0], { clamp: true });
+  const z = useTransform(scrollYProgress, [start, mid, end], [index, TOTAL + index, index], {
     clamp: true,
   });
 
   return (
     <motion.div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      animate={hovered ? { rotate: 0, scale: 1.08, y: -20, zIndex: 99 } : {}}
+      transition={{ duration: 0.3, ease: EASE }}
       style={{ rotate, scale, y, zIndex: z }}
-      className="relative -ml-8 h-80 w-64 shrink-0 first:ml-0 sm:-ml-10 sm:h-96 sm:w-72 md:h-[28rem] md:w-80"
+      className="relative -ml-8 h-80 w-64 shrink-0 first:ml-0 sm:-ml-10 sm:h-96 sm:w-72 md:h-[28rem] md:w-80 cursor-pointer"
     >
-      <motion.div
-        whileHover={{ scale: 1.04 }}
-        transition={{ duration: 0.3, ease: EASE }}
+      <div
         style={{ backgroundColor: card.color }}
         className="flex h-full w-full flex-col justify-end rounded-2xl p-6 shadow-xl sm:p-7"
       >
@@ -83,7 +87,7 @@ function ContentCard({
         <p className="mt-3 text-sm leading-relaxed text-white/85 sm:text-base">
           {card.description}
         </p>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
