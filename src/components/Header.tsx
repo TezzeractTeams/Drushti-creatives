@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
@@ -25,6 +26,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Tracks the page's overall scroll position (no target = whole document).
   const { scrollY } = useScroll();
@@ -53,17 +55,24 @@ export default function Header() {
     }
   });
 
+  const isContactPage = pathname === "/contact";
+
   return (
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: EASE }}
-      className={`fixed inset-x-0 top-0 z-40 border-b border-white/25 transition-colors duration-300 ${scrolled ? "bg-blue" : "bg-transparent"
-        }`}
+      className={`fixed inset-x-0 top-0 z-40 border-b transition-colors duration-300 ${
+        scrolled
+          ? "bg-blue border-white/25"
+          : isContactPage
+          ? "bg-transparent border-[#1A1A1A]/10"
+          : "bg-transparent border-white/25"
+      }`}
     >
       <Container className="flex items-center justify-between py-0">
         <Link href="/" className="block px-[0.45rem] py-[0.9rem]">
           <Image
-            src="/work/drushtiwhitecopy-trimmed.png"
+            src={isContactPage && !scrolled ? "/work/DrushtiLogo.png" : "/work/drushtiwhitecopy-trimmed.png"}
             alt="Drushti Creatives"
             width={318}
             height={199}

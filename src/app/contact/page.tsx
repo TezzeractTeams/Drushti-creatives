@@ -35,33 +35,67 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="w-full bg-[#0B1424]">
+    <main className="w-full bg-[#F4EFEA]">
       {/* ── HERO SECTION ───────────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-blue px-6 text-center">
+      <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-[#F4EFEA] px-6 text-center pt-24">
+        {/* Left arc */}
+        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-24 top-1/2 -translate-y-1/2 w-[8vw] max-w-[120px] aspect-[1/2.2] pointer-events-none opacity-20 md:opacity-40">
+          <svg viewBox="0 0 100 220" fill="none" className="w-full h-full text-[#1A1A1A]">
+            <path
+              d="M90 10 C 15 65, 15 155, 90 210"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+
+        {/* Right arc */}
+        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-24 top-1/2 -translate-y-1/2 w-[8vw] max-w-[120px] aspect-[1/2.2] pointer-events-none opacity-20 md:opacity-40">
+          <svg viewBox="0 0 100 220" fill="none" className="w-full h-full text-[#1A1A1A]">
+            <path
+              d="M10 10 C 85 65, 85 155, 10 210"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+
         <div className="relative z-10 flex flex-col items-center gap-6 max-w-5xl">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="text-xs font-semibold uppercase tracking-[0.32em] text-orange"
-          >
-            Get in touch
-          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="font-heading text-[clamp(2.5rem,7vw,6.5rem)] font-bold leading-[0.95] text-white"
+            transition={{ duration: 0.8, ease: EASE }}
+            className="font-heading text-[clamp(2.5rem,7.5vw,7.5rem)] font-normal leading-[0.95] text-orange tracking-tight"
           >
-            Let&apos;s build something remarkable.
+            Want to connect?
           </motion.h1>
+          
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
-            className="mt-4"
+            className="flex flex-col items-center gap-2 text-[#1A1A1A]/70"
           >
-            <PillButton href="#form">Start a conversation</PillButton>
+            <p className="font-body text-xs sm:text-sm uppercase tracking-wider">
+              Feel free to email us or use
+            </p>
+            <div className="flex items-center gap-2 font-body text-xs sm:text-sm uppercase tracking-wider">
+              <span>the form below</span>
+              <motion.a
+                href="#form"
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                className="inline-flex items-center justify-center w-6 h-6 bg-[#1A1A1A] text-[#F4EFEA] rounded hover:bg-orange hover:text-white transition-colors duration-300 mx-1"
+                aria-label="Scroll to contact form"
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 1V9M5 9L1.5 5.5M5 9L8.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.a>
+              <span>with any questions</span>
+            </div>
           </motion.div>
         </div>
       </section>
