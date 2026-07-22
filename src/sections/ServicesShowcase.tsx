@@ -6,58 +6,81 @@ import Container from "@/components/Container";
 
 const SERVICES = [
   {
+    id: "marketing",
+    lines: ["DIGITAL & SOCIAL", "MEDIA MARKETING"],
+    description:
+      "We help you reach the right people and turn them into customers. We handle everything from creating your daily posts to managing your ad campaigns, ensuring every dollar you spend helps your business grow.",
+    bg: "bg-blue",
+    text: "text-white",
+    border: "border-white/40",
+    tabs: ["REACH", "ENGAGE", "GROW"],
+  },
+  {
     id: "brand",
-    lines: ["BRAND &", "CREATIVE"],
+    lines: ["LOGO DESIGN &", "BRAND IDENTITY"],
     description:
-      "We build brands that move culture and make sense. From strategy and storytelling to identity and creative direction, we help brands sound, look, and feel like they mean it.",
-    bg: "bg-[#0D0D0D]",
+      "We create a professional look that fits your business perfectly. From your logo to your brand colors, we make sure you look consistent everywhere.",
+    bg: "bg-orange",
     text: "text-white",
     border: "border-white/40",
-    tabs: ["STRATEGY", "NARRATIVE", "DIRECTION"],
+    tabs: ["LOGO", "COLOR", "IDENTITY"],
   },
   {
-    id: "campaign",
-    lines: ["CAMPAIGN &", "FILM"],
+    id: "graphic",
+    lines: ["GRAPHIC", "DESIGN"],
     description:
-      "We turn insights into impact. From the big idea to the final frame, we create campaigns and films that get people talking, sharing, and acting.",
-    bg: "bg-[#E12222]",
-    text: "text-black",
-    border: "border-black/40",
-    tabs: ["CONCEPT", "PRODUCTION", "STORYTELLING"],
+      "We design clear and attractive visuals for your business needs. Whether it's a company profile or a banner, we make your information easy to read and follow.",
+    bg: "bg-yellow",
+    text: "text-ink",
+    border: "border-ink/40",
+    tabs: ["VISUALS", "LAYOUT", "CLARITY"],
   },
   {
-    id: "visual",
-    lines: ["VISUAL &", "EXPERIENTIAL"],
+    id: "content",
+    lines: ["CONTENT", "DEVELOPMENT"],
     description:
-      "We don't just design spaces, we design experiences. From exhibitions to retail environments, we create physical and digital touchpoints that engage senses and build communities.",
-    bg: "bg-[#CEFC00]",
-    text: "text-black",
-    border: "border-black/40",
-    tabs: ["DESIGN", "ENVIRONMENTS", "MERCHANDISING"],
-  },
-  {
-    id: "growth",
-    lines: ["GROWTH &", "PARTNERSHIP"],
-    description:
-      "Behind every creative leap is a solid system. We connect the dots between creativity and operations. We build processes, partnerships, and strategies that help you scale without the chaos.",
-    bg: "bg-[#343029]",
+      "We find the right words to explain what you do. We write clear, simple, and honest messages that help your audience trust your brand.",
+    bg: "bg-green",
     text: "text-white",
     border: "border-white/40",
-    tabs: ["PR", "PROCESS", "PROCUREMENT"],
+    tabs: ["WORDS", "MESSAGE", "TRUST"],
+  },
+  {
+    id: "video",
+    lines: ["VIDEO", "PRODUCTION"],
+    description:
+      "We create high-quality videos that tell your brand's story. We use visuals and sound to grab attention and make your message stand out.",
+    bg: "bg-sky",
+    text: "text-white",
+    border: "border-white/40",
+    tabs: ["STORY", "VISUALS", "SOUND"],
+  },
+  {
+    id: "web",
+    lines: ["WEBSITE &", "UI DESIGNING"],
+    description:
+      "We build websites that are easy for your customers to use. Our designs are clean and simple, making sure people have a great experience when they visit you online.",
+    bg: "bg-blue",
+    text: "text-white",
+    border: "border-white/40",
+    tabs: ["DESIGN", "BUILD", "EXPERIENCE"],
   },
 ];
 
-const ROTATIONS = [-8, -4, 0];
-// Staggered scroll-progress windows per tab — each tab's rise starts a beat
-// after the previous one, instead of all three animating over the same
-// [0,1] range. This is what produces the cascading "pop up one after
-// another" motion rather than three bars moving in lockstep.
+// Entrance + stagger windows now live inside the FIRST ~35% of each panel's
+// scroll progress. The remaining ~65% is pure "dwell" time — the panel sits
+// fully visible and static while the user keeps scrolling — so fast/large
+// scroll jumps (trackpad flicks, fast wheel scroll) don't skip past content
+// before it's had a chance to be seen.
 const STAGGER_WINDOWS: [number, number][] = [
-  [0, 0.55],
-  [0.15, 0.7],
-  [0.3, 0.85],
+  [0, 0.22],
+  [0.08, 0.28],
+  [0.16, 0.34],
 ];
-const RISE_DISTANCES = [440, 565, 700]; // starting y-offset (px) per tab
+
+// How much extra scroll distance (beyond one viewport) each panel gets.
+// 1 viewport is consumed by the entrance animation; the rest is dwell time.
+const PANEL_HEIGHT = "h-[230vh]";
 
 function ServicePanel({
   service,
@@ -66,54 +89,55 @@ function ServicePanel({
   service: (typeof SERVICES)[number];
   index: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // Track progress across the TALL wrapper, not the sticky element itself —
+  // this is what creates the dwell period after the entrance finishes.
   const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "start start"],
+    target: wrapperRef,
+    offset: ["start start", "end end"],
   });
 
   return (
-    <div
-      ref={ref}
-      style={{ zIndex: index + 1 }}
-      className={`sticky top-0 h-screen w-full overflow-hidden flex items-center ${service.bg} ${service.text}`}
-    >
-      <Container className="w-full h-full flex flex-col justify-between py-12 md:py-16">
-        <div className="grid w-full h-full grid-cols-1 md:grid-cols-12 items-end">
-          {/* Left Column: Heading at top-left, description at bottom-left */}
-          <div className="md:col-span-7 h-full flex flex-col justify-between py-6 md:py-10">
-            <h2 className="font-heading text-6xl sm:text-8xl md:text-9xl lg:text-[7.5rem] xl:text-[8.5rem] font-black leading-[0.82] tracking-tighter uppercase select-none">
+    <div ref={wrapperRef} className={`relative w-full ${PANEL_HEIGHT}`}>
+      <div
+        style={{ zIndex: index + 1 }}
+        className={`sticky top-0 h-screen w-full overflow-hidden flex items-center ${service.bg} ${service.text}`}
+      >
+        <Container className="w-full h-full flex flex-col justify-center py-12 md:py-16">
+          <div className="w-full max-w-4xl flex flex-col">
+            <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight capitalize select-none">
               {service.lines.map((line, lIdx) => (
                 <span key={lIdx} className="block">
-                  {line}
+                  {line.toLowerCase()}
                 </span>
               ))}
             </h2>
-            <p className="mt-12 max-w-lg text-lg sm:text-xl md:text-2xl font-medium leading-snug opacity-95">
+
+            <p className="mt-10 md:mt-12 max-w-lg text-lg sm:text-xl md:text-2xl font-medium leading-snug opacity-95">
               {service.description}
             </p>
-          </div>
 
-          {/* Right Column: Overlapping staggered tilted tabs, cascading up from the bottom */}
-          <div className="md:col-span-5 flex items-end justify-center md:justify-end h-full pb-6 md:pb-10 pl-6 md:pl-0">
-            {service.tabs.map((tab, tIdx) => (
-              <Tab
-                key={tab}
-                label={tab}
-                index={tIdx}
-                border={service.border}
-                scrollYProgress={scrollYProgress}
-              />
-            ))}
+            {/* Tags: horizontal row directly under the paragraph */}
+            <div className="mt-6 md:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+              {service.tabs.map((tab, tIdx) => (
+                <Tag
+                  key={tab}
+                  label={tab}
+                  index={tIdx}
+                  border={service.border}
+                  scrollYProgress={scrollYProgress}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </div>
     </div>
   );
 }
 
-function Tab({
+function Tag({
   label,
   index,
   border,
@@ -125,33 +149,20 @@ function Tab({
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
   const [start, end] = STAGGER_WINDOWS[index];
-  const rawY = useTransform(
-    scrollYProgress,
-    [start, end],
-    [RISE_DISTANCES[index], 0]
-  );
-  // Spring settle so each tab has a gentle overshoot/settle instead of a
-  // linear stop, matching the "pop" feel of the reference.
+
+  const rawY = useTransform(scrollYProgress, [start, end], [36, 0]);
   const y = useSpring(rawY, { stiffness: 220, damping: 24, mass: 0.6 });
 
-  const opacity = useTransform(scrollYProgress, [start, start + 0.12], [0, 1]);
-  const scale = useTransform(scrollYProgress, [start, end], [0.92, 1]);
+  const opacity = useTransform(scrollYProgress, [start, start + 0.06], [0, 1]);
+  const scale = useTransform(scrollYProgress, [start, end], [0.9, 1]);
 
   return (
-    <motion.div
-      style={{
-        y,
-        opacity,
-        scale,
-        rotate: ROTATIONS[index],
-        zIndex: index + 1,
-      }}
-      className={`relative w-20 sm:w-24 md:w-28 lg:w-32 h-[50vh] sm:h-[60vh] md:h-[68vh] lg:h-[75vh] border-[1.5px] ${border} rounded-t-full overflow-hidden shrink-0 -ml-4 sm:-ml-6 md:-ml-8 first:ml-0 bg-inherit`}
+    <motion.span
+      style={{ y, opacity, scale }}
+      className={`inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 border-[1.5px] ${border} rounded-full font-heading text-sm sm:text-base md:text-lg font-black uppercase tracking-[0.12em] bg-inherit`}
     >
-      <span className="absolute bottom-10 sm:bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 origin-bottom -rotate-90 whitespace-nowrap font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-[0.12em]">
-        {label}
-      </span>
-    </motion.div>
+      {label}
+    </motion.span>
   );
 }
 
