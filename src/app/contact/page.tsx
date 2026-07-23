@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef, type FormEvent, type SVGProps } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import PillButton from "@/components/PillButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -20,6 +20,115 @@ function ArrowIcon() {
   );
 }
 
+/* ── Floating line-illustration icons for the hero ────────────
+   Same stroke-only, white icon treatment used on the Services hero,
+   themed to "getting in touch" instead of services. */
+
+function iconProps(props: SVGProps<SVGSVGElement>) {
+  return {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.4,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    ...props,
+  };
+}
+
+const IconMail = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m4 6.5 8 6 8-6" />
+  </svg>
+);
+const IconPhone = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <path d="M6.5 3h3l1.5 4-2 1.5a11 11 0 0 0 6.5 6.5l1.5-2 4 1.5v3c0 1-1 2-2 2-8 0-14.5-6.5-14.5-14.5 0-1 1-2 2-2Z" />
+  </svg>
+);
+const IconChatDots = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <path d="M4 4h16v12H8l-4 4V4Z" />
+    <circle cx="9" cy="10" r="0.8" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="10" r="0.8" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="10" r="0.8" fill="currentColor" stroke="none" />
+  </svg>
+);
+const IconPin = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z" />
+    <circle cx="12" cy="10" r="2.2" />
+  </svg>
+);
+const IconSend = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3Z" />
+    <path d="M10 13 21 3" />
+  </svg>
+);
+const IconAt = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps(p)}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-4 7.5" />
+  </svg>
+);
+
+const FLOATING_ICONS = [
+  { Icon: IconMail, top: "14%", left: "10%", size: 44, duration: 9, depth: 26 },
+  { Icon: IconChatDots, top: "20%", left: "84%", size: 52, duration: 10.5, depth: -30 },
+  { Icon: IconPhone, top: "68%", left: "8%", size: 40, duration: 8.5, depth: 22 },
+  { Icon: IconPin, top: "72%", left: "88%", size: 38, duration: 11, depth: -20 },
+  { Icon: IconSend, top: "40%", left: "5%", size: 32, duration: 7.5, depth: 34 },
+  { Icon: IconAt, top: "44%", left: "92%", size: 34, duration: 9.5, depth: -28 },
+] as const;
+
+function FloatingIcon({
+  Icon,
+  top,
+  left,
+  size,
+  duration,
+  depth,
+  pointerX,
+  pointerY,
+  delay,
+}: {
+  Icon: (p: SVGProps<SVGSVGElement>) => JSX.Element;
+  top: string;
+  left: string;
+  size: number;
+  duration: number;
+  depth: number;
+  pointerX: ReturnType<typeof useSpring>;
+  pointerY: ReturnType<typeof useSpring>;
+  delay: number;
+}) {
+  const prefersReducedMotion = useReducedMotion();
+  const ix = useTransform(pointerX, (v) => v * depth);
+  const iy = useTransform(pointerY, (v) => v * depth);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, delay, ease: EASE }}
+      className="pointer-events-none absolute hidden -translate-x-1/2 -translate-y-1/2 text-white/60 lg:block"
+      style={{ top, left, width: size, height: size }}
+    >
+      <motion.div style={prefersReducedMotion ? undefined : { x: ix, y: iy }} className="h-full w-full">
+        <motion.div
+          animate={prefersReducedMotion ? undefined : { y: [0, -10, 0] }}
+          transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+          className="h-full w-full"
+        >
+          <Icon className="h-full w-full" />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sent">("idle");
   const [formData, setFormData] = useState({
@@ -29,6 +138,20 @@ export default function ContactPage() {
     message: "",
   });
 
+  const heroRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 100, damping: 20, mass: 0.4 });
+  const sy = useSpring(py, { stiffness: 100, damping: 20, mass: 0.4 });
+
+  const handlePointer = (e: React.MouseEvent) => {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - rect.left) / rect.width - 0.5);
+    py.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("sent");
@@ -37,46 +160,41 @@ export default function ContactPage() {
   return (
     <main className="w-full bg-[#F4EFEA]">
       {/* ── HERO SECTION ───────────────────────────────────────── */}
-      <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-[#F4EFEA] px-6 text-center pt-24">
-        {/* Left arc */}
-        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-24 top-1/2 -translate-y-1/2 w-[8vw] max-w-[120px] aspect-[1/2.2] pointer-events-none opacity-20 md:opacity-40">
-          <svg viewBox="0 0 100 220" fill="none" className="w-full h-full text-[#1A1A1A]">
-            <path
-              d="M90 10 C 15 65, 15 155, 90 210"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-
-        {/* Right arc */}
-        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-24 top-1/2 -translate-y-1/2 w-[8vw] max-w-[120px] aspect-[1/2.2] pointer-events-none opacity-20 md:opacity-40">
-          <svg viewBox="0 0 100 220" fill="none" className="w-full h-full text-[#1A1A1A]">
-            <path
-              d="M10 10 C 85 65, 85 155, 10 210"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
+      <section
+        ref={heroRef}
+        onMouseMove={handlePointer}
+        className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-blue px-6 text-center pt-24"
+      >
+        {FLOATING_ICONS.map(({ Icon, top, left, size, duration, depth }, i) => (
+          <FloatingIcon
+            key={i}
+            Icon={Icon}
+            top={top}
+            left={left}
+            size={size}
+            duration={duration}
+            depth={depth}
+            pointerX={sx}
+            pointerY={sy}
+            delay={0.3 + i * 0.06}
+          />
+        ))}
 
         <div className="relative z-10 flex flex-col items-center gap-6 max-w-5xl">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="font-heading text-[clamp(2.5rem,7.5vw,7.5rem)] font-normal leading-[0.95] text-orange tracking-tight"
+            className="font-heading text-[clamp(2.5rem,7.5vw,7.5rem)] font-normal leading-[0.95] text-white tracking-tight"
           >
             Want to connect?
           </motion.h1>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
-            className="flex flex-col items-center gap-2 text-[#1A1A1A]/70"
+            className="flex flex-col items-center gap-2 text-white/60"
           >
             <p className="font-body text-xs sm:text-sm uppercase tracking-wider">
               Feel free to email us or use
@@ -87,11 +205,11 @@ export default function ContactPage() {
                 href="#form"
                 animate={{ y: [0, 4, 0] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                className="inline-flex items-center justify-center w-6 h-6 bg-[#1A1A1A] text-[#F4EFEA] rounded hover:bg-orange hover:text-white transition-colors duration-300 mx-1"
+                className="inline-flex items-center justify-center w-6 h-6 bg-white text-blue rounded hover:bg-orange hover:text-white transition-colors duration-300 mx-1"
                 aria-label="Scroll to contact form"
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 1V9M5 9L1.5 5.5M5 9L8.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 1V9M5 9L1.5 5.5M5 9L8.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </motion.a>
               <span>with any questions</span>
