@@ -1,164 +1,152 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import PillButton from "@/components/PillButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/* ── Sub-service cards ────────────────────────────────────────── */
-const SUB_SERVICES = [
-  { num: "01", title: "Digital Marketing & Ad Management", image: "/work/advantis.webp" },
-  { num: "02", title: "Logo Design & Brand Identity", image: "/work/fairfirst.webp" },
-  { num: "03", title: "Website & UI Designing", image: "/work/softlogic.webp" },
-  { num: "04", title: "Video Production / Editing", image: "/work/norlanka.webp" },
-  { num: "05", title: "Graphic Design & Content Development", image: "/work/ginger-fresh.webp" },
+/* Custom shapes matching the user's uploaded elements */
+const SHAPES = [
+  { src: "/images/hero-shapes/shape-1.png" },
+  { src: "/images/hero-shapes/shape-3.png" },
+  { src: "/images/hero-shapes/shape-2.png" },
+  { src: "/images/hero-shapes/shape-4.png" },
 ];
 
-/* Per-card placement + the slice of scroll progress (0–1) each card
-   owns. Cards are staggered so #05 finishes right around progress 0.9,
-   leaving a little headroom before the section un-pins. */
-const CARD_LAYOUT: {
-  position: string;
-  rotate: number;
-  initRotate: number;
-  start: number;
-  end: number;
-  aspect: string;
-  width: string;
-}[] = [
-    {
-      position: "left-[1%] xl:left-[3%] top-[8%]",
-      rotate: -11,
-      initRotate: -5,
-      start: 0.0,
-      end: 0.22,
-      aspect: "aspect-[3/4]",
-      width: "w-[220px] xl:w-[260px]",
-    },
-    {
-      position: "right-[1%] xl:right-[3%] top-[8%]",
-      rotate: 10,
-      initRotate: 4,
-      start: 0.15,
-      end: 0.37,
-      aspect: "aspect-[3/4]",
-      width: "w-[210px] xl:w-[250px]",
-    },
-    {
-      position: "left-[4%] xl:left-[8%] bottom-[4%]",
-      rotate: -7,
-      initRotate: -3,
-      start: 0.3,
-      end: 0.52,
-      aspect: "aspect-[3/4]",
-      width: "w-[200px] xl:w-[240px]",
-    },
-    {
-      position: "right-[4%] xl:right-[8%] bottom-[4%]",
-      rotate: 8,
-      initRotate: 3,
-      start: 0.45,
-      end: 0.67,
-      aspect: "aspect-[3/4]",
-      width: "w-[210px] xl:w-[250px]",
-    },
-    {
-      position: "left-1/2 -translate-x-1/2 bottom-[-6%]",
-      rotate: 3,
-      initRotate: 0,
-      start: 0.6,
-      end: 0.85,
-      aspect: "aspect-[9/14]",
-      width: "w-[230px] xl:w-[270px]",
-    },
-  ];
-
-function ArrowIcon() {
-  return (
-    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="w-3 h-3">
-      <path
-        d="M1 11L11 1M11 1H3.5M11 1V8.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+/* Per-card placement + properties for continuous float and pointer parallax.
+   Entrance windows are compressed into the first ~55% of scroll so there's a
+   long "hold" phase afterwards — cards stay fully visible and settled well
+   before the section releases, instead of finishing right as it exits. */
+const CARD_LAYOUT = [
+  {
+    position: "left-[1%] xl:left-[4%] top-[6%]",
+    rotate: -12,
+    initRotate: -4,
+    start: 0.0,
+    end: 0.16,
+    aspect: "aspect-[1/1]",
+    width: "w-[420px] xl:w-[560px]",
+    depth: 55,
+    floatY: 22,
+    duration: 9,
+  },
+  {
+    position: "right-[1%] xl:right-[4%] top-[10%]",
+    rotate: 15,
+    initRotate: 5,
+    start: 0.13,
+    end: 0.29,
+    aspect: "aspect-[1/1]",
+    width: "w-[390px] xl:w-[520px]",
+    depth: -45,
+    floatY: 26,
+    duration: 11,
+  },
+  {
+    position: "left-[4%] xl:left-[7%] bottom-[4%]",
+    rotate: -8,
+    initRotate: -2,
+    start: 0.26,
+    end: 0.42,
+    aspect: "aspect-[1/1]",
+    width: "w-[440px] xl:w-[600px]",
+    depth: 70,
+    floatY: 16,
+    duration: 8,
+  },
+  {
+    position: "right-[3%] xl:right-[6%] bottom-[6%]",
+    rotate: 12,
+    initRotate: 3,
+    start: 0.39,
+    end: 0.55,
+    aspect: "aspect-[1/1]",
+    width: "w-[400px] xl:w-[540px]",
+    depth: -65,
+    floatY: 19,
+    duration: 10,
+  },
+];
 
 function ServiceCard({
-  service,
   layout,
   index,
   progress,
+  pointerX,
+  pointerY,
 }: {
-  service: (typeof SUB_SERVICES)[number];
   layout: (typeof CARD_LAYOUT)[number];
   index: number;
-  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+  progress: MotionValue<number>;
+  pointerX: MotionValue<number>;
+  pointerY: MotionValue<number>;
 }) {
   const prefersReducedMotion = useReducedMotion();
 
-  // Map this card's slice of the overall scroll progress to its entrance.
+  // Scroll-based entrance animations. useTransform clamps to the last
+  // keyframe value once progress passes `end`, so opacity/scale/rotate all
+  // stay locked at their settled state for the rest of the scroll — cards
+  // never fade or shrink back out on their own.
   const y = useTransform(progress, [layout.start, layout.end], [650, 0]);
   const opacity = useTransform(progress, [layout.start, layout.end], [0, 1]);
-  const scale = useTransform(progress, [layout.start, layout.end], [0.88, 1]);
+  const scale = useTransform(progress, [layout.start, layout.end], [0.8, 1]);
   const rotate = useTransform(progress, [layout.start, layout.end], [layout.initRotate, layout.rotate]);
+
+  // Pointer parallax transforms
+  const px = useTransform(pointerX, (v) => v * layout.depth);
+  const py = useTransform(pointerY, (v) => v * layout.depth);
+
+  const shape = SHAPES[index];
 
   return (
     <motion.div
       style={
         prefersReducedMotion
           ? { opacity: 1 }
-          : { y, opacity, scale, rotate, zIndex: index === 4 ? 20 : 10 + index }
+          : { y, opacity, scale, rotate, zIndex: 10 + index }
       }
-      whileHover={
-        prefersReducedMotion
-          ? undefined
-          : {
-            scale: 1.06,
-            y: -18,
-            rotate: layout.rotate * 0.6,
-            transition: { type: "spring", stiffness: 300, damping: 20 },
-          }
-      }
-      className={`absolute ${layout.position} hidden lg:flex flex-col ${layout.width} ${layout.aspect} bg-white/[0.06] backdrop-blur-lg border border-white/[0.12] rounded-2xl p-2.5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.55)] overflow-hidden cursor-pointer group`}
+      className={`absolute ${layout.position} hidden lg:flex flex-col ${layout.width} ${layout.aspect} cursor-pointer`}
     >
-      {/* Image */}
-      <div className="relative flex-1 rounded-xl overflow-hidden bg-black/30">
-        <img
-          src={service.image}
-          alt={service.title}
-          className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
-        />
-        <span className="absolute top-3 left-3 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-[9px] font-bold text-white tracking-wider">
-          {service.num}
-        </span>
-      </div>
-
-      {/* Title + CTA */}
-      <div className="pt-2.5 pb-1 flex flex-col items-center gap-2">
-        <p className="font-heading text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white/90 text-center leading-snug px-1 line-clamp-2">
-          {service.title}
-        </p>
-        <motion.span
-          className="inline-flex items-center gap-1.5 bg-orange text-white text-[9px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-lg group-hover:bg-white group-hover:text-[#1A1A1A] transition-colors duration-300"
-          whileHover={{ scale: 1.08 }}
+      {/* Pointer Parallax Container */}
+      <motion.div style={prefersReducedMotion ? undefined : { x: px, y: py }} className="w-full h-full">
+        {/* Continuous slow floating animation */}
+        <motion.div
+          animate={prefersReducedMotion ? undefined : { y: [0, -layout.floatY, 0] }}
+          transition={{ duration: layout.duration, repeat: Infinity, ease: "easeInOut" }}
+          className="w-full h-full pointer-events-none"
         >
-          Read case study
-          <ArrowIcon />
-        </motion.span>
-      </div>
+          <motion.img
+            whileHover={
+              prefersReducedMotion
+                ? undefined
+                : {
+                  scale: 1.08,
+                  transition: { type: "spring", stiffness: 300, damping: 20 },
+                }
+            }
+            src={shape.src}
+            alt={`Service shape ${index + 1}`}
+            className="w-full h-full object-contain filter drop-shadow-[0_35px_70px_rgba(0,0,0,0.4)] pointer-events-auto"
+            draggable={false}
+          />
+        </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
 
-/** Services-page hero — pinned for 3 viewport-heights of scroll while the 5
- *  sub-service cards appear one by one, each owning its own slice of the
- *  scroll range (traced from the TeamSection pinning pattern). Once the
- *  last card has settled, the page continues scrolling to the next section. */
+/** Services-page hero — pinned for 3.4 viewport-heights of scroll while the 4
+ *  sub-service cards appear one by one, then hold fully settled for a long
+ *  stretch before the page continues on to the next section. */
 export default function ServicesHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -168,20 +156,46 @@ export default function ServicesHero() {
     offset: ["start start", "end end"],
   });
 
+  // Pointer tracking for parallax
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 120, damping: 20, mass: 0.4 });
+  const sy = useSpring(py, { stiffness: 120, damping: 20, mass: 0.4 });
+
+  const handlePointer = (e: React.MouseEvent) => {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - rect.left) / rect.width - 0.5);
+    py.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
   return (
-    <section ref={sectionRef} className="relative h-[300vh] bg-blue">
+    <section
+      ref={sectionRef}
+      onMouseMove={handlePointer}
+      className="relative h-[340vh] bg-blue"
+    >
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
-        {/* Dark overlay for depth */}
-        <div className="absolute inset-0 bg-[#0B1424]/40 pointer-events-none" />
+        {/* ── AMBIENT BACKGROUND TEXTURE ───────────────────── */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <div className="absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange/20 blur-[160px]" />
+          <div className="absolute left-[15%] top-[20%] h-[500px] w-[500px] rounded-full bg-green/10 blur-[140px]" />
+          <div className="absolute right-[15%] bottom-[15%] h-[500px] w-[500px] rounded-full bg-yellow/10 blur-[140px]" />
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+
+          />
+        </div>
 
         {/* ── FLOATING SUB-SERVICE CARDS ───────────────────── */}
-        {SUB_SERVICES.map((service, i) => (
+        {CARD_LAYOUT.map((layout, i) => (
           <ServiceCard
-            key={service.num}
-            service={service}
-            layout={CARD_LAYOUT[i]}
+            key={i}
+            layout={layout}
             index={i}
             progress={scrollYProgress}
+            pointerX={sx}
+            pointerY={sy}
           />
         ))}
 
@@ -191,17 +205,20 @@ export default function ServicesHero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="text-xs font-semibold uppercase tracking-[0.32em] text-orange"
+            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-orange"
           >
+            <span className="relative flex h-1.5 w-1.5">
+            </span>
             Our services
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="max-w-5xl font-heading text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.95] text-white"
+            className="max-w-6xl font-heading text-[clamp(2.75rem,9vw,8.5rem)] font-bold leading-[0.92] tracking-tight text-white"
           >
-            Clear solutions for your brand&apos;s growth.
+            Clear solutions for your{" "}
+            <span className="italic text-orange">brand&apos;s</span> growth.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 14 }}
@@ -222,24 +239,22 @@ export default function ServicesHero() {
           </motion.div>
         </div>
 
-        {/* ── MOBILE FALLBACK (cards hidden on <lg) ──────────── */}
-        <div className="absolute bottom-8 left-0 right-0 flex lg:hidden justify-center gap-3 px-4 overflow-x-auto z-20">
-          {SUB_SERVICES.map((service, i) => (
-            <motion.div
-              key={service.num}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 + i * 0.1, ease: EASE }}
-              className="shrink-0 flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2"
-            >
-              <span className="text-[10px] font-bold text-orange">{service.num}</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-white/80 whitespace-nowrap">
-                {service.title}
-              </span>
-            </motion.div>
-          ))}
-        </div>
+        {/* ── SCROLL CUE ───────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.6, ease: EASE }}
+          className="pointer-events-none absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2"
+        >
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40">
+            Scroll
+          </span>
+          <motion.div
+            animate={prefersReducedMotion ? undefined : { y: [0, 8, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="h-9 w-[1px] bg-gradient-to-b from-white/60 to-transparent"
+          />
+        </motion.div>
       </div>
     </section>
   );
