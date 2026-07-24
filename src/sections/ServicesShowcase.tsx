@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import Image from "next/image";
 import Container from "@/components/Container";
 
 const SERVICES = [
@@ -14,6 +15,7 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["REACH", "ENGAGE", "GROW"],
+    image: "/services/digital-social-media.png",
   },
   {
     id: "brand",
@@ -24,6 +26,7 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["LOGO", "COLOR", "IDENTITY"],
+    image: "/services/logo-design.png",
   },
   {
     id: "graphic",
@@ -34,6 +37,7 @@ const SERVICES = [
     text: "text-ink",
     border: "border-ink/40",
     tabs: ["VISUALS", "LAYOUT", "CLARITY"],
+    image: "/services/graphic.png",
   },
   {
     id: "content",
@@ -86,7 +90,7 @@ function ServicePanel({
   service,
   index,
 }: {
-  service: (typeof SERVICES)[number];
+  service: (typeof SERVICES)[number] & { image?: string };
   index: number;
 }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -105,31 +109,45 @@ function ServicePanel({
         className={`sticky top-0 h-screen w-full overflow-hidden flex items-center ${service.bg} ${service.text}`}
       >
         <Container className="w-full h-full flex flex-col justify-center py-12 md:py-16">
-          <div className="w-full max-w-4xl flex flex-col">
-            <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight normal-case select-none">
-              {service.lines.map((line, lIdx) => (
-                <span key={lIdx} className="block">
-                  {line.charAt(0).toUpperCase() + line.slice(1)}
-                </span>
-              ))}
-            </h2>
+          <div className="w-full h-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
+            <div className="w-full max-w-3xl flex flex-col">
+              <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight normal-case select-none">
+                {service.lines.map((line, lIdx) => (
+                  <span key={lIdx} className="block">
+                    {line.charAt(0).toUpperCase() + line.slice(1)}
+                  </span>
+                ))}
+              </h2>
 
-            <p className="mt-10 md:mt-12 max-w-lg text-lg sm:text-xl md:text-2xl font-medium leading-snug opacity-95">
-              {service.description}
-            </p>
+              <p className="mt-10 md:mt-12 max-w-lg text-lg sm:text-xl md:text-2xl font-medium leading-snug opacity-95">
+                {service.description}
+              </p>
 
-            {/* Tags: horizontal row directly under the paragraph */}
-            <div className="mt-6 md:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-              {service.tabs.map((tab, tIdx) => (
-                <Tag
-                  key={tab}
-                  label={tab}
-                  index={tIdx}
-                  border={service.border}
-                  scrollYProgress={scrollYProgress}
-                />
-              ))}
+              {/* Tags: horizontal row directly under the paragraph */}
+              <div className="mt-6 md:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+                {service.tabs.map((tab, tIdx) => (
+                  <Tag
+                    key={tab}
+                    label={tab}
+                    index={tIdx}
+                    border={service.border}
+                    scrollYProgress={scrollYProgress}
+                  />
+                ))}
+              </div>
             </div>
+
+            {service.image && (
+              <div className="w-full lg:w-1/2 flex justify-center lg:justify-end items-center">
+                <Image
+                  src={service.image}
+                  alt={service.lines.join(" ")}
+                  width={600}
+                  height={600}
+                  className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl"
+                />
+              </div>
+            )}
           </div>
         </Container>
       </div>

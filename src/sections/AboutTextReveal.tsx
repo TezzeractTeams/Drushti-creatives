@@ -64,8 +64,8 @@ export default function AboutTextReveal() {
   });
 
   return (
-    <section ref={sectionRef} className="relative h-[250vh] bg-orange">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden py-20">
+    <section ref={sectionRef} className="relative h-auto md:h-[250vh] bg-orange">
+      <div className="md:sticky md:top-0 flex md:h-svh items-center overflow-hidden py-12 md:py-20">
         <Container>
           <div className="flex flex-col gap-4 font-heading text-[clamp(1.2rem,2.8vw,2.5rem)] font-bold uppercase leading-[1.2] md:gap-6">
             {FORMATTED_SENTENCES.map((sentenceWords, sIdx) => (

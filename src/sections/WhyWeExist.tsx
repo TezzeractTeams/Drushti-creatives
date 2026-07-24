@@ -75,7 +75,9 @@ function ContentCard({
       animate={hovered ? { rotate: 0, scale: 1.08, y: -20, zIndex: 99 } : {}}
       transition={{ duration: 0.3, ease: EASE }}
       style={{ rotate, scale, y, zIndex: z }}
-      className="relative -ml-8 h-80 w-64 shrink-0 first:ml-0 sm:-ml-10 sm:h-96 sm:w-72 md:h-[28rem] md:w-80 cursor-pointer"
+      // No negative margin / overlap on mobile — cards sit one after
+      // another in normal document flow. Overlap only kicks in from sm.
+      className="relative h-64 w-full max-w-sm shrink-0 sm:-ml-10 sm:h-96 sm:w-72 sm:first:ml-0 md:h-[28rem] md:w-80 cursor-pointer"
     >
       <div
         style={{ backgroundColor: card.color }}
@@ -101,8 +103,8 @@ export default function WhatWeDo() {
   });
 
   return (
-    <section ref={sectionRef} className="relative h-[220vh] bg-green">
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-16">
+    <section ref={sectionRef} className="relative h-auto md:h-[220vh] bg-green">
+      <div className="md:sticky md:top-0 flex h-auto md:h-screen flex-col justify-center overflow-hidden py-16">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
@@ -120,12 +122,12 @@ export default function WhatWeDo() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
-            className="mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
+            className="mb-12 md:mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
           >
             We Build on &ldquo;Deep Strategic Thinking&rdquo;
           </motion.h2>
 
-          <div className="flex w-full justify-center">
+          <div className="flex w-full flex-col sm:flex-row items-center sm:justify-center gap-6 sm:gap-0">
             {CARDS.map((card, i) => (
               <ContentCard key={card.title} card={card} index={i} scrollYProgress={scrollYProgress} />
             ))}
