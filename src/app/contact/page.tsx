@@ -2,7 +2,6 @@
 
 import { useState, useRef, type FormEvent, type SVGProps } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
-import PillButton from "@/components/PillButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 

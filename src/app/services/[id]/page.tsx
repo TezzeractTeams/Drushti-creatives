@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
@@ -157,7 +157,6 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
 
 export default function ServiceDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     const id = typeof params.id === "string" ? params.id : "";
@@ -295,11 +294,11 @@ export default function ServiceDetailPage() {
                     <div className="bg-orange text-white rounded-[2rem] p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div className="max-w-xl">
                             <h3 className="font-heading text-2xl md:text-3xl font-normal leading-tight mb-2">Ready to work with us?</h3>
-                            <p className="opacity-90 text-sm md:text-base">Let's discuss how we can accelerate your business growth.</p>
+                            <p className="opacity-90 text-sm md:text-base">Let&apos;s discuss how we can accelerate your business growth.</p>
                         </div>
                         <Link href="/contact" passHref legacyBehavior>
                             <Button variant="primary" className="!rounded-md !bg-white !text-ink hover:!bg-cream transition-colors self-start md:self-auto">
-                                Let's Talk
+                                Let&apos;s Talk
                             </Button>
                         </Link>
                     </div>
