@@ -21,33 +21,28 @@ const MENU_BUTTON_CLASSES =
 
 /** Top-right + expands into a row of nav pills, morphing to × — matching
  *  the reference site's header interaction. Hides on scroll down, shows on
- *  scroll up, matching copula.agency's header behavior. */
+ *  scroll up, matching copula.agency's header behavior. On mobile, the
+ *  expanded nav drops into a stacked panel below the header instead of
+ *  a horizontal row, since four pills won't fit inline on a narrow screen. */
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Tracks the page's overall scroll position (no target = whole document).
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     const scrollingDown = latest > previous;
 
-    // Solid background only kicks in once you've actually left the very top
-    // of the page — at scrollY 0 it stays transparent over the hero.
     setScrolled(latest > 10);
 
-    // If the nav menu is open, force the header to stay visible so it can't
-    // slide away mid-click on a link.
     if (open) {
       setHidden(false);
       return;
     }
 
-    // 80px threshold so the header doesn't flicker away on a tiny nudge
-    // right at the top of the page.
     if (scrollingDown && latest > 80) {
       setHidden(true);
     } else if (!scrollingDown) {
@@ -76,14 +71,15 @@ export default function Header() {
             width={318}
             height={199}
             priority
-            className="block h-12 w-auto"
+            className="block h-10 w-auto md:h-12"
           />
         </Link>
 
         <div className="flex items-center gap-3">
+          {/* Desktop: pills expand inline next to the button */}
           <AnimatePresence>
             {open && (
-              <motion.nav className="flex items-center gap-2">
+              <motion.nav className="hidden md:flex items-center gap-2">
                 {LINKS.map((link, i) => (
                   <Link key={link.href} href={link.href} passHref legacyBehavior>
                     <motion.a
@@ -108,7 +104,7 @@ export default function Header() {
             aria-expanded={open}
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.45, ease: EASE }}
-            className={`flex h-12 w-12 items-center justify-center ${MENU_BUTTON_CLASSES}`}
+            className={`relative z-10 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center ${MENU_BUTTON_CLASSES}`}
           >
             <svg width="24" height="24" viewBox="0 0 16 16" fill="none" aria-hidden>
               <path
@@ -121,6 +117,34 @@ export default function Header() {
           </motion.button>
         </div>
       </Container>
+
+      {/* Mobile: stacked dropdown panel below the header */}
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="md:hidden flex flex-col gap-2 border-t border-white/15 bg-blue px-4 py-4"
+          >
+            {LINKS.map((link, i) => (
+              <Link key={link.href} href={link.href} passHref legacyBehavior>
+                <motion.a
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.35, ease: EASE, delay: i * 0.05 }}
+                  onClick={() => setOpen(false)}
+                  className={`flex h-12 w-full items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
+                >
+                  {link.label}
+                </motion.a>
+              </Link>
+            ))}
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
