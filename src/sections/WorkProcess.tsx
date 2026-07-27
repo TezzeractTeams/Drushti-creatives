@@ -8,7 +8,6 @@ import { Burst } from "@/components/HeroShapes";
 import { EASE } from "@/lib/motion";
 import { PROCESS_STEPS } from "@/data/workProcess";
 
-
 // Tailwind rem scale: 7xl=4.5rem, 12xl=12rem, 14xl=14rem
 const CONTRACTED_SIZE_PX = 72; // text-7xl (4.5rem)
 const EXPANDED_SIZE_MIN_PX = 192;
@@ -41,8 +40,8 @@ function ProcessStepNumber({
 
       const widthTarget = isActive
         ? EXPANDED_SIZE_MIN_PX +
-          (EXPANDED_SIZE_MAX_PX - EXPANDED_SIZE_MIN_PX) *
-            Math.min(1, Math.max(0, (cardWidth - 64) / (560 - 64)))
+        (EXPANDED_SIZE_MAX_PX - EXPANDED_SIZE_MIN_PX) *
+        Math.min(1, Math.max(0, (cardWidth - 64) / (560 - 64)))
         : CONTRACTED_SIZE_PX;
 
       const fitByCardWidth = cardWidth * 0.82;
@@ -148,6 +147,35 @@ function ProcessCard({
   );
 }
 
+/** Static mobile card — plain layout, no scroll-driven flex/color/number
+ *  animation, no click-to-expand. Just a stacked, always-expanded step. */
+function ProcessCardStatic({
+  step,
+  index,
+}: {
+  step: (typeof PROCESS_STEPS)[number];
+  index: number;
+}) {
+  return (
+    <div className="rounded-2xl bg-white p-5">
+      <span
+        className="block font-heading text-5xl leading-none"
+        style={{
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          WebkitTextStroke: "1px rgb(var(--ink))",
+        }}
+      >
+        {index + 1}
+      </span>
+      <h3 className="mt-2 font-heading text-heading-xl leading-heading text-ink">
+        {step.title}
+      </h3>
+      <p className="mt-2 text-sm text-ink/80">{step.description}</p>
+    </div>
+  );
+}
+
 export default function WorkProcess() {
   const containerRef = useRef<HTMLDivElement>(null);
   // Start at 0 so "The Immersion" is the active/white card before any scrolling happens.
@@ -157,7 +185,7 @@ export default function WorkProcess() {
   // We track the scroll progress through this container.
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
   });
 
   // Whenever the scroll progress changes, we calculate which of the 5 cards should be active.
@@ -178,54 +206,80 @@ export default function WorkProcess() {
     <section
       ref={containerRef}
       className="relative bg-[#77c26b]"
-      // Controls "how fast" we move through steps: smaller height => faster snapping.
-      style={{ height: `${PROCESS_STEPS.length * 55}vh` }}
+      // Mobile: normal document height, no scroll-jack pin needed since
+      // there's no scroll-linked animation running there. Desktop keeps
+      // the original tall scroll runway exactly as-is.
+      style={{ height: "auto" }}
     >
-      {/* Sticky container that stays in the viewport while we scroll through the 400vh */}
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-10 lg:py-20">
-        <Container className="flex h-full w-full flex-col justify-center">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white lg:mb-10"
-          >
+      {/* ---------- Mobile: plain stacked list, no sticky, no scroll effect ---------- */}
+      <div className="sm:hidden">
+        <Container className="py-12">
+          <div className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white">
             <Burst className="h-4 w-4 text-white" />
             Work Process
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="mb-8 max-w-4xl lg:mb-12"
-          >
-            <h2 className="font-heading text-heading-3xl leading-heading text-white sm:text-heading-4xl lg:text-heading-5xl">
-              We follow a structured approach to deliver consistent and effective results:
-            </h2>
-          </motion.div>
+          <h2 className="mb-8 font-heading text-heading-3xl leading-heading text-white">
+            We follow a structured approach to deliver consistent and effective results:
+          </h2>
 
-          {/* The Horizontal Expanding Cards */}
-          <div className="flex flex-1 w-full min-h-[300px] max-h-[500px] gap-2">
-            {PROCESS_STEPS.map((step, i) => {
-              const isActive = activeIndex === i;
-              // All cards are visible from the very start now — only their
-              // width/color changes as scroll moves the active card along.
-
-              return (
-                <ProcessCard
-                  key={step.title}
-                  step={step}
-                  index={i}
-                  isActive={isActive}
-                  onActivate={() => setActiveIndex(i)}
-                />
-              );
-            })}
+          <div className="flex flex-col gap-3">
+            {PROCESS_STEPS.map((step, i) => (
+              <ProcessCardStatic key={step.title} step={step} index={i} />
+            ))}
           </div>
         </Container>
+      </div>
+
+      {/* ---------- Desktop: original pinned, scroll-driven expanding cards ---------- */}
+      <div
+        className="hidden sm:block"
+        style={{ height: `${PROCESS_STEPS.length * 55}vh` }}
+      >
+        {/* Sticky container that stays in the viewport while we scroll through the 400vh */}
+        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-10 lg:py-20">
+          <Container className="flex h-full w-full flex-col justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.6, ease: EASE }}
+              className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white lg:mb-10"
+            >
+              <Burst className="h-4 w-4 text-white" />
+              Work Process
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="mb-8 max-w-4xl lg:mb-12"
+            >
+              <h2 className="font-heading text-heading-3xl leading-heading text-white sm:text-heading-4xl lg:text-heading-5xl">
+                We follow a structured approach to deliver consistent and effective results:
+              </h2>
+            </motion.div>
+
+            {/* The Horizontal Expanding Cards */}
+            <div className="flex flex-1 w-full min-h-[300px] max-h-[500px] gap-2">
+              {PROCESS_STEPS.map((step, i) => {
+                const isActive = activeIndex === i;
+
+                return (
+                  <ProcessCard
+                    key={step.title}
+                    step={step}
+                    index={i}
+                    isActive={isActive}
+                    onActivate={() => setActiveIndex(i)}
+                  />
+                );
+              })}
+            </div>
+          </Container>
+        </div>
       </div>
     </section>
   );

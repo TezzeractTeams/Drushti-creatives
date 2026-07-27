@@ -94,7 +94,11 @@ export default function SubServicesCarousel() {
     useEffect(() => {
         const updateSpread = () => {
             const w = window.innerWidth;
-            if (w < 480) setSpread(0.48);
+            // Extra tier below 400px so the peeking side cards don't push
+            // past the viewport edge on the smallest phones (e.g. iPhone SE
+            // at 320-375px), where 0.48 was still too wide.
+            if (w < 380) setSpread(0.34);
+            else if (w < 480) setSpread(0.48);
             else if (w < 768) setSpread(0.68);
             else if (w < 1024) setSpread(0.86);
             else setSpread(1);
@@ -158,15 +162,15 @@ export default function SubServicesCarousel() {
     };
 
     return (
-        <section className="relative overflow-hidden bg-cream py-20 md:py-28">
+        <section className="relative overflow-hidden bg-cream py-12 sm:py-16 md:py-28">
             <Container>
                 <div
-                    className="relative flex h-[520px] items-center justify-center sm:h-[640px] md:h-[760px]"
+                    className="relative flex h-[420px] items-center justify-center xs:h-[460px] sm:h-[640px] md:h-[760px]"
                     style={{ perspective: "1800px", perspectiveOrigin: "50% 48%" }}
                 >
                     <motion.div
                         className="absolute inset-0 flex cursor-grab items-center justify-center active:cursor-grabbing"
-                        style={{ x: dragX, transformStyle: "preserve-3d" }}
+                        style={{ x: dragX, transformStyle: "preserve-3d", touchAction: "pan-y" }}
                         drag="x"
                         dragConstraints={{ left: 0, right: 0 }}
                         dragElastic={0.18}
@@ -206,7 +210,7 @@ export default function SubServicesCarousel() {
                                                 startAutoplay();
                                             }
                                         }}
-                                        className="group relative block h-[420px] w-[320px] overflow-hidden rounded-[2rem] shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 sm:h-[520px] sm:w-[400px] md:h-[600px] md:w-[480px]"
+                                        className="group relative block h-[280px] w-[220px] overflow-hidden rounded-2xl shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 xs:h-[320px] xs:w-[250px] sm:h-[520px] sm:w-[400px] sm:rounded-[2rem] md:h-[600px] md:w-[480px]"
                                         aria-label={item.title}
                                         aria-current={isActive ? "true" : undefined}
                                     >
@@ -224,19 +228,19 @@ export default function SubServicesCarousel() {
 
                                         {isActive && (
                                             <motion.div
-                                                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6"
+                                                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6"
                                                 initial={{ opacity: 0, y: 15 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.15, duration: 0.4 }}
                                             >
-                                                <h3 className="font-heading text-center text-4xl font-normal leading-none tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)] md:text-5xl lg:text-6xl">
+                                                <h3 className="font-heading text-center text-xl font-normal leading-none tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)] xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
                                                     {item.title}
                                                 </h3>
-                                                <div className="pointer-events-auto mt-10">
+                                                <div className="pointer-events-auto mt-4 xs:mt-6 sm:mt-10">
                                                     <Button
                                                         href={`/services/${item.id}`}
                                                         variant="primary"
-                                                        className="!rounded-md"
+                                                        className="!rounded-md !px-4 !py-2 !text-sm sm:!px-6 sm:!py-3 sm:!text-base"
                                                     >
                                                         View More
                                                     </Button>
@@ -250,7 +254,7 @@ export default function SubServicesCarousel() {
                     </motion.div>
                 </div>
 
-                <div className="mt-16 flex items-center justify-center gap-5">
+                <div className="mt-8 flex items-center justify-center gap-4 sm:mt-16 sm:gap-5">
                     <NavButton
                         label="Previous"
                         onClick={() => {
@@ -289,17 +293,18 @@ function NavButton({
             type="button"
             onClick={onClick}
             aria-label={label}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-ink text-white shadow-lg transition-colors hover:bg-ink/80"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-lg transition-colors hover:bg-ink/80 sm:h-14 sm:w-14"
         >
             <svg
-                width="22"
-                height="22"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="sm:h-[22px] sm:w-[22px]"
             >
                 {children}
             </svg>

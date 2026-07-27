@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
-import Image from "next/image";
 import Container from "@/components/Container";
 
 const SERVICES = [
@@ -16,6 +15,7 @@ const SERVICES = [
     border: "border-white/40",
     tabs: ["REACH", "ENGAGE", "GROW"],
     image: "/services/digital-social-media.png",
+    tint: "#E0B624", // yellow pops against blue
   },
   {
     id: "brand",
@@ -27,6 +27,7 @@ const SERVICES = [
     border: "border-white/40",
     tabs: ["LOGO", "COLOR", "IDENTITY"],
     image: "/services/logo-design.png",
+    tint: "#284F9F", // blue vs orange = strong complementary contrast
   },
   {
     id: "graphic",
@@ -38,6 +39,7 @@ const SERVICES = [
     border: "border-ink/40",
     tabs: ["VISUALS", "LAYOUT", "CLARITY"],
     image: "/services/graphic.png",
+    tint: "#284F9F", // dark blue reads clearly on light yellow
   },
   {
     id: "content",
@@ -48,6 +50,8 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["WORDS", "MESSAGE", "TRUST"],
+    image: "/services/Content Development.png",
+    tint: "#E0B624", // yellow vs green
   },
   {
     id: "video",
@@ -58,6 +62,8 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["STORY", "VISUALS", "SOUND"],
+    image: "/services/Video Production.png",
+    tint: "#DC5C26", // orange vs sky blue
   },
   {
     id: "web",
@@ -68,6 +74,8 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["DESIGN", "BUILD", "EXPERIENCE"],
+    image: "/services/Website.png",
+    tint: "#DC5C26", // orange, different from the other blue panel for variety
   },
 ];
 
@@ -139,12 +147,21 @@ function ServicePanel({
 
             {service.image && (
               <div className="w-full lg:w-1/2 flex justify-center lg:justify-end items-center">
-                <Image
-                  src={service.image}
-                  alt={service.lines.join(" ")}
-                  width={600}
-                  height={600}
-                  className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl"
+                <div
+                  role="img"
+                  aria-label={service.lines.join(" ")}
+                  className="w-full max-w-[500px] aspect-square drop-shadow-2xl"
+                  style={{
+                    backgroundColor: service.tint,
+                    WebkitMaskImage: `url(${service.image})`,
+                    maskImage: `url(${service.image})`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
                 />
               </div>
             )}
