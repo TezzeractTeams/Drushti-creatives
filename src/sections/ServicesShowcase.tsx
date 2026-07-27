@@ -50,7 +50,7 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["WORDS", "MESSAGE", "TRUST"],
-    image: "/services/Content Development.png",
+    image: "/services/Content-Development.png",
     tint: "#E0B624", // yellow vs green
   },
   {
@@ -62,7 +62,7 @@ const SERVICES = [
     text: "text-white",
     border: "border-white/40",
     tabs: ["STORY", "VISUALS", "SOUND"],
-    image: "/services/Video Production.png",
+    image: "/services/Video-Production.png",
     tint: "#DC5C26", // orange vs sky blue
   },
   {
