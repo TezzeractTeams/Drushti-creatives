@@ -57,10 +57,10 @@ export default function Header() {
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: EASE }}
       className={`fixed inset-x-0 top-0 z-40 border-b transition-colors duration-300 ${scrolled
-          ? "bg-blue border-white/25"
-          : isContactPage
-            ? "bg-transparent border-[#1A1A1A]/10"
-            : "bg-transparent border-white/25"
+        ? "bg-blue border-white/25"
+        : isContactPage
+          ? "bg-transparent border-[#1A1A1A]/10"
+          : "bg-transparent border-white/25"
         }`}
     >
       <Container className="flex items-center justify-between py-0">

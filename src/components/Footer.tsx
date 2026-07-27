@@ -90,11 +90,14 @@ export default function Footer() {
           the pinned footer. As the page ends it lifts away, uncovering it. */}
       <section
         ref={ctaRef}
-        className="relative z-10 overflow-hidden bg-orange py-[5.6rem] pb-[7.2rem] lg:py-[8.8rem] lg:pb-[9.6rem]"
+        className="relative z-10 overflow-hidden bg-orange py-[4rem] pb-[5.6rem] sm:py-[5.6rem] sm:pb-[7.2rem] lg:py-[8.8rem] lg:pb-[9.6rem]"
         style={{ clipPath: CTA_PEAK_CLIP }}
       >
+        {/* Corner decoration: scaled down and pushed further off-canvas on
+            phones so it reads as a subtle accent instead of competing with
+            the heading text for a narrow viewport's limited width. */}
         <div
-          className="pointer-events-none absolute inset-y-0 -right-[10%] z-0 flex justify-end"
+          className="pointer-events-none absolute inset-y-0 -right-[18%] z-0 flex justify-end opacity-60 sm:-right-[10%] sm:opacity-100"
           aria-hidden
         >
           <motion.div
@@ -106,14 +109,14 @@ export default function Footer() {
               alt=""
               width={888}
               height={1024}
-              className="-my-[2.5px] h-[calc(100%+5px)] w-auto max-w-[min(72vw,720px)] object-contain object-right-top sm:max-w-[min(62vw,780px)] lg:max-w-[min(52vw,860px)]"
+              className="-my-[2.5px] h-[calc(100%+5px)] w-auto max-w-[48vw] object-contain object-right-top sm:max-w-[min(62vw,780px)] lg:max-w-[min(52vw,860px)]"
               priority={false}
             />
           </motion.div>
         </div>
         <Container>
-          <div className="relative z-10 max-w-xl py-[1.2rem] sm:py-[1.6rem] lg:py-[2.4rem]">
-            <h2 className="mb-4 font-heading text-heading-5xl leading-heading text-white sm:text-heading-6xl lg:text-heading-7xl">
+          <div className="relative z-10 max-w-xl py-[1rem] sm:py-[1.6rem] lg:py-[2.4rem]">
+            <h2 className="mb-4 font-heading text-heading-4xl leading-heading text-white sm:text-heading-5xl lg:text-heading-7xl">
               Let&apos;s make<br />something{" "}
               <span className="relative inline-block text-ink">
                 <AnimatePresence mode="wait">
@@ -131,9 +134,11 @@ export default function Footer() {
               </span>
             </h2>
 
-            <p className="mb-10 text-base text-white">Kick start a project with us today</p>
+            <p className="mb-8 text-sm text-white sm:mb-10 sm:text-base">
+              Kick start a project with us today
+            </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               <PillButton href="mailto:collabs@drushticreatives.com">
                 Discuss a project
               </PillButton>
@@ -148,16 +153,16 @@ export default function Footer() {
       {/* ── DARK FOOTER ─────────────────────────────────────────
           Pinned at the viewport bottom (sticky bottom-0, z-0 under the
           page's z-10 wrapper): revealed as the CTA sheet lifts away.
-          -mt-[25vh] pulls it up underneath the CTA section above so the two
-          overlap instead of leaving a seam/gap between them
-          before the sticky reveal kicks in. */}
-      <footer className="sticky bottom-0 z-0 -mt-[25vh] flex h-[90vh] flex-col overflow-hidden bg-ink">
-        <div className="h-[20vh] shrink-0" aria-hidden />
-        <Container className="relative flex min-h-0 flex-1 flex-col justify-center gap-12 py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-          {/* Giant lowercase wordmark, left — sized up from the original
-              (which had no explicit width, so it rendered at the image's
-              small natural/intrinsic size). Bumped through breakpoints so
-              it stays proportionally large on bigger screens too. */}
+          On mobile, height/margins scale down and switch from a hard
+          h-[90vh] to min-h so a tall stacked mobile layout (logo + nav +
+          contact + socials + copyright) can never get clipped by
+          overflow-hidden — the exact vh pin height is only enforced from
+          lg upward, where the row layout is short enough to fit reliably. */}
+      <footer className="sticky bottom-0 z-0 -mt-[14vh] flex min-h-[70vh] flex-col overflow-hidden bg-ink sm:-mt-[18vh] sm:min-h-[80vh] lg:-mt-[25vh] lg:h-[90vh] lg:min-h-0">
+        <div className="h-[10vh] shrink-0 sm:h-[14vh] lg:h-[20vh]" aria-hidden />
+        <Container className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-10 py-10 text-center sm:gap-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:text-left">
+          {/* Wordmark, left. Sized down for phones so it doesn't dominate
+              the screen relative to the nav/contact content below it. */}
           <div className="relative flex items-center justify-center overflow-hidden">
             <Image
               src="/work/drushtiwhitecopy-trimmed.png"
@@ -165,13 +170,13 @@ export default function Footer() {
               width={318}
               height={199}
               loading="lazy"
-              className="w-64 sm:w-80 lg:w-[28rem] xl:w-[32rem] h-auto"
+              className="h-auto w-40 sm:w-56 md:w-64 lg:w-[28rem] xl:w-[32rem]"
             />
           </div>
 
           {/* Nav / contact / socials, right */}
-          <div className="flex flex-col gap-10 sm:flex-row sm:gap-14 lg:gap-16">
-            <nav className="flex flex-col gap-2">
+          <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:gap-14 lg:gap-16">
+            <nav className="flex flex-col items-center gap-2 sm:items-start">
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.label}
@@ -183,9 +188,9 @@ export default function Footer() {
               ))}
             </nav>
 
-            <div className="flex flex-col gap-1 text-sm text-white/50">
+            <div className="flex flex-col items-center gap-1 text-sm text-white/50 sm:items-start">
               <p className="text-white">Sri Lanka</p>
-              <address className="max-w-56 not-italic leading-relaxed">
+              <address className="max-w-56 text-center not-italic leading-relaxed sm:text-left">
                 Orion City, Colombo 09, Western Province
               </address>
               <a href="tel:+94768519161" className="mt-5 transition-colors hover:text-white">
@@ -196,7 +201,7 @@ export default function Footer() {
               </a>
             </div>
 
-            <div className="flex items-start gap-5">
+            <div className="flex items-center gap-5 sm:items-start">
               {SOCIAL_LINKS.map((social) => (
                 <a
                   key={social.label}

@@ -100,8 +100,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "How long does it take to build a website?", answer: "A standard business site usually takes 4 to 6 weeks, depending on how much information and how many pages you need." },
             { question: "Will my website show up on Google?", answer: "We set up the basics to make sure Google can find you. For higher rankings, we can talk about a long-term plan to keep your site active and relevant." }
         ],
-        bgClass: "bg-blue",
-        textClass: "text-white"
+        bgClass: "bg-yellow",
+        textClass: "text-ink"
     },
     video: {
         title: "Video Production/Editing",
@@ -174,9 +174,13 @@ export default function ServiceDetailPage() {
     }
 
     return (
-        <main className="min-h-screen bg-cream text-ink pt-28 pb-20 md:pt-36 md:pb-28">
-            {/* Hero Section */}
-            <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 rounded-[2.5rem] overflow-hidden`}>
+        <main className="min-h-screen bg-cream text-ink pb-20 md:pb-28">
+            {/* Hero Section: no top padding on <main> and no top border-radius
+                here, so this block sits flush against the very top of the
+                viewport with zero gap — rounding only the bottom corners
+                avoids the small triangle of page background that would
+                otherwise peek through rounded top corners at the edge. */}
+            <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 rounded-b-[2.5rem] overflow-hidden`}>
                 <Container>
                     <div className="max-w-4xl">
                         <Link href="/services" className="inline-flex items-center gap-2 mb-8 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity">

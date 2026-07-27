@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
-import PillButton from "@/components/PillButton";
 import { fadeUp } from "@/lib/motion";
 import type { Project } from "@/data/projects";
+import Link from "next/link";
 
 /** Case-study page traced from the reference: a sticky left info panel
  *  (title, tags, Challenge, Strategy, Results) stays pinned while a full-
@@ -14,10 +14,13 @@ export default function CaseStudy({ project }: { project: Project }) {
   return (
     <section className="bg-cream py-16 sm:py-24">
       <Container>
-        <motion.div {...fadeUp()} className="mb-10">
-          <PillButton href="/#work" variant="light">
-            ← Back to work
-          </PillButton>
+        <motion.div {...fadeUp()} className="mb-8">
+          <Link
+            href="/#work"
+            className="inline-flex items-center gap-2 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity"
+          >
+            ← Back to Work
+          </Link>
         </motion.div>
 
         <div className="grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-start">

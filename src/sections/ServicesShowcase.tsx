@@ -15,67 +15,67 @@ const SERVICES = [
     border: "border-white/40",
     tabs: ["REACH", "ENGAGE", "GROW"],
     image: "/services/digital-social-media.png",
-    tint: "#E0B624", // yellow pops against blue
+    tint: "#FFFFFF",
   },
   {
     id: "brand",
     lines: ["Logo Design &", "Brand Identity"],
     description:
       "We create a professional look that fits your business perfectly. From your logo to your brand colors, we make sure you look consistent everywhere.",
-    bg: "bg-orange",
-    text: "text-white",
-    border: "border-white/40",
+    bg: "bg-yellow",
+    text: "text-ink",
+    border: "border-ink/40",
     tabs: ["LOGO", "COLOR", "IDENTITY"],
     image: "/services/logo-design.png",
-    tint: "#284F9F", // blue vs orange = strong complementary contrast
+    tint: "#000000",
   },
   {
     id: "graphic",
     lines: ["Graphic", "Design"],
     description:
       "We design clear and attractive visuals for your business needs. Whether it's a company profile or a banner, we make your information easy to read and follow.",
-    bg: "bg-yellow",
-    text: "text-ink",
-    border: "border-ink/40",
+    bg: "bg-orange",
+    text: "text-white",
+    border: "border-white/40",
     tabs: ["VISUALS", "LAYOUT", "CLARITY"],
     image: "/services/graphic.png",
-    tint: "#284F9F", // dark blue reads clearly on light yellow
+    tint: "#FFFFFF",
   },
   {
     id: "content",
     lines: ["Content", "Development"],
     description:
       "We find the right words to explain what you do. We write clear, simple, and honest messages that help your audience trust your brand.",
-    bg: "bg-green",
-    text: "text-white",
-    border: "border-white/40",
+    bg: "bg-yellow",
+    text: "text-ink",
+    border: "border-ink/40",
     tabs: ["WORDS", "MESSAGE", "TRUST"],
     image: "/services/Content-Development.png",
-    tint: "#E0B624", // yellow vs green
+    tint: "#000000",
   },
   {
     id: "video",
     lines: ["Video", "Production"],
     description:
       "We create high-quality videos that tell your brand's story. We use visuals and sound to grab attention and make your message stand out.",
-    bg: "bg-sky",
+    bg: "bg-green",
     text: "text-white",
     border: "border-white/40",
     tabs: ["STORY", "VISUALS", "SOUND"],
     image: "/services/Video-Production.png",
-    tint: "#DC5C26", // orange vs sky blue
+    tint: "#FFFFFF",
   },
   {
     id: "web",
     lines: ["Website &", "UI Designing"],
     description:
       "We build websites that are easy for your customers to use. Our designs are clean and simple, making sure people have a great experience when they visit you online.",
-    bg: "bg-blue",
-    text: "text-white",
-    border: "border-white/40",
+    bg: "bg-yellow",
+    text: "text-ink",
+    border: "border-ink/40",
     tabs: ["DESIGN", "BUILD", "EXPERIENCE"],
     image: "/services/Website.png",
-    tint: "#DC5C26", // orange, different from the other blue panel for variety
+    tint: "#000000",
   },
 ];
 
@@ -153,8 +153,8 @@ function ServicePanel({
                   className="w-full max-w-[500px] aspect-square drop-shadow-2xl"
                   style={{
                     backgroundColor: service.tint,
-                    WebkitMaskImage: `url(${service.image})`,
-                    maskImage: `url(${service.image})`,
+                    WebkitMaskImage: `url("${service.image}")`,
+                    maskImage: `url("${service.image}")`,
                     WebkitMaskSize: "contain",
                     maskSize: "contain",
                     WebkitMaskRepeat: "no-repeat",

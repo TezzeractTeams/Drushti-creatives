@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, type RefObject } from "react";
-import { AnimatePresence, motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent } from "motion/react";
+import { AnimatePresence, motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
 import Container from "@/components/Container";
 import PillButton from "@/components/PillButton";
 import { ABOUT_SCROLL_VH, SHAPE_CLOSED_AT } from "@/config/clientCurtain";
@@ -12,6 +12,21 @@ const IMAGES = [
 ];
 
 const IMAGE_ROTATE_MS = 2500;
+
+// --- Title timing -----------------------------------------------------
+// These control how gradually the title/scrim fade in and out relative to
+// scrollYProgress. Bigger windows = slower, smoother transitions.
+// Previously the appear window was only 0.04 (a near-instant snap) and the
+// exit window was 0.1 — both widened here so the fade actually reads as a
+// fade instead of a pop.
+const TITLE_APPEAR_START = Math.max(0, SHAPE_CLOSED_AT - 0.18); // was -0.04
+const TITLE_HOLD_END = 0.55; // was 0.4 — title now stays fully visible much longer
+const TITLE_FADE_END = 0.78; // was 0.6 — and the fade-out itself is slower too
+
+// Content below the title now starts revealing only once the title has
+// almost fully faded, over a wider window than before.
+const CONTENT_FADE_START = 0.68;
+const CONTENT_FADE_END = 0.85;
 
 type AboutUsProps = {
   scrollRef?: RefObject<HTMLElement | null>;
@@ -37,36 +52,34 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
   const topPath = useMotionTemplate`M 0 0 L 100 0 L 100 ${topEdgeY} Q 50 ${topCenterY} 0 ${topEdgeY} Z`;
   const bottomPath = useMotionTemplate`M 0 100 L 100 100 L 100 ${bottomEdgeY} Q 50 ${bottomCenterY} 0 ${bottomEdgeY} Z`;
 
-  // CLOSING (scroll down) — left exactly as-is. The title stays invisible
-  // for almost the entire closing motion and only pops in during the last
-  // sliver of it, right as the shape seals shut.
+  // CLOSING (scroll down) and OPENING (scroll up) share the same eased
+  // curve now that both windows are wide enough to read as smooth fades in
+  // either direction — kept as two separate values in case you want to
+  // diverge them later.
   const closingOpacity = useTransform(
     scrollYProgress,
-    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0, TITLE_APPEAR_START, SHAPE_CLOSED_AT, TITLE_HOLD_END, TITLE_FADE_END],
     [0, 0, 1, 1, 0]
   );
 
-  // OPENING (scroll up) — mirrors the closing curve's narrow snap window,
-  // instead of ramping gradually across the whole SHAPE_CLOSED_AT -> 0
-  // range. Opacity stays at 1 right up until progress is a hair below
-  // SHAPE_CLOSED_AT, then drops to 0 within that same narrow 0.04 window —
-  // so the text is already fully invisible for the rest of the opening
-  // motion, well before the gap becomes visually noticeable.
   const openingOpacity = useTransform(
     scrollYProgress,
-    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0, TITLE_APPEAR_START, SHAPE_CLOSED_AT, TITLE_HOLD_END, TITLE_FADE_END],
     [0, 0, 1, 1, 0]
   );
 
   // Plain motion value driven manually, switching between the two curves
-  // above depending on which way the user is actually scrolling.
-  const titleOpacity = useMotionValue(0);
+  // above depending on which way the user is actually scrolling, then
+  // smoothed through a spring so any residual jump (e.g. on a direction
+  // reversal mid-scroll) gets eased out rather than snapping.
+  const titleOpacityRaw = useMotionValue(0);
+  const titleOpacity = useSpring(titleOpacityRaw, { stiffness: 60, damping: 20, mass: 0.8 });
   const prevProgress = useRef(0);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const isScrollingDown = latest >= prevProgress.current;
     prevProgress.current = latest;
-    titleOpacity.set(isScrollingDown ? closingOpacity.get() : openingOpacity.get());
+    titleOpacityRaw.set(isScrollingDown ? closingOpacity.get() : openingOpacity.get());
 
     if (latest < CONTENT_FADE_START) {
       contentOpacity.set(0);
@@ -92,13 +105,10 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
 
   const titleScale = useTransform(
     scrollYProgress,
-    [0, SHAPE_CLOSED_AT - 0.04, SHAPE_CLOSED_AT, 0.35, 0.45],
+    [0, TITLE_APPEAR_START, SHAPE_CLOSED_AT, TITLE_HOLD_END, TITLE_FADE_END],
     [0.9, 0.9, 1, 1, 0.8]
   );
-  const titleY = useTransform(scrollYProgress, [0.35, 0.45], ["0%", "-20%"]);
-
-  const CONTENT_FADE_START = 0.45;
-  const CONTENT_FADE_END = 0.5;
+  const titleY = useTransform(scrollYProgress, [TITLE_HOLD_END, TITLE_FADE_END], ["0%", "-20%"]);
 
   const contentY = useMotionValue("50px");
   const contentOpacity = useMotionValue(0);
