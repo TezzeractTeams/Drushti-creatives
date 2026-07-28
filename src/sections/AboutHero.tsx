@@ -11,15 +11,19 @@ const LINES = ["We build the voice your vision deserves."];
  *  massive white two-line heading anchored bottom-left, staggered rise-in. */
 export default function AboutHero() {
   return (
-    <section className="relative flex min-h-screen items-end bg-orange pb-16 pt-32 sm:pb-24">
+    <section className="relative flex min-h-[70svh] lg:min-h-screen items-end bg-orange pb-12 pt-24">
       <Container>
-        <h2 className="font-heading text-[clamp(3.25rem,9vw,9rem)] font-bold leading-[1.02] text-white">
+        <h2 className="max-w-[10ch] font-heading text-[clamp(3.5rem,14vw,9rem)] font-bold leading-[0.95] tracking-tight text-white">
           {LINES.map((line, i) => (
             <span key={line} className="block overflow-hidden">
               <motion.span
                 initial={{ y: "110%" }}
                 animate={{ y: "0%" }}
-                transition={{ duration: 0.8, delay: 0.15 + i * 0.12, ease: EASE }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.15 + i * 0.12,
+                  ease: EASE,
+                }}
                 className="block"
               >
                 {line}

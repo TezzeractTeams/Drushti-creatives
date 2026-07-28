@@ -70,7 +70,7 @@ export default function AboutTextReveal() {
     >
       <div className="sticky top-0 flex h-svh items-center overflow-hidden py-12 md:py-20">
         <Container>
-          <div className="flex flex-col gap-4 font-heading text-[clamp(1.2rem,2.8vw,2.5rem)] font-bold uppercase leading-[1.2] md:gap-6">
+          <div className="flex flex-col gap-4 font-heading text-[clamp(2rem,7vw,2.5rem)] font-bold uppercase leading-[1.15] md:gap-6">
             {FORMATTED_SENTENCES.map((sentenceWords, sIdx) => (
               <span key={sIdx} className="block">
                 {sentenceWords.map(({ word, index }) => (

@@ -1,600 +1,102 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-  type MotionValue,
-} from "motion/react";
+import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import Container from "@/components/Container";
 
-import PillButton from "@/components/PillButton";
+type Band = {
+  id: string;
+  label: string;
+  image: string;
+  // Negative = drifts left as you scroll down, positive = drifts right.
+  // Magnitude controls how far it travels — bigger number, more drift.
+  speed: number;
+  align: "start" | "end";
+};
 
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-
-
-const SERVICES = [
-  {
-    title: "BRAND",
-    subtitle: "Brand Strategy",
-    image: "/images/services/brand.jpg",
-    items: [
-      "Brand Identity",
-      "Visual Direction",
-      "Creative Strategy",
-    ],
-  },
-
-  {
-    title: "DIGITAL",
-    subtitle: "Digital Marketing",
-    image: "/images/services/digital.jpg",
-    items: [
-      "Social Media",
-      "Content Creation",
-      "Growth Campaigns",
-    ],
-  },
-
-  {
-    title: "VIDEO",
-    subtitle: "Video Production",
-    image: "/images/services/video.jpg",
-    items: [
-      "Commercial Films",
-      "Short Form Content",
-      "Motion Design",
-    ],
-  },
-
-  {
-    title: "CREATIVE",
-    subtitle: "Creative Design",
-    image: "/images/services/design.jpg",
-    items: [
-      "Web Design",
-      "Campaign Design",
-      "Art Direction",
-    ],
-  },
+// Same 5 sub-services as SubServicesCarousel/ServicesHero's arc version —
+// this just presents them as labeled parallax bands instead.
+const BANDS: Band[] = [
+  { id: "marketing", label: "DIGITAL MARKETING", image: "/images/sub-services/content-front.png", speed: -140, align: "end" },
+  { id: "brand", label: "BRAND IDENTITY", image: "/images/sub-services/brand-front.png", speed: 110, align: "start" },
+  { id: "web", label: "WEB DESIGN", image: "/images/sub-services/web-front.jpg", speed: -170, align: "end" },
+  { id: "video", label: "VIDEO PRODUCTION", image: "/images/sub-services/innovative.png", speed: 130, align: "start" },
+  { id: "graphic", label: "GRAPHIC DESIGN", image: "/images/sub-services/landscape-front.jpg", speed: -100, align: "end" },
 ];
 
+// Alternating diagonal edges so consecutive bands' slanted borders interlock
+// when stacked with a small negative margin between them.
+const CLIP_DOWN = "polygon(0 7%, 100% 0%, 100% 93%, 0% 100%)";
+const CLIP_UP = "polygon(0 0%, 100% 7%, 100% 100%, 0% 93%)";
 
-
-function ServiceImage({
-  servicesIndex,
+function ParallaxBand({
+  band,
+  index,
+  scrollYProgress,
 }: {
-  servicesIndex: MotionValue<number>;
+  band: Band;
+  index: number;
+  scrollYProgress: MotionValue<number>;
 }) {
-
-
-  return (
-
-    <AnimatePresence mode="wait">
-
-      <motion.div
-        key={servicesIndex.get()}
-        initial={{
-          opacity: 0,
-          scale: .9,
-          y: 40
-        }}
-
-        animate={{
-          opacity: 1,
-          scale: 1,
-          y: 0
-        }}
-
-        exit={{
-          opacity: 0,
-          scale: 1.05,
-          y: -40
-        }}
-
-        transition={{
-          duration: .7,
-          ease: EASE
-        }}
-
-        className="
-          absolute
-          left-[58%]
-          top-[52%]
-          -translate-x-1/2
-          -translate-y-1/2
-          w-[260px]
-md:w-[340px]
-xl:w-[420px]
-          aspect-square
-        "
-      >
-
-        <img
-          src={
-            SERVICES[
-              Math.round(
-                servicesIndex.get()
-              )
-            ].image
-          }
-
-          className="
-            w-full
-            h-full
-            object-cover
-            rounded-[32px]
-            border
-            border-white/20
-            shadow-[0_50px_120px_rgba(0,0,0,.5)]
-          "
-
-          alt=""
-        />
-
-
-        <div
-          className="
-            absolute
-            bottom-5
-            left-5
-            bg-white
-            text-black
-            rounded-full
-            w-12
-            h-12
-            flex
-            items-center
-            justify-center
-            text-xs
-          "
-        >
-          ▶
-        </div>
-
-
-      </motion.div>
-
-    </AnimatePresence>
-
-  );
-}
-export default function ServicesHero() {
-
-  const sectionRef = useRef<HTMLElement>(null);
-
-
-  const {
-    scrollYProgress
-  } = useScroll({
-
-    target: sectionRef,
-
-    offset: [
-      "start start",
-      "end end"
-    ],
-
-  });
-
-
-
-  /*
-    Scroll controls active service
-
-    0 - Brand
-    1 - Digital
-    2 - Video
-    3 - Creative
-  */
-
-  const activeService = useTransform(
-    scrollYProgress,
-
-    [
-      0,
-      .25,
-      .5,
-      .75,
-      1
-    ],
-
-    [
-      0,
-      1,
-      2,
-      3,
-      3
-    ]
-
-  );
-
-
-
-  const titleScale = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [1, 0.92]
-  );
-
-
+  const x = useTransform(scrollYProgress, [0, 1], [0, band.speed]);
 
   return (
-
-    <section
-      ref={sectionRef}
-      className="
-    relative
-    h-[400vh]
-    bg-blue
-    text-white
-  "
+    <div
+      className="relative -mt-4 h-28 w-full overflow-hidden sm:-mt-6 sm:h-40 md:h-52 lg:h-60"
+      style={{ clipPath: index % 2 === 0 ? CLIP_DOWN : CLIP_UP }}
     >
+      <motion.img
+        src={band.image}
+        alt=""
+        style={{ x }}
+        className="absolute left-1/2 top-1/2 h-[145%] w-[130%] -translate-x-1/2 -translate-y-1/2 object-cover"
+        draggable={false}
+      />
 
+      <div className="absolute inset-0 bg-ink/25" />
 
       <div
-
-        className="
-          sticky
-          top-0
-          h-screen
-          overflow-hidden
-        "
-
+        className={`absolute inset-0 flex items-center px-6 sm:px-12 ${band.align === "end" ? "justify-end" : "justify-start"
+          }`}
       >
-
-        {/* BIG LEFT TEXT */}
-
-
-        <motion.h1
-          style={{
-            scale: titleScale
-          }}
-          className="
-    absolute
-    left-[4vw]
-    top-[12%]
-    max-w-[900px]
-    z-10
-    font-heading
-    font-bold
-    text-[clamp(3rem,6.8vw,7rem)]
-    leading-[0.92]
-    tracking-tight
-    text-white
-  "
-        >
-
-          Clear solutions for your{" "}
-          <span className="italic text-orange">
-            brand&apos;s
-          </span>{" "}
-          growth.
-
-        </motion.h1>
-
-
-
-
-
-
-        {/* CENTER IMAGE */}
-
-        <ServiceImage
-
-          servicesIndex={activeService}
-
-        />
-
-
-
-
-
-
-        {/* RIGHT HUGE WORD */}
-
-
-        <motion.h1
-
-          className="
-            absolute
-            right-[3vw]
-            bottom-[15%]
-            font-heading
-            font-black
-            uppercase
-            text-[clamp(5rem,15vw,14rem)]
-            leading-[.75]
-            tracking-[-.06em]
-          "
-
-        >
-
-          <motion.div
-            className="
-    absolute
-    right-[5vw]
-    bottom-[18%]
-    z-30
-    text-right
-  "
-          >
-
-            <p
-              className="
-      text-orange
-      uppercase
-      tracking-[.3em]
-      text-xs
-      font-semibold
-    "
-            >
-              Featured Service
-            </p>
-
-
-            <h2
-              className="
-      mt-3
-      font-heading
-      text-4xl
-      md:text-6xl
-      font-bold
-    "
-            >
-              {
-                SERVICES[
-                  Math.round(
-                    activeService.get()
-                  )
-                ].subtitle
-              }
-            </h2>
-
-          </motion.div>
-
-        </motion.h1>
-
-
-
-
-
-
-        {/* SERVICE LIST */}
-
-
-        <div
-
-          className="
-            absolute
-            left-[4vw]
-bottom-[18%]
-max-w-[280px]
-            z-30
-          "
-
-        >
-
-          <AnimatePresence mode="wait">
-
-            <motion.ul
-
-              key={
-                Math.round(
-                  activeService.get()
-                )
-              }
-
-              initial={{
-                opacity: 0,
-                y: 20
-              }}
-
-              animate={{
-                opacity: 1,
-                y: 0
-              }}
-
-              exit={{
-                opacity: 0,
-                y: -20
-              }}
-
-              transition={{
-                duration: .5
-              }}
-
-              className="
-                space-y-3
-              "
-
-            >
-
-              {
-                SERVICES[
-                  Math.round(
-                    activeService.get()
-                  )
-                ]
-                  .items
-                  .map(
-                    item =>
-                    (
-
-                      <li
-
-                        key={item}
-
-                        className="
-                      flex
-                      items-center
-                      gap-3
-                      uppercase
-                      font-bold
-                      text-sm
-                      tracking-wide
-                    "
-
-                      >
-
-                        <span
-
-                          className="
-                        w-3
-                        h-3
-                        rounded-full
-                        bg-lime-300
-                      "
-
-                        />
-
-                        {item}
-
-
-                      </li>
-
-                    )
-
-                  )
-              }
-
-
-            </motion.ul>
-
-          </AnimatePresence>
-
-
-        </div>
-
-
-
-
-
-
-
-        {/* FLOATING PROJECT CARD */}
-
-
-        <div
-
-          className="
-            absolute
-            right-12
-            top-[28%]
-            bg-white
-            text-black
-            rounded-[28px]
-            p-3
-            w-[270px]
-            z-30
-            flex
-            gap-4
-            items-center
-          "
-
-        >
-
-          <img
-
-            src="/images/project-thumb.jpg"
-
-            className="
-              w-20
-              h-20
-              rounded-2xl
-              object-cover
-            "
-
-            alt=""
-
-          />
-
-
-          <div>
-
-            <p
-              className="
-                text-sm
-                opacity-60
-              "
-            >
-              New project
-            </p>
-
-
-            <p
-              className="
-                font-black
-                text-lg
-              "
-            >
-              NOVA TECH
-            </p>
-
-
-          </div>
-
-
-        </div>
-
-
-
-
-
-
-
-        {/* CTA */}
-
-
-        <div
-
-          className="
-            absolute
-            left-12
-            bottom-12
-            z-40
-          "
-
-        >
-
-          <PillButton href="#contact">
-
-            Book a call
-
-          </PillButton>
-
-
-        </div>
-
-
-
-
-
-
-        {/* FOOTER */}
-
-        <div
-
-          className="
-            absolute
-            bottom-10
-            right-12
-            text-white/60
-          "
-
-        >
-
-        </div>
-
-
-
+        <span className="font-heading text-[2.6rem] font-black uppercase leading-none tracking-tight text-white/60 mix-blend-overlay sm:text-[4.5rem] md:text-[6.5rem] lg:text-[8rem]">
+          {band.label}
+        </span>
       </div>
+    </div>
+  );
+}
 
+export default function ServicesHero() {
+  const sectionRef = useRef<HTMLElement>(null);
 
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden bg-white py-16 md:py-24">
+      <Container>
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-16">
+          <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl md:text-6xl">
+            Clear solutions for your{" "}
+            <span className="italic text-orange">brand&apos;s</span> growth.
+          </h1>
+
+          <p className="max-w-md text-sm leading-relaxed text-ink/60 sm:text-base lg:justify-self-end lg:text-right">
+            We handle everything from strategy to execution — branding, digital
+            marketing, web, video, and graphic design — so your brand stays
+            consistent, professional, and always moving forward.
+          </p>
+        </div>
+      </Container>
+
+      <div className="relative mt-14 md:mt-20">
+        {BANDS.map((band, index) => (
+          <ParallaxBand key={band.id} band={band} index={index} scrollYProgress={scrollYProgress} />
+        ))}
+      </div>
     </section>
-
   );
 }

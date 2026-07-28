@@ -15,7 +15,6 @@ export default function ServicesPage() {
   return (
     <main>
       <ServicesHero />
-      <SubServicesCarousel />
       <ServicesShowcase />
       <WorkProcess />
       <Testimonials />
