@@ -76,7 +76,7 @@ export default function Faq() {
     // Tall wrapper + sticky inner (same pattern as TeamSection/WhyWeExist):
     // the extra height below gives the pinned panel room to hold in place
     // as the page keeps scrolling. z-10 + solid bg-cream ensure whatever
-    // section sits before this one (About Drushti) scrolls fully behind it
+    // section sits before this one (Why We Exist) scrolls fully behind it
     // instead of bleeding through during the overlap.
     <section className="relative z-10 h-[130vh] bg-cream">
       <div className="sticky top-0 flex min-h-screen flex-col justify-center py-24 sm:py-32">

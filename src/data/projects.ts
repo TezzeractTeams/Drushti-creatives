@@ -12,6 +12,7 @@ export interface StrategyPoint {
 
 export interface Project {
   name: string;
+  client: string;
   description: string;
   tags: string[];
   image: string;
@@ -28,10 +29,11 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
-    name: "Advantis Project Logistics | Building B2B Authority",
+    name: "Building B2B Authority",
+    client: "Advantis",
     description:
       "Strategic LinkedIn and Facebook management for Advantis Project Logistics — building B2B authority through consistent, trust-based organic engagement.",
-    tags: ["Social Media Design", "Content Creation", "Digital Advertising"],
+    tags: ["Social Media Design", "Content Creation"],
     image: "/work/advantis.webp",
     challenge:
       "Advantis Project Logistics needed to move beyond basic social media presence and strategically manage their LinkedIn and Facebook platforms. Their primary goal was to “strip away the noise” of a complex industry to establish real credibility and engage a professional B2B audience through organic methods. They required a partner that could articulate their vision and build trust in their ability to manage large-scale logistics projects.",
@@ -63,10 +65,11 @@ export const PROJECTS: Project[] = [
     href: "/work/advantis",
   },
   {
-    name: "Norlanka | Organic Advocacy & Employer Branding",
+    name: "Organic Advocacy & Employer Branding",
+    client: "Norlanka",
     description:
       "Organic advocacy and employer branding for Norlanka — building community awareness and attracting the right talent through authentic content.",
-    tags: ["Social Media Design", "Employer Branding", "Content Creation"],
+    tags: ["Social Media Design", "Employer Branding"],
     image: "/work/norlanka.webp",
     challenge:
       "Norlanka aimed to build organic awareness within the local community, specifically to attract the right talent for their job vacancies. The core pressure was finding a way to articulate their internal culture and build genuine trust with potential candidates through employee advocacy.",
@@ -101,10 +104,11 @@ export const PROJECTS: Project[] = [
     href: "/work/norlanka",
   },
   {
-    name: "Uber Sri Lanka | Driver Onboarding Campaign",
+    name: "Driver Onboarding Campaign",
+    client: "Uber Sri Lanka",
     description:
       "Driver onboarding campaign for Uber Sri Lanka — reducing cost per result while increasing inquiry rates across driver and rider segments.",
-    tags: ["Digital Advertising", "Driver Onboarding", "Social Media Marketing"],
+    tags: ["Digital Advertising", "Driver Onboarding"],
     image: "/work/softlogic.webp",
     challenge:
       "The objective was to onboard driver partners to the Uber rider network. While initial advertising was managed by a regional team in Singapore, the client sought a more localized approach after seeing the success of our Uber Eats delivery rider campaigns. The challenge was to move beyond generic communication and “strip away the noise” to reach specific segments effectively.",
@@ -132,10 +136,11 @@ export const PROJECTS: Project[] = [
     href: "/work/uber-sri-lanka",
   },
   {
-    name: "Uber Eats | Rider Onboarding Campaign",
+    name: "Rider Onboarding Campaign",
+    client: "Uber Eats",
     description:
       "Rider onboarding campaign for Uber Eats — expanding the local delivery rider network with highly targeted, local communication.",
-    tags: ["Digital Advertising", "Lead Generation", "Social Media Marketing"],
+    tags: ["Digital Advertising", "Lead Generation"],
     image: "/work/ginger-fresh.webp",
     challenge:
       "Uber Eats needed to expand its local delivery rider network. Their existing campaigns, managed by a regional team in Singapore, lacked a “local vibe,” resulting in high lead costs and a struggle to connect with the right audience.",
@@ -151,10 +156,11 @@ export const PROJECTS: Project[] = [
     href: "/work/uber-eats",
   },
   {
-    name: "Wild Drift | Humanizing Experiential Learning",
+    name: "Humanizing Experiential Learning",
+    client: "Wild Drift",
     description:
       "Social content for Wild Drift — establishing a trusted authority in experiential learning and driving B2B lead generation.",
-    tags: ["Social Media Design", "Content Creation", "B2B Marketing"],
+    tags: ["Social Media Design", "B2B Marketing"],
     image: "/work/fairfirst.webp",
     challenge:
       "Wild Drift needed to move beyond a basic online presence to establish themselves as a trusted authority in the outbound training industry. Their goal was to articulate their unique experiential learning offerings in a way that would genuinely attract new clients and build long-term credibility.",

@@ -94,12 +94,12 @@ export default function CaseStudy({ project }: { project: Project }) {
           </div>
 
           {/* Scrolling gallery */}
-          <motion.div {...fadeUp(0.1)} className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl sm:aspect-[4/3]">
+          <motion.div {...fadeUp(0.1)} className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-white sm:aspect-[4/3]">
             <Image
               src={project.image}
               alt={project.name}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 1024px) 100vw, 55vw"
               priority
             />

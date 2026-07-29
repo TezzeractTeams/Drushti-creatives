@@ -16,6 +16,11 @@ import Tag from "@/components/Tag";
 
 import { EASE } from "@/lib/motion";
 import { PROJECTS } from "@/data/projects";
+import {
+  getFeaturedWorkLogo,
+  FEATURED_WORK_LOGO_MAX_HEIGHT,
+  FEATURED_WORK_LOGO_MAX_WIDTH,
+} from "@/data/clientLogos";
 
 
 /** Pinned scroll section: a client list where scroll position (not clicks)
@@ -77,6 +82,7 @@ export default function FeaturedWork() {
           <div>
             {PROJECTS.map((project, i) => {
               const isActive = i === active;
+              const logoSrc = getFeaturedWorkLogo(project.client);
               return (
                 <div key={project.name} className="border-b border-ink/10 py-3 first:pt-0">
                   <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -125,6 +131,21 @@ export default function FeaturedWork() {
                               ↓
                             </span>
                             <div className="min-w-0 sm:col-start-2">
+                              {logoSrc && (
+                                <div className="mb-2 block w-fit">
+                                  <Image
+                                    src={logoSrc}
+                                    alt={project.client}
+                                    width={148}
+                                    height={48}
+                                    className="block h-auto w-auto object-contain object-left"
+                                    style={{
+                                      maxHeight: FEATURED_WORK_LOGO_MAX_HEIGHT,
+                                      maxWidth: FEATURED_WORK_LOGO_MAX_WIDTH,
+                                    }}
+                                  />
+                                </div>
+                              )}
                               <p className="text-sm text-ink/70">
                                 {project.challenge}
                               </p>
@@ -152,12 +173,12 @@ export default function FeaturedWork() {
                           </div>
 
                           <div className="my-4 flex min-w-0 w-full">
-                            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-3xl">
+                            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-3xl border border-ink/10 bg-white">
                               <Image
                                 src={project.image}
                                 alt={project.name}
                                 fill
-                                className="object-cover"
+                                className="object-cover object-top"
                               />
                             </div>
                           </div>

@@ -158,7 +158,7 @@ export default function Footer() {
           contact + socials + copyright) can never get clipped by
           overflow-hidden — the exact vh pin height is only enforced from
           lg upward, where the row layout is short enough to fit reliably. */}
-      <footer className="sticky bottom-0 z-0 -mt-[14vh] flex min-h-[70vh] flex-col overflow-hidden bg-ink sm:-mt-[18vh] sm:min-h-[80vh] lg:-mt-[25vh] lg:h-[90vh] lg:min-h-0">
+      <footer className="sticky bottom-0 z-0 -mt-[14vh] flex min-h-[70vh] flex-col overflow-hidden bg-blue sm:-mt-[18vh] sm:min-h-[80vh] lg:-mt-[25vh] lg:h-[90vh] lg:min-h-0">
         <div className="h-[10vh] shrink-0 sm:h-[14vh] lg:h-[20vh]" aria-hidden />
         <Container className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-10 py-10 text-center sm:gap-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:text-left">
           {/* Wordmark, left. Sized down for phones so it doesn't dominate
