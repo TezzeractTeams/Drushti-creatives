@@ -5,13 +5,13 @@
  *  directly to control when OurClients content fades out. */
 
 /** Total scroll track height for the AboutUs pinned section (vh). */
-export const ABOUT_SCROLL_VH = 150;
+export const ABOUT_SCROLL_VH = 220;
 
 /** Scroll progress where the curtain shape fully closes. */
-export const SHAPE_CLOSED_AT = 0.2;
+export const SHAPE_CLOSED_AT = 0.4;
 
 /** Scroll progress where OurClients content begins fading out. */
-export const CLIENT_FADE_START = 0.1;
+export const CLIENT_FADE_START = SHAPE_CLOSED_AT * 0.25;
 
 /** Scroll progress where OurClients content is fully faded out. */
-export const CLIENT_FADE_END = 0.15;
+export const CLIENT_FADE_END = SHAPE_CLOSED_AT * 0.5;

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import TeamSection from "@/sections/TeamSection";
-import AboutDrushti from "@/sections/AboutDrushti";
 import AboutTextReveal from "@/sections/AboutTextReveal";
 import WhyWeExist from "@/sections/WhyWeExist";
 import Faq from "@/sections/Faq";
@@ -16,7 +15,6 @@ export default function AboutPage() {
     <main>
       <TeamSection />
       <AboutTextReveal />
-      <AboutDrushti />
       <WhyWeExist />
       <Faq />
     </main>
