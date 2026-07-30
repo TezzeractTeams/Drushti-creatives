@@ -14,7 +14,6 @@ export default function ServicesPage() {
   return (
     <main>
       <ServicesHero />
-      <ServicesShowcase />
       <WorkProcess />
       <Testimonials />
     </main>

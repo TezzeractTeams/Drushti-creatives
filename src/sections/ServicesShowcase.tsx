@@ -13,7 +13,7 @@ const SERVICES = [
     bg: "bg-blue",
     text: "text-white",
     border: "border-white/40",
-    tabs: ["REACH", "ENGAGE", "GROW"],
+    tabs: ["Social Media Management", "Paid Ad Campaigns", "Audience Targeting & Analytics", "Performance Reporting"],
     image: "/services/digital-social-media.png",
     tint: "#FFFFFF",
   },
@@ -25,35 +25,35 @@ const SERVICES = [
     bg: "bg-yellow",
     text: "text-ink",
     border: "border-ink/40",
-    tabs: ["LOGO", "COLOR", "IDENTITY"],
+    tabs: ["Logo Design", "Brand Identity & Guidelines", "Social Media Post Designs", "Marketing Collateral & Brochures", "Digital & Print Banners", "Infographics & Presentation Design"],
     image: "/services/logo-design.png",
     tint: "#000000",
   },
-  {
-    id: "graphic",
-    lines: ["Graphic", "Design"],
+  /*{
+    id: "content",
+    lines: ["Content", "Development"],
     description:
-      "We design clear and attractive visuals for your business needs. Whether it's a company profile or a banner, we make your information easy to read and follow.",
+      "We find the right words to explain what you do. We write clear, simple, and honest messages that help your audience trust your brand.",
     bg: "bg-orange",
     text: "text-white",
     border: "border-white/40",
-    tabs: ["VISUALS", "LAYOUT", "CLARITY"],
-    image: "/services/graphic.png",
+    tabs: ["Copywriting & Messaging Strategy", "Social Media Content Creation", "Video Production & Editing", "Social Meida Reels & Editing", "Blog & Article Writing"],
+    image: "/services/Content-Development.png",
     tint: "#FFFFFF",
-  },
+  },*/
   {
     id: "content",
     lines: ["Content", "Development"],
     description:
       "We find the right words to explain what you do. We write clear, simple, and honest messages that help your audience trust your brand.",
-    bg: "bg-yellow",
-    text: "text-ink",
-    border: "border-ink/40",
-    tabs: ["WORDS", "MESSAGE", "TRUST"],
+    bg: "bg-green",
+    text: "text-white",
+    border: "border-white/40",
+    tabs: ["Copywriting & Messaging Strategy", "Social Media Content Creation", "Video Production & Editing", "Social Meida Reels & Editing", "Blog & Article Writing"],
     image: "/services/Content-Development.png",
-    tint: "#000000",
+    tint: "#FFFFFF",
   },
-  {
+  /*{
     id: "video",
     lines: ["Video", "Production"],
     description:
@@ -64,31 +64,40 @@ const SERVICES = [
     tabs: ["STORY", "VISUALS", "SOUND"],
     image: "/services/Video-Production.png",
     tint: "#FFFFFF",
-  },
+  },*/
   {
     id: "web",
     lines: ["Website &", "UI Designing"],
     description:
       "We build websites that are easy for your customers to use. Our designs are clean and simple, making sure people have a great experience when they visit you online.",
-    bg: "bg-yellow",
-    text: "text-ink",
-    border: "border-ink/40",
-    tabs: ["DESIGN", "BUILD", "EXPERIENCE"],
+    bg: "bg-orange",
+    text: "text-white",
+    border: "border-white/40",
+    tabs: ["Custom Website Development", "UI/UX Design & Prototyping", "Landing Page Optimization", "Website Maintenance & Support"],
     image: "/services/Website.png",
-    tint: "#000000",
+    tint: "#FFFFFF",
   },
 ];
 
-// Entrance + stagger windows now live inside the FIRST ~35% of each panel's
-// scroll progress. The remaining ~65% is pure "dwell" time — the panel sits
+// Entrance + stagger windows live inside the FIRST ~35-40% of each panel's
+// scroll progress. The remaining time is pure "dwell" — the panel sits
 // fully visible and static while the user keeps scrolling — so fast/large
 // scroll jumps (trackpad flicks, fast wheel scroll) don't skip past content
 // before it's had a chance to be seen.
-const STAGGER_WINDOWS: [number, number][] = [
-  [0, 0.22],
-  [0.08, 0.28],
-  [0.16, 0.34],
-];
+//
+// This used to be a fixed 3-entry array (STAGGER_WINDOWS[index]), which
+// crashed with "undefined is not iterable" as soon as any service had a
+// 4th tab — index 3 had no corresponding entry. Generating the window from
+// a formula instead means it now works for any number of tabs, for any
+// service, without needing to remember to extend an array by hand.
+const STAGGER_STEP = 0.08; // how much later each subsequent tag starts
+const STAGGER_SPAN = 0.22; // how long each tag's own entrance takes
+
+function getStaggerWindow(index: number): [number, number] {
+  const start = index * STAGGER_STEP;
+  const end = start + STAGGER_SPAN;
+  return [start, end];
+}
 
 // How much extra scroll distance (beyond one viewport) each panel gets.
 // 1 viewport is consumed by the entrance animation; the rest is dwell time.
@@ -183,7 +192,7 @@ function Tag({
   border: string;
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
-  const [start, end] = STAGGER_WINDOWS[index];
+  const [start, end] = getStaggerWindow(index);
 
   const rawY = useTransform(scrollYProgress, [start, end], [36, 0]);
   const y = useSpring(rawY, { stiffness: 220, damping: 24, mass: 0.6 });

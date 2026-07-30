@@ -19,11 +19,11 @@ type Band = {
 // id matches a key in SERVICES_DATA in services/[id]/page.tsx, so the
 // button links straight to that service's detail page.
 const BANDS: Band[] = [
-  { id: "marketing", label: "DIGITAL MARKETING", image: "/images/sub-services/content-front.png", speed: -70 },
-  { id: "brand", label: "BRAND IDENTITY", image: "/images/sub-services/brand-front.png", speed: 55 },
-  { id: "web", label: "WEB DESIGN", image: "/images/sub-services/web-front.jpg", speed: -85 },
-  { id: "video", label: "VIDEO PRODUCTION", image: "/images/sub-services/innovative.png", speed: 65 },
-  { id: "graphic", label: "GRAPHIC DESIGN", image: "/images/sub-services/landscape-front.jpg", speed: -50 },
+  { id: "marketing", label: "Digital Marketing", image: "/images/sub-services/content-front.png", speed: -70 },
+  { id: "brand", label: "Brand Identity", image: "/images/sub-services/brand-front.png", speed: 55 },
+  { id: "web", label: "Web Design", image: "/images/sub-services/web-front.jpg", speed: -85 },
+  { id: "video", label: "Video Production", image: "/images/sub-services/innovative.png", speed: 65 },
+  { id: "graphic", label: "Graphic Design", image: "/images/sub-services/landscape-front.jpg", speed: -50 },
 ];
 
 // Each band owns a slice of the section's overall scroll progress, with a
