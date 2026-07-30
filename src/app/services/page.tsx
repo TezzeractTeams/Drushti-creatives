@@ -3,7 +3,6 @@ import ServicesHero from "@/sections/ServicesHero";
 import ServicesShowcase from "@/sections/ServicesShowcase";
 import WorkProcess from "@/sections/WorkProcess";
 import Testimonials from "@/sections/Testimonials";
-import SubServicesCarousel from "@/sections/subservices";
 
 export const metadata: Metadata = {
   title: "Services | Drushti Creatives",
