@@ -8,22 +8,24 @@ import PillButton from "@/components/PillButton";
 type Band = {
   id: string;
   label: string;
-  image: string;
-  // Negative = drifts left as you scroll down, positive = drifts right.
-  // Magnitude controls how far it travels — bigger number, more drift.
-  speed: number;
+  // Tailwind background class — solid brand-color fill instead of a photo.
+  bg: string;
+  // Light backgrounds (yellow) need dark text/button for contrast; dark
+  // backgrounds (blue/green/orange/sky) keep white.
+  text: string;
+  buttonVariant?: "light";
 };
 
 // Same 5 sub-services as SubServicesCarousel/ServicesHero's arc version —
-// this just presents them as labeled parallax bands instead. Each band's
+// now presented as flat brand-color bands instead of photos. Each band's
 // id matches a key in SERVICES_DATA in services/[id]/page.tsx, so the
 // button links straight to that service's detail page.
 const BANDS: Band[] = [
-  { id: "marketing", label: "Digital Marketing", image: "/images/sub-services/content-front.png", speed: -70 },
-  { id: "brand", label: "Brand Identity", image: "/images/sub-services/brand-front.png", speed: 55 },
-  { id: "web", label: "Web Design", image: "/images/sub-services/web-front.jpg", speed: -85 },
-  { id: "video", label: "Video Production", image: "/images/sub-services/innovative.png", speed: 65 },
-  { id: "graphic", label: "Graphic Design", image: "/images/sub-services/landscape-front.jpg", speed: -50 },
+  { id: "marketing", label: "Social Media & Digital Marketing", bg: "bg-sky", text: "text-white", buttonVariant: "light" },
+  { id: "brand", label: "Brand Identity", bg: "bg-green", text: "text-white", buttonVariant: "light" },
+  { id: "web", label: "Website & UI Designing", bg: "bg-orange", text: "text-white", buttonVariant: "light" },
+  { id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },
+  { id: "graphic", label: "Graphic Design", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
 ];
 
 // Each band owns a slice of the section's overall scroll progress, with a
@@ -69,8 +71,6 @@ function ParallaxBand({
   window: [number, number];
   scrollYProgress: MotionValue<number>;
 }) {
-  const x = useTransform(scrollYProgress, [0, 1], [0, band.speed]);
-
   // Band grows taller as scroll passes through its own window, pushing the
   // bands below it down the page — a real layout height change (not an
   // absolute-positioned overlay), so collapsed cards stay flush against
@@ -89,26 +89,9 @@ function ParallaxBand({
   const buttonScale = useTransform(scrollYProgress, [mid, end], [0.85, 1]);
 
   return (
-    <motion.div style={{ height }} className="relative w-full overflow-hidden">
-      {/* Static centering lives on this wrapper (Tailwind's translate
-          utilities also set `transform`, so combining them with Framer's
-          `style={{ x }}` on the SAME element would let Framer's inline
-          transform silently clobber the centering). The inner motion.img
-          only carries the scroll-driven drift. */}
-      <div className="absolute left-1/2 top-1/2 h-[130%] w-[120%] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
-        <motion.img
-          src={band.image}
-          alt=""
-          style={{ x }}
-          className="h-full w-full object-cover"
-          draggable={false}
-        />
-      </div>
-
-      <div className="absolute inset-0 bg-ink/20" />
-
-      <div className="absolute inset-0 flex items-center justify-start px-6 sm:px-12">
-        <span className="font-heading text-heading-4xl font-black uppercase leading-heading tracking-tight text-white sm:text-heading-5xl lg:text-heading-6xl">
+    <motion.div style={{ height }} className={`relative w-full overflow-hidden ${band.bg}`}>
+      <div className={`absolute inset-0 flex items-center justify-start px-6 sm:px-12 ${band.text}`}>
+        <span className="font-heading text-heading-4xl font-black uppercase leading-heading tracking-tight sm:text-heading-5xl lg:text-heading-6xl">
           {band.label}
         </span>
       </div>
@@ -119,7 +102,7 @@ function ParallaxBand({
         style={{ scale: buttonScale, opacity: buttonOpacity.get() }}
         className="absolute bottom-6 left-6 sm:bottom-8 sm:left-12"
       >
-        <PillButton href={`/services/${band.id}`} variant="light">
+        <PillButton href={`/services/${band.id}`} variant={band.buttonVariant}>
           Explore service
         </PillButton>
       </motion.div>
@@ -158,15 +141,15 @@ export default function ServicesHero() {
   });
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-white pt-16 md:pt-24">
+    <section ref={sectionRef} className="relative overflow-hidden bg-blue pt-16 md:pt-24">
       <Container>
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-16">
-          <h1 className="font-heading text-6xl font-bold leading-[1.05] tracking-tight text-ink sm:text-7xl md:text-8xl">
+          <h1 className="font-heading text-6xl text-white font-bold leading-[1.05] tracking-tight sm:text-7xl md:text-8xl">
             Clear solutions for your{" "}
             <span className="italic text-orange">brand&apos;s</span> growth.
           </h1>
 
-          <p className="max-w-md text-sm leading-relaxed text-ink/60 sm:text-base lg:justify-self-end lg:text-right">
+          <p className="max-w-md text-sm leading-relaxed text-white sm:text-base lg:justify-self-end lg:text-right">
             We handle everything from strategy to execution — branding, digital
             marketing, web, video, and graphic design — so your brand stays
             consistent, professional, and always moving forward.

@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import Link from "next/link";
+import OurWork from "@/sections/OurWork";
+import OurProcess from "@/sections/OurProcess";
 
 type ProcessStep = {
     step: string;
@@ -30,7 +32,7 @@ type ServiceDetails = {
 
 const SERVICES_DATA: Record<string, ServiceDetails> = {
     marketing: {
-        title: "Digital Marketing & Ad Management",
+        title: "Social Media & Digital Marketing",
         description: "We take full responsibility for your brand’s online presence. From creating daily content to managing paid ad campaigns on platforms like Meta, Google, and LinkedIn, we make sure your business stays in front of the right people. We handle the strategy and the execution so your marketing works while you focus on leading.",
         focus: [
             "Reclaim Your Time: You shouldn’t have to worry about what to post or how to set up an ad.",
@@ -221,28 +223,9 @@ export default function ServiceDetailPage() {
                 </Container>
             </section>
 
-            {/* Our Process Section */}
-            <section className="py-16 md:py-24 bg-white/40 border-y border-ink/5">
-                <Container>
-                    <div className="mb-12 max-w-2xl">
-                        <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-tight">Our Process</h2>
-                        <p className="mt-4 text-ink/65 text-sm md:text-base leading-relaxed">
-                            How we collaborate with you from discovery to management & growth.
-                        </p>
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {details.process.map((step, index) => (
-                            <div key={index} className="relative bg-white p-8 rounded-3xl border border-ink/5 flex flex-col justify-between min-h-[220px]">
-                                <div>
-                                    <span className="block font-heading text-4xl text-ink/15 font-black mb-4">{step.step}</span>
-                                    <h3 className="font-heading text-lg font-semibold mb-2">{step.title}</h3>
-                                </div>
-                                <p className="text-sm text-ink/70 leading-relaxed">{step.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </Container>
-            </section>
+            <OurProcess steps={details.process} />
+
+            <OurWork serviceId={id} />
 
             {/* FAQ Section */}
             <section className="py-16 md:py-24">
@@ -292,22 +275,7 @@ export default function ServiceDetailPage() {
                 </Container>
             </section>
 
-            {/* Contact Banner / CTA */}
-            <section className="py-12 md:py-16">
-                <Container>
-                    <div className="bg-orange text-white rounded-[2rem] p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                        <div className="max-w-xl">
-                            <h3 className="font-heading text-2xl md:text-3xl font-normal leading-tight mb-2">Ready to work with us?</h3>
-                            <p className="opacity-90 text-sm md:text-base">Let&apos;s discuss how we can accelerate your business growth.</p>
-                        </div>
-                        <Link href="/contact" passHref legacyBehavior>
-                            <Button variant="primary" className="!rounded-md !bg-white !text-ink hover:!bg-cream transition-colors self-start md:self-auto">
-                                Let&apos;s Talk
-                            </Button>
-                        </Link>
-                    </div>
-                </Container>
-            </section>
+
         </main>
     );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 
@@ -12,12 +12,23 @@ import { EASE } from "@/lib/motion";
 const LINKS = [
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
-  { label: "Blog", href: "#blog" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
 const MENU_BUTTON_CLASSES =
   "rounded-full bg-white font-heading text-xs uppercase text-ink transition-colors duration-300 hover:bg-ink hover:text-white";
+
+// Timing for the Blog link's full-screen "curtain" transition: solid panel
+// covers the screen with the logo fading in, navigation happens underneath
+// it, then the panel curls away from the bottom to reveal the new page —
+// traced from a reference site's page-transition. Driven by plain CSS
+// transitions (className/style toggles on state changes) rather than
+// framer's `style={{ opacity: motionValue }}` binding, since that binding
+// doesn't reliably reach the DOM in this project's setup (see ServicesHero).
+const CURTAIN_COVER_MS = 550;
+const CURTAIN_NAV_DELAY_MS = 150;
+const CURTAIN_REVEAL_MS = 750;
 
 /** Top-right + expands into a row of nav pills, morphing to × — matching
  *  the reference site's header interaction. Hides on scroll down, shows on
@@ -28,7 +39,10 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [curtainPhase, setCurtainPhase] = useState<"idle" | "cover" | "reveal">("idle");
+  const [curtainLogoVisible, setCurtainLogoVisible] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const { scrollY } = useScroll();
 
@@ -51,6 +65,26 @@ export default function Header() {
   });
 
   const isContactPage = pathname === "/contact";
+
+  // Only the Blog link gets the curtain treatment (see CURTAIN_* constants
+  // above): cover the screen, navigate underneath it, then curl the panel
+  // away from the bottom. Every other link just navigates normally.
+  function handleBlogClick(e: React.MouseEvent, href: string) {
+    if (pathname === href) return;
+    e.preventDefault();
+    setOpen(false);
+    setCurtainPhase("cover");
+    requestAnimationFrame(() => requestAnimationFrame(() => setCurtainLogoVisible(true)));
+
+    window.setTimeout(() => {
+      router.push(href);
+      window.setTimeout(() => {
+        setCurtainLogoVisible(false);
+        setCurtainPhase("reveal");
+        window.setTimeout(() => setCurtainPhase("idle"), CURTAIN_REVEAL_MS);
+      }, CURTAIN_NAV_DELAY_MS);
+    }, CURTAIN_COVER_MS);
+  }
 
   return (
     <motion.header
@@ -87,6 +121,11 @@ export default function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 16 }}
                       transition={{ duration: 0.45, ease: EASE, delay: i * 0.06 }}
+                      onClick={
+                        link.href === "/blog"
+                          ? (e) => handleBlogClick(e, link.href)
+                          : () => setOpen(false)
+                      }
                       className={`inline-flex h-12 items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
                     >
                       {link.label}
@@ -135,7 +174,11 @@ export default function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.35, ease: EASE, delay: i * 0.05 }}
-                  onClick={() => setOpen(false)}
+                  onClick={
+                    link.href === "/blog"
+                      ? (e) => handleBlogClick(e, link.href)
+                      : () => setOpen(false)
+                  }
                   className={`flex h-12 w-full items-center justify-center px-5 ${MENU_BUTTON_CLASSES}`}
                 >
                   {link.label}
@@ -145,6 +188,28 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
+
+      {/* Blog link's page-transition curtain: a solid panel that covers the
+          screen (logo fading in), navigation happens underneath it, then it
+          curls away from the bottom edge (scale-y-0 from origin-top, so the
+          bottom rises to meet the top) to reveal the new page. */}
+      {curtainPhase !== "idle" && (
+        <div aria-hidden className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden">
+          <div
+            className={`absolute inset-0 origin-top rounded-b-none bg-blue transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${curtainPhase === "reveal" ? "scale-y-0 !rounded-b-[50%]" : "scale-y-100"
+              }`}
+            style={{ transitionDuration: `${CURTAIN_REVEAL_MS}ms` }}
+          />
+          <Image
+            src="/work/drushtiwhitecopy-trimmed.png"
+            alt=""
+            width={318}
+            height={199}
+            className={`relative h-12 w-auto transition-all duration-300 ease-out md:h-16 ${curtainLogoVisible ? "scale-100 opacity-100" : "scale-90 opacity-0"
+              }`}
+          />
+        </div>
+      )}
     </motion.header>
   );
 }

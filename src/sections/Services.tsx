@@ -44,7 +44,7 @@ const CATEGORIES = [
     ],
     Shape: Circle,
     color: "text-yellow",
-    image: "/performance-growth-icon.png",
+    image: "/logo-design.png",
   },
   {
     name: "Content Development",
@@ -144,7 +144,7 @@ export default function Services() {
                       type="button"
                       onClick={() => setActive(i)}
                       aria-expanded={isActive}
-                      className={`text-left font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-4xl lg:text-heading-5xl ${isActive ? cat.color : "text-ink/25 hover:text-ink/50"
+                      className={`text-left font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 ${isActive ? cat.color : "text-ink/25 hover:text-ink/50"
                         }`}
                     >
                       {cat.name}
