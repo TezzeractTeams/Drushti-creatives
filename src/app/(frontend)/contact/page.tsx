@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, type FormEvent, type SVGProps } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import PillButton from "@/components/PillButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -28,7 +29,7 @@ function iconProps(props: SVGProps<SVGSVGElement>) {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.4,
+    strokeWidth: 1,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
     ...props,
@@ -74,12 +75,14 @@ const IconAt = (p: SVGProps<SVGSVGElement>) => (
 );
 
 const FLOATING_ICONS = [
-  { Icon: IconMail, top: "14%", left: "10%", size: 44, duration: 9, depth: 26 },
-  { Icon: IconChatDots, top: "20%", left: "84%", size: 52, duration: 10.5, depth: -30 },
-  { Icon: IconPhone, top: "68%", left: "8%", size: 40, duration: 8.5, depth: 22 },
-  { Icon: IconPin, top: "72%", left: "88%", size: 38, duration: 11, depth: -20 },
-  { Icon: IconSend, top: "40%", left: "5%", size: 32, duration: 7.5, depth: 34 },
-  { Icon: IconAt, top: "44%", left: "92%", size: 34, duration: 9.5, depth: -28 },
+  // Left Side
+  { Icon: IconMail, top: "15%", left: "18%", size: 42, duration: 9, depth: 26, label: "Send Email", href: "mailto:hello@drushticreatives.com", color: "#E0B624", btnVariant: "dark" },
+  { Icon: IconSend, top: "45%", left: "12%", size: 34, duration: 7.5, depth: 34, label: "Send Message", href: "#form", color: "#257FC2", btnVariant: "light" },
+  { Icon: IconPhone, top: "75%", left: "15%", size: 40, duration: 8.5, depth: 22, label: "Call Us", href: "tel:+94112345678", color: "#77C26B", btnVariant: "light" },
+  // Right Side
+  { Icon: IconChatDots, top: "15%", left: "82%", size: 50, duration: 10.5, depth: -30, label: "Chat Now", href: "https://wa.me/94112345678", color: "#77C26B", btnVariant: "light" },
+  { Icon: IconAt, top: "45%", left: "88%", size: 36, duration: 9.5, depth: -28, label: "Send Email", href: "mailto:hello@drushticreatives.com", color: "#DC5C26", btnVariant: "light" },
+  { Icon: IconPin, top: "75%", left: "85%", size: 38, duration: 11, depth: -20, label: "View Map", href: "https://maps.google.com", color: "#257FC2", btnVariant: "light" },
 ] as const;
 
 function FloatingIcon({
@@ -92,6 +95,10 @@ function FloatingIcon({
   pointerX,
   pointerY,
   delay,
+  label,
+  href,
+  color,
+  btnVariant,
 }: {
   Icon: (p: SVGProps<SVGSVGElement>) => JSX.Element;
   top: string;
@@ -102,26 +109,64 @@ function FloatingIcon({
   pointerX: ReturnType<typeof useSpring>;
   pointerY: ReturnType<typeof useSpring>;
   delay: number;
+  label: string;
+  href: string;
+  color: string;
+  btnVariant: "light" | "dark";
 }) {
+  const [hovered, setHovered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const ix = useTransform(pointerX, (v) => v * depth);
   const iy = useTransform(pointerY, (v) => v * depth);
+  const boxSize = hovered ? 220 : 120;
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.6 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, delay, ease: EASE }}
-      className="pointer-events-none absolute hidden -translate-x-1/2 -translate-y-1/2 text-white/60 lg:block"
-      style={{ top, left, width: size, height: size }}
+      className="pointer-events-auto absolute hidden -translate-x-1/2 -translate-y-1/2 lg:block cursor-pointer z-20"
+      style={{ top, left }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <motion.div style={prefersReducedMotion ? undefined : { x: ix, y: iy }} className="h-full w-full">
         <motion.div
-          animate={prefersReducedMotion ? undefined : { y: [0, -10, 0] }}
-          transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
-          className="h-full w-full"
+          animate={{ width: boxSize, height: boxSize }}
+          transition={{ type: "spring", stiffness: 300, damping: 22 }}
+          style={{ backgroundColor: color }}
+          className="flex flex-col items-center justify-center rounded-[2rem] p-4 shadow-xl select-none transition-colors"
         >
-          <Icon className="h-full w-full" />
+          <motion.div
+            animate={prefersReducedMotion || hovered ? undefined : { y: [0, -6, 0] }}
+            transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+            style={{ width: size + 24, height: size + 24, backgroundColor: color }}
+            className="flex items-center justify-center rounded-full border border-white shadow-inner text-white shrink-0"
+          >
+            <div style={{ width: size, height: size }}>
+              <Icon className="h-full w-full" />
+            </div>
+          </motion.div>
+
+          <AnimatePresence>
+            {hovered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 flex shrink-0"
+              >
+                <PillButton
+                  href={href}
+                  variant={btnVariant}
+                  className="!px-4 !py-2 !text-[9px] tracking-wider shadow-lg"
+                >
+                  {label}
+                </PillButton>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </motion.div>
     </motion.div>
@@ -164,7 +209,7 @@ export default function ContactPage() {
         onMouseMove={handlePointer}
         className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-blue px-6 text-center pt-24"
       >
-        {FLOATING_ICONS.map(({ Icon, top, left, size, duration, depth }, i) => (
+        {FLOATING_ICONS.map(({ Icon, top, left, size, duration, depth, label, href, color, btnVariant }, i) => (
           <FloatingIcon
             key={i}
             Icon={Icon}
@@ -176,6 +221,10 @@ export default function ContactPage() {
             pointerX={sx}
             pointerY={sy}
             delay={0.3 + i * 0.06}
+            label={label}
+            href={href}
+            color={color}
+            btnVariant={btnVariant}
           />
         ))}
 
@@ -309,7 +358,7 @@ export default function ContactPage() {
                       placeholder="Enter your Email address"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full font-body bg-[#EFEAE3] border border-[#1A1A1A]/20 rounded-lg px-5 py-4 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:border-[#1A1A1A]/60 focus:bg-[#EAE5DE] transition-all"
+                      className="w-full font-body bg-[#EFEAE3] rounded-lg px-5 py-4 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:border-[#1A1A1A]/60 focus:bg-[#EAE5DE] transition-all"
                     />
                   </div>
 
