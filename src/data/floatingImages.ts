@@ -7,6 +7,8 @@ const HREF_BY_SRC: Record<string, string> = {
   "/work/advantis.webp": "/work/advantis",
   "/work/ginger-fresh.webp": "/work/uber-eats",
   "/work/fairfirst.webp": "/work/wild-drift",
+  "/work/uber eats.png": "/work/uber-eats",
+  "/work/wilddrift.png": "/work/wild-drift",
 };
 
 function withHref(
@@ -24,12 +26,12 @@ export const FLOATING_IMAGES: FloatingImageConfig[] = [
   withHref({ src: "/work/ginger-fresh.webp", alt: "Ginger Fresh project",       speed: 7.5,  phase: 0.8, amplitude: 20 }),
 
   withHref({ src: "/work/fairfirst.webp",    alt: "Fairfirst Insurance project", speed: 10,   phase: 1.8, amplitude: 14 }),
-  withHref({ src: "/work/norlanka.webp",     alt: "Norlanka project (variant)",  speed: 9.5,  phase: 3.0, amplitude: 13 }),
-  withHref({ src: "/work/advantis.webp",     alt: "Advantis project (variant)",  speed: 8.5,  phase: 2.0, amplitude: 15 }),
-  withHref({ src: "/work/ginger-fresh.webp", alt: "Ginger Fresh project (variant)", speed: 10.5, phase: 0.5, amplitude: 17 }),
+  withHref({ src: "/work/uber eats.png",     alt: "Uber Eats Onboarding",       speed: 9.5,  phase: 3.0, amplitude: 13 }),
+  withHref({ src: "/work/wilddrift.png",     alt: "Wild Drift Team Building",   speed: 8.5,  phase: 2.0, amplitude: 15 }),
+  withHref({ src: "/work/pxbee_2026-07-31_12-35-44.jpeg", alt: "Creative project", speed: 10.5, phase: 0.5, amplitude: 17 }),
 
-  withHref({ src: "/work/softlogic.webp",    alt: "Softlogic project (variant)", speed: 9,    phase: 3.6, amplitude: 15 }),
-  withHref({ src: "/work/fairfirst.webp",    alt: "Fairfirst Insurance project (variant)", speed: 10.5, phase: 0.2, amplitude: 12 }),
-  withHref({ src: "/work/norlanka.webp",     alt: "Norlanka project (variant 2)", speed: 8.2,  phase: 2.2, amplitude: 11 }),
-  withHref({ src: "/work/advantis.webp",     alt: "Advantis project (variant 2)", speed: 9.7,  phase: 1.1, amplitude: 14 }),
+  withHref({ src: "/work/pxbee_2026-07-31_12-41-27.jpeg", alt: "Branding project", speed: 9,    phase: 3.6, amplitude: 15 }),
+  withHref({ src: "/work/pxbee_2026-07-31_12-42-20.jpeg", alt: "Strategy project", speed: 10.5, phase: 0.2, amplitude: 12 }),
+  withHref({ src: "/work/pxbee_2026-07-31_12-43-15.jpeg", alt: "Design project",   speed: 8.2,  phase: 2.2, amplitude: 11 }),
+  withHref({ src: "/work/advantis.webp",     alt: "Advantis project (variant)",  speed: 9.7,  phase: 1.1, amplitude: 14 }),
 ];

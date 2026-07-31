@@ -22,10 +22,10 @@ type Band = {
 // button links straight to that service's detail page.
 const BANDS: Band[] = [
   { id: "marketing", label: "Social Media & Digital Marketing", bg: "bg-sky", text: "text-white", buttonVariant: "light" },
-  { id: "brand", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
+  { id: "logo", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
   { id: "web", label: "Website & UI Designing", bg: "bg-orange", text: "text-white", buttonVariant: "light" },
-  { id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },
-  { id: "graphic", label: "Graphic Design", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
+  /*{ id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },*/
+  { id: "content", label: "Content Development", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
 ];
 
 // Each band owns a slice of the section's overall scroll progress, with a
