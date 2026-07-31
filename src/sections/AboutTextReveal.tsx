@@ -1,60 +1,18 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import Container from "@/components/Container";
 
-const SENTENCES = [
+const BLOCK_1 = [
   "For us creativity isn't just a service.",
   "It's our mindset.",
+];
+const BLOCK_2 = [
   "We believe your business objectives deserve to be translated into authentic communication that people actually want to follow.",
   "We step into your shoes to ensure every visual, strategy, and digital experience we build is rooted in your specific culture and goals.",
 ];
 
-let globalWordIndex = 0;
-const FORMATTED_SENTENCES = SENTENCES.map((sentence) => {
-  const words = sentence.trim().split(/\s+/);
-  return words.map((word) => {
-    const index = globalWordIndex;
-    globalWordIndex += 1;
-    return { word, index };
-  });
-});
-
-const TOTAL_WORDS = globalWordIndex;
-
-/** One word, lit from dim to full white as scroll progress passes its
- *  index-based gate — no per-word animation, just a direct scroll-linked
- *  color function, traced from the reference's line-by-line text reveal. */
-function RevealWord({
-  word,
-  start,
-  end,
-  progress,
-}: {
-  word: string;
-  start: number;
-  end: number;
-  progress: MotionValue<number>;
-}) {
-  const color = useTransform(
-    progress,
-    [start, end],
-    ["rgba(255,255,255,0.3)", "rgba(255,255,255,1)"]
-  );
-
-  // Plain inline (not inline-block) so the trailing space stays in the same
-  // inline formatting context as the surrounding text.
-  return (
-    <motion.span style={{ color }}>
-      {word}{" "}
-    </motion.span>
-  );
-}
-
-/** Pinned scroll section: the paragraph is always fully visible in a dim
- *  tone, and words light up to full white left-to-right as scroll position
- *  passes each one — traced from the reference's orange text-reveal. */
 export default function AboutTextReveal() {
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -63,27 +21,45 @@ export default function AboutTextReveal() {
     offset: ["start start", "end end"],
   });
 
+  // Block 1 starts fully visible, stays until 40% scroll, fades out by 50%
+  const block1Opacity = useTransform(scrollYProgress, [0, 0.4, 0.5], [1, 1, 0]);
+  const block1Y = useTransform(scrollYProgress, [0.4, 0.5], [0, -20]);
+
+  // Block 2 starts invisible, fades in from 50% to 60%, stays until end
+  const block2Opacity = useTransform(scrollYProgress, [0.5, 0.6, 1], [0, 1, 1]);
+  const block2Y = useTransform(scrollYProgress, [0.5, 0.6], [20, 0]);
+
   return (
     <section
       ref={sectionRef}
-      className="relative h-[130vh] md:h-[180vh] bg-orange"
+      className="relative h-[200vh] bg-orange"
     >
       <div className="sticky top-0 flex h-svh items-center overflow-hidden py-12 md:py-20">
         <Container>
-          <div className="flex flex-col gap-4 font-heading text-[clamp(2rem,7vw,2.5rem)] font-bold uppercase leading-[1.15] md:gap-6">
-            {FORMATTED_SENTENCES.map((sentenceWords, sIdx) => (
-              <span key={sIdx} className="block">
-                {sentenceWords.map(({ word, index }) => (
-                  <RevealWord
-                    key={index}
-                    word={word}
-                    start={index / TOTAL_WORDS}
-                    end={(index + 1) / TOTAL_WORDS}
-                    progress={scrollYProgress}
-                  />
-                ))}
-              </span>
-            ))}
+          <div className="relative w-full">
+            {/* BLOCK 1 */}
+            <motion.div
+              style={{ opacity: block1Opacity, y: block1Y }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 flex w-full flex-col gap-4 font-heading text-[clamp(2rem,7vw,2.5rem)] font-bold uppercase leading-[1.15] md:gap-6 text-white"
+            >
+              {BLOCK_1.map((sentence, sIdx) => (
+                <span key={sIdx} className="block">
+                  {sentence}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* BLOCK 2 */}
+            <motion.div
+              style={{ opacity: block2Opacity, y: block2Y }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 flex w-full flex-col gap-4 font-heading text-[clamp(2rem,7vw,2.5rem)] font-bold uppercase leading-[1.15] md:gap-6 text-white"
+            >
+              {BLOCK_2.map((sentence, sIdx) => (
+                <span key={sIdx} className="block">
+                  {sentence}
+                </span>
+              ))}
+            </motion.div>
           </div>
         </Container>
       </div>

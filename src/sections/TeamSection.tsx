@@ -147,11 +147,11 @@ export default function TeamSection() {
   // position at load) and stream further up past the pinned heading as the
   // user scrolls — right column stays ~40vh behind the left so cards arrive
   // staggered instead of in lockstep.
-  const leftY = useTransform(scrollYProgress, [0, 1], ["6vh", "-190vh"]);
-  const rightY = useTransform(scrollYProgress, [0, 1], ["46vh", "-150vh"]);
+  const leftY = useTransform(scrollYProgress, [0, 1], ["6vh", "-90vh"]);
+  const rightY = useTransform(scrollYProgress, [0, 1], ["46vh", "-50vh"]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh] bg-blue">
+    <section ref={sectionRef} className="relative h-[150vh] bg-blue">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         {/* Pinned center content */}
         <div className="relative z-20 flex flex-col items-center gap-6 px-6 text-center">

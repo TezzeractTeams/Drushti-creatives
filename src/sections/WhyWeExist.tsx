@@ -79,8 +79,10 @@ function ContentCard({
         style={{ backgroundColor: card.color }}
         className="flex h-80 w-full max-w-sm flex-col justify-end rounded-2xl p-6 shadow-xl sm:hidden"
       >
-        <div className="relative mb-auto h-20 w-20">
-          <Image src={card.image} alt={card.title} fill className="object-contain" />
+        <div className="flex-1 flex items-center justify-center w-full min-h-0 mb-4">
+          <div className="relative h-32 w-32">
+            <Image src={card.image} alt={card.title} fill className="object-contain" />
+          </div>
         </div>
         <h3 className="font-heading text-xl font-bold leading-tight text-white">{card.title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-white/85">{card.description}</p>
@@ -99,8 +101,10 @@ function ContentCard({
           style={{ backgroundColor: card.color }}
           className="flex h-full w-full flex-col justify-end rounded-2xl p-7 shadow-xl"
         >
-          <div className="relative mb-auto h-28 w-28">
-            <Image src={card.image} alt={card.title} fill className="object-contain" />
+          <div className="flex-1 flex items-center justify-center w-full min-h-0 mb-6">
+            <div className="relative h-40 w-40 md:h-48 md:w-48">
+              <Image src={card.image} alt={card.title} fill className="object-contain" />
+            </div>
           </div>
           <h3 className="font-heading text-2xl font-bold leading-tight text-white">{card.title}</h3>
           <p className="mt-3 text-base leading-relaxed text-white/85">{card.description}</p>
