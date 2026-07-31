@@ -11,6 +11,7 @@ import {
   useTransform,
 } from "motion/react";
 import PillButton from "@/components/PillButton";
+import type { TeamMember } from "@/lib/content/types";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -19,37 +20,14 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // using them for the frames too would blend in instead of standing out.
 const FRAME_COLORS = ["bg-sky", "bg-yellow", "bg-green"] as const;
 
-const TEAM = [
-  {
-    name: "Shameem Naffeel",
-    role: "Co-Founder / Social Media Strategist",
-    photo: "/SHAMEEM NAFFEEL.png",
-  },
-  {
-    name: "Farhan Imamudeen",
-    role: "Co-Founder / Creative Director",
-    photo: "/FARHAN IMAMUDEEN.png",
-  },
-  {
-    name: "Shareena Faleel",
-    role: "Graphic Designer",
-    photo: "/SHAREENA FALEEL.png",
-  },
-  {
-    name: "Pujitha Chandima",
-    role: "Videographer",
-    photo: "/PUJITHA CHANDIMA.png",
-  },
-  {
-    name: "Minura Pieris",
-    role: "Social Media Manager",
-    photo: "/Minura Pieris.png",
-  },
-].map((member, i) => ({ ...member, frameColor: FRAME_COLORS[i % FRAME_COLORS.length] }));
+type TeamCardMember = TeamMember & { frameColor: (typeof FRAME_COLORS)[number] };
 
-// Original arrangement: two columns, alternating members left/right
-const LEFT_COLUMN = TEAM.filter((_, i) => i % 2 === 0);
-const RIGHT_COLUMN = TEAM.filter((_, i) => i % 2 === 1);
+function withFrameColors(members: TeamMember[]): TeamCardMember[] {
+  return members.map((member, index) => ({
+    ...member,
+    frameColor: FRAME_COLORS[index % FRAME_COLORS.length],
+  }));
+}
 
 function LinkedInIcon() {
   return (
@@ -59,7 +37,7 @@ function LinkedInIcon() {
   );
 }
 
-function TeamCard({ member }: { member: (typeof TEAM)[number] }) {
+function TeamCard({ member }: { member: TeamCardMember }) {
   const prefersReducedMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -120,7 +98,7 @@ function TeamCard({ member }: { member: (typeof TEAM)[number] }) {
         <div className="relative flex items-start justify-between gap-3 pt-3">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-white">{member.name}</p>
-            <p className="mt-0.5 text-xs text-white/50">{member.role}</p>
+            <p className="mt-0.5 text-xs text-white/50">{member.designation}</p>
           </div>
           <span className="pt-0.5 text-white/40">
             <LinkedInIcon />
@@ -134,7 +112,11 @@ function TeamCard({ member }: { member: (typeof TEAM)[number] }) {
 /** Team section traced from the reference: pinned dark screen with centered
  *  heading + CTA, while two columns of member cards float up past it on the
  *  left and right edges, driven by scroll. */
-export default function TeamSection() {
+export default function TeamSection({ members }: { members: TeamMember[] }) {
+  const team = withFrameColors(members);
+  const leftColumn = team.filter((_, index) => index % 2 === 0);
+  const rightColumn = team.filter((_, index) => index % 2 === 1);
+
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -186,8 +168,8 @@ export default function TeamSection() {
         {prefersReducedMotion ? (
           /* Static fallback: simple grid under the heading */
           <div className="absolute inset-x-0 bottom-8 z-20 flex flex-wrap justify-center gap-6 px-6">
-            {TEAM.slice(0, 3).map((m) => (
-              <TeamCard key={m.name} member={m} />
+            {team.slice(0, 3).map((member) => (
+              <TeamCard key={member.name} member={member} />
             ))}
           </div>
         ) : (
@@ -197,16 +179,16 @@ export default function TeamSection() {
               style={{ y: leftY }}
               className="absolute left-[2%] top-0 z-10 flex flex-col gap-[26vh] sm:left-[3%] md:left-[4%] xl:left-[6%]"
             >
-              {LEFT_COLUMN.map((m) => (
-                <TeamCard key={m.name} member={m} />
+              {leftColumn.map((member) => (
+                <TeamCard key={member.name} member={member} />
               ))}
             </motion.div>
             <motion.div
               style={{ y: rightY }}
               className="absolute right-[2%] top-0 z-10 flex flex-col gap-[26vh] sm:right-[3%] md:right-[4%] xl:right-[6%]"
             >
-              {RIGHT_COLUMN.map((m) => (
-                <TeamCard key={m.name} member={m} />
+              {rightColumn.map((member) => (
+                <TeamCard key={member.name} member={member} />
               ))}
             </motion.div>
           </>

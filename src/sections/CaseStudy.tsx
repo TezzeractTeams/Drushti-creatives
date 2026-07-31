@@ -4,27 +4,25 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import Container from "@/components/Container";
 import { fadeUp } from "@/lib/motion";
-import type { Project } from "@/data/projects";
+import type { Project } from "@/lib/content/types";
 import Link from "next/link";
 
-/** Case-study page traced from the reference: a sticky left info panel
- *  (title, tags, Challenge, Strategy, Results) stays pinned while a full-
- *  bleed gallery scrolls independently on the right. */
 export default function CaseStudy({ project }: { project: Project }) {
+  const galleryImages = [project.featuredImage, ...project.images].filter(Boolean);
+
   return (
     <section className="bg-cream py-16 sm:py-24">
       <Container>
         <motion.div {...fadeUp()} className="mb-8">
           <Link
-            href="/#work"
+            href="/portfolio"
             className="inline-flex items-center gap-2 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity"
           >
-            ← Back to Work
+            ← Back to Portfolio
           </Link>
         </motion.div>
 
         <div className="grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-start">
-          {/* Sticky left panel */}
           <div className="lg:sticky lg:top-28">
             <motion.h1
               {...fadeUp(0.05)}
@@ -32,6 +30,10 @@ export default function CaseStudy({ project }: { project: Project }) {
             >
               {project.name}
             </motion.h1>
+
+            <motion.p {...fadeUp(0.08)} className="mt-3 text-sm text-ink/60">
+              {project.serviceCategory}
+            </motion.p>
 
             <motion.div {...fadeUp(0.1)} className="mt-5 flex flex-wrap gap-2">
               {project.tags.map((tag) => (
@@ -93,16 +95,22 @@ export default function CaseStudy({ project }: { project: Project }) {
             </motion.div>
           </div>
 
-          {/* Scrolling gallery */}
-          <motion.div {...fadeUp(0.1)} className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-white sm:aspect-[4/3]">
-            <Image
-              src={project.image}
-              alt={project.name}
-              fill
-              className="object-contain"
-              sizes="(max-width: 1024px) 100vw, 55vw"
-              priority
-            />
+          <motion.div {...fadeUp(0.1)} className="space-y-6">
+            {galleryImages.map((src, index) => (
+              <div
+                key={`${src}-${index}`}
+                className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-white sm:aspect-[4/3]"
+              >
+                <Image
+                  src={src}
+                  alt={index === 0 ? project.name : `${project.name} gallery ${index}`}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 55vw"
+                  priority={index === 0}
+                />
+              </div>
+            ))}
           </motion.div>
         </div>
       </Container>

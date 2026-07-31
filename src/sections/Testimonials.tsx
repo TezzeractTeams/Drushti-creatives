@@ -7,7 +7,8 @@ import Container from "@/components/Container";
 
 import { EASE } from "@/lib/motion";
 import { TESTIMONIALS } from "@/data/testimonials";
-import { getCompanyLogo } from "@/data/clientLogos";
+import type { Client } from "@/lib/content/types";
+import { resolveClientLogoSquare } from "@/lib/content/client-utils";
 
 
 // Cards are min(420px, 85vw) wide so they never exceed the phone viewport;
@@ -21,12 +22,14 @@ const LOGO_INNER = "h-[3.75rem] w-[3.75rem] sm:h-[4.25rem] sm:w-[4.25rem]";
 
 function CompanyLogo({
   company,
+  clients,
   className,
 }: {
   company: string;
+  clients: Client[];
   className?: string;
 }) {
-  const src = getCompanyLogo(company);
+  const src = resolveClientLogoSquare(clients, company);
 
   if (!src) {
     return (
@@ -67,7 +70,7 @@ function LinkedInIcon() {
 /** Testimonials carousel traced from the reference: static left column with
  *  Clutch rating; click-driven card track on the right that clips at the
  *  screen edge; circular prev/next buttons beneath the cards. */
-export default function Testimonials() {
+export default function Testimonials({ clients }: { clients: Client[] }) {
   const [index, setIndex] = useState(0);
   const [step, setStep] = useState(FALLBACK_STEP);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -147,7 +150,7 @@ export default function Testimonials() {
                     </motion.p>
 
                     <div className="mt-8 flex items-center gap-6">
-                      <CompanyLogo company={t.company} />
+                      <CompanyLogo company={t.company} clients={clients} />
 
                       <div className="min-w-0 flex-1">
                         <motion.p

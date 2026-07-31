@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import { useAnimationFrame } from "@/hooks/useAnimationFrame";
 import { FloatingImage } from "@/components/FloatingImage";
-import { FLOATING_IMAGES } from "@/data/floatingImages";
+import type { FloatingImageConfig } from "@/types/floatingImage";
 
 // Canvas: 200vw wide × 200vh tall (100vw/100vh overshoot beyond the viewport,
 // so mouse travel pans the canvas by at most ±50vw/±50vh from rest).
@@ -48,9 +48,10 @@ const CANVAS_H_VH = 200;
 
 interface Props {
   containerRef: React.RefObject<HTMLElement | null>;
+  floatingImages: FloatingImageConfig[];
 }
 
-export function BackgroundLayer({ containerRef }: Props) {
+export function BackgroundLayer({ containerRef, floatingImages }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ targetX: 0.5, targetY: 0.5, x: 0.5, y: 0.5 });
 
@@ -95,7 +96,7 @@ export function BackgroundLayer({ containerRef }: Props) {
       }}
     >
       <div className="pointer-events-auto relative h-full w-full">
-        {FLOATING_IMAGES.map((img, i) => (
+        {floatingImages.map((img, i) => (
           <div
             key={i}
             className="absolute z-0 hover:z-20"

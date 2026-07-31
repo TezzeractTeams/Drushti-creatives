@@ -13,43 +13,39 @@ import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 import PillButton from "@/components/PillButton";
 import Tag from "@/components/Tag";
-
 import { EASE } from "@/lib/motion";
-import { PROJECTS } from "@/data/projects";
+import type { Project } from "@/lib/content/types";
 import {
-  getFeaturedWorkLogo,
   FEATURED_WORK_LOGO_MAX_HEIGHT,
   FEATURED_WORK_LOGO_MAX_WIDTH,
 } from "@/data/clientLogos";
 
-
-/** Pinned scroll section: a client list where scroll position (not clicks)
- *  drives which project is expanded with description, tags, and image. */
-export default function FeaturedWork() {
+/** Pinned scroll section driven by CMS portfolio entries flagged featuredOnHomepage. */
+export default function FeaturedWork({ projects }: { projects: Project[] }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const count = Math.max(projects.length, 1);
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
     offset: ["start start", "end end"],
   });
 
-  const rawIndex = useTransform(scrollYProgress, [0, 1], [0, PROJECTS.length - 1]);
+  const rawIndex = useTransform(scrollYProgress, [0, 1], [0, Math.max(projects.length - 1, 0)]);
 
   useMotionValueEvent(rawIndex, "change", (v) => {
-    const rounded = Math.min(PROJECTS.length - 1, Math.max(0, Math.round(v)));
+    if (projects.length === 0) return;
+    const rounded = Math.min(projects.length - 1, Math.max(0, Math.round(v)));
     setActive((prev) => (prev === rounded ? prev : rounded));
   });
 
-  /** Click-to-reveal: jump to the scroll offset within the pinned range that
-   *  corresponds to project i — the scroll-driven state then reveals it. */
   const scrollToProject = (i: number) => {
     const el = wrapperRef.current;
-    if (!el) return;
+    if (!el || projects.length <= 1) return;
     const rect = el.getBoundingClientRect();
     const sectionTop = rect.top + window.scrollY;
     const range = el.offsetHeight - window.innerHeight;
-    const target = sectionTop + (i / (PROJECTS.length - 1)) * range;
+    const target = sectionTop + (i / (projects.length - 1)) * range;
     const lenis = (window as unknown as { __lenis?: { scrollTo: (t: number) => void } }).__lenis;
     if (lenis) {
       lenis.scrollTo(target);
@@ -58,13 +54,14 @@ export default function FeaturedWork() {
     }
   };
 
+  if (projects.length === 0) return null;
+
   return (
     <section
       id="work"
       ref={wrapperRef}
       className="relative bg-white"
-      // Controls "how fast" we move through projects: smaller height => faster snapping.
-      style={{ height: `${PROJECTS.length * 55}vh` }}
+      style={{ height: `${count * 55}vh` }}
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-20">
         <Container>
@@ -80,16 +77,15 @@ export default function FeaturedWork() {
           </motion.div>
 
           <div>
-            {PROJECTS.map((project, i) => {
+            {projects.map((project, i) => {
               const isActive = i === active;
-              const logoSrc = getFeaturedWorkLogo(project.client);
+              const logoSrc = project.clientLogoFocus || project.clientLogoSquare;
               return (
-                <div key={project.name} className="border-b border-ink/10 py-3 first:pt-0">
+                <div key={project.slug} className="border-b border-ink/10 py-3 first:pt-0">
                   <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="grid min-w-0 flex-1 grid-cols-1 gap-x-4 sm:grid-cols-[auto_1fr]">
                       <span
-                        className={`hidden text-[2.5rem] leading-none text-ink/40 transition-transform duration-300 sm:inline-block sm:self-center ${isActive ? "-rotate-90" : ""
-                          }`}
+                        className={`hidden text-[2.5rem] leading-none text-ink/40 transition-transform duration-300 sm:inline-block sm:self-center ${isActive ? "-rotate-90" : ""}`}
                         aria-hidden
                       >
                         ↓
@@ -101,8 +97,7 @@ export default function FeaturedWork() {
                         className="text-left sm:col-start-2"
                       >
                         <span
-                          className={`font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 ${isActive ? "text-ink" : "text-ink/25"
-                            }`}
+                          className={`font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 ${isActive ? "text-ink" : "text-ink/25"}`}
                         >
                           {project.name}
                         </span>
@@ -146,9 +141,7 @@ export default function FeaturedWork() {
                                   />
                                 </div>
                               )}
-                              <p className="text-sm text-ink/70">
-                                {project.challenge}
-                              </p>
+                              <p className="text-sm text-ink/70">{project.challenge}</p>
 
                               <ul className="mt-4 space-y-2">
                                 {project.results.map((result, ri) => (
@@ -175,7 +168,7 @@ export default function FeaturedWork() {
                           <div className="my-4 flex min-w-0 w-full">
                             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-3xl border border-ink/10 bg-white">
                               <Image
-                                src={project.image}
+                                src={project.featuredImage}
                                 alt={project.name}
                                 fill
                                 className="object-cover object-top"

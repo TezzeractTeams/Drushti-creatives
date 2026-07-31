@@ -12,6 +12,7 @@ import { EASE } from "@/lib/motion";
 const LINKS = [
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

@@ -30,7 +30,7 @@ export function ForegroundLayer() {
         transition={{ duration: 0.7, delay: 0.35, ease: EASE }}
         className="pointer-events-auto mt-2"
       >
-        <PillButton href="#work" variant="light">
+        <PillButton href="/portfolio" variant="light">
           View our work
         </PillButton>
       </motion.div>

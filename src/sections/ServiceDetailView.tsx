@@ -1,12 +1,11 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import Link from "next/link";
-import OurWork from "@/sections/OurWork";
+import OurWork, { type WorkItem } from "@/sections/OurWork";
 import OurProcess from "@/sections/OurProcess";
 
 type ProcessStep = {
@@ -157,11 +156,15 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
     }
 };
 
-export default function ServiceDetailPage() {
-    const params = useParams();
+export default function ServiceDetailView({
+    id,
+    workItems,
+}: {
+    id: string;
+    workItems: WorkItem[];
+}) {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-    const id = typeof params.id === "string" ? params.id : "";
     const details = SERVICES_DATA[id];
 
     if (!details) {
@@ -222,7 +225,7 @@ export default function ServiceDetailPage() {
 
             <OurProcess steps={details.process} />
 
-            <OurWork serviceId={id} />
+            <OurWork serviceId={id} items={workItems} />
 
             {/* FAQ Section */}
             <section className="py-16 md:py-24">

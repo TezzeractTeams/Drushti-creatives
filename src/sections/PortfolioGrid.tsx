@@ -3,43 +3,30 @@
 import { useState } from "react";
 import Container from "@/components/Container";
 import PortfolioCard from "@/components/PortfolioCard";
+import type { Project } from "@/lib/content/types";
 
-export type WorkItem = {
-  name: string;
-  client: string;
-  image: string;
-  tags: string[];
-  href: string;
-};
-
-export default function OurWork({
-  serviceId,
-  items,
-}: {
-  serviceId: string;
-  items: WorkItem[];
-}) {
+export default function PortfolioGrid({ projects }: { projects: Project[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
 
-  if (items.length === 0) return null;
-
   return (
-    <section className="bg-yellow py-16 md:py-24">
+    <section className="bg-cream py-16 md:py-24">
       <Container>
         <div className="mb-12 max-w-2xl">
-          <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-tight">Our Work</h2>
-          <p className="mt-4 text-ink/65 text-sm md:text-base leading-relaxed">
+          <h1 className="font-heading text-3xl font-normal tracking-tight md:text-4xl">
+            Portfolio
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-ink/65 md:text-base">
             A look at real projects we&apos;ve delivered for our clients.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
-          {items.map((project, index) => (
+        <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          {projects.map((project, index) => (
             <PortfolioCard
-              key={`${serviceId}-${project.name}`}
+              key={project.slug}
               name={project.name}
               client={project.client}
-              image={project.image}
+              image={project.featuredImage}
               tags={project.tags}
               href={project.href}
               isHovered={hovered === index}

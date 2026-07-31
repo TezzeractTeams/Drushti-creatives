@@ -8,16 +8,10 @@ import { Burst } from "@/components/HeroShapes";
 
 import { EASE } from "@/lib/motion";
 
-import { CLIENT_LOGOS } from "@/data/clientLogos";
-
 /** Even 9-petal flower, local to this badge only — not the shared
  *  ScallopBadge (which stays untouched for the Hero/CTA buttons). */
 
-
-/** Client logo strip: a continuous, seamless-loop marquee that pauses on
- *  hover. The logo array is duplicated once so the translateX(-50%) loop
- *  has no visible seam. */
-function ClientMarquee() {
+function ClientMarquee({ logos }: { logos: string[] }) {
   const [paused, setPaused] = useState(false);
 
   return (
@@ -30,7 +24,7 @@ function ClientMarquee() {
         className={`flex w-max items-center gap-6 animate-marquee ${paused ? "animate-marquee-paused" : ""
           }`}
       >
-        {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((src, i) => (
+        {[...logos, ...logos].map((src, i) => (
           // Fixed slot per logo so portrait, landscape, and square marks
           // normalize to a similar visual footprint in the marquee.
           <div
@@ -54,9 +48,10 @@ function ClientMarquee() {
 type OurClientsProps = {
   /** Scroll-driven opacity (1 → 0) passed from ClientAboutCurtain. */
   contentFadeOpacity?: MotionValue<number>;
+  clientLogos: string[];
 };
 
-export default function OurClients({ contentFadeOpacity }: OurClientsProps) {
+export default function OurClients({ contentFadeOpacity, clientLogos }: OurClientsProps) {
   return (
     <section className="sticky top-0 z-0 flex min-h-[80vh] flex-col justify-center bg-white py-28">
       <Container>
@@ -89,7 +84,7 @@ export default function OurClients({ contentFadeOpacity }: OurClientsProps) {
           </motion.div>
 
           <div className="mt-20">
-            <ClientMarquee />
+            <ClientMarquee logos={clientLogos} />
           </div>
         </motion.div>
       </Container>

@@ -17,7 +17,7 @@ const WORDS = ["Exceptional", "Innovative", "Impactful", "Memorable", "Remarkabl
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
-  { label: "Our Works", href: "#work" },
+  { label: "Our Works", href: "/portfolio" },
   { label: "About Us", href: "#about" },
   { label: "Contact", href: "#contact" },
 ];

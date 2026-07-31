@@ -7,7 +7,7 @@ import AboutUs from "@/sections/AboutUs";
 import { CLIENT_FADE_END, CLIENT_FADE_START } from "@/config/clientCurtain";
 
 /** Pins OurClients while AboutUs scrolls over it; drives client content fade-out. */
-export default function ClientAboutCurtain() {
+export default function ClientAboutCurtain({ clientLogos }: { clientLogos: string[] }) {
   const aboutRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -23,7 +23,7 @@ export default function ClientAboutCurtain() {
 
   return (
     <div className="relative">
-      <OurClients contentFadeOpacity={contentFadeOpacity} />
+      <OurClients contentFadeOpacity={contentFadeOpacity} clientLogos={clientLogos} />
       <AboutUs scrollRef={aboutRef} />
     </div>
   );

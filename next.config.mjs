@@ -1,10 +1,15 @@
+import { withPayload } from "@payloadcms/next/withPayload";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    // TeamSection currently hotlinks Unsplash placeholders (TODO: swap for
-    // real team photos) — remotePatterns lets next/image optimize them too.
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+  },
+  async redirects() {
+    return [
+      { source: "/work/:slug", destination: "/portfolio/:slug", permanent: true },
+    ];
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);
