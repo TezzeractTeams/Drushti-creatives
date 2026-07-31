@@ -1,4 +1,6 @@
 import HeroLive from "@/components/Hero";
+import { HeroHeadline } from "@/components/HeroHeadline";
+import { HeroImagePreloads } from "@/components/HeroImagePreloads";
 import Services from "@/sections/Services";
 import FeaturedWork from "@/sections/FeaturedWork";
 import ClientAboutCurtain from "@/sections/ClientAboutCurtain";
@@ -10,7 +12,7 @@ import {
 } from "@/lib/content/portfolio";
 import { getClients } from "@/lib/content/clients";
 import { getMarqueeClientLogos } from "@/lib/content/client-utils";
-import { buildFloatingImageConfigs } from "@/lib/content/floatingImages";
+import { buildFloatingImageConfigs, getInitialFocusImageSrcs } from "@/lib/content/floatingImages";
 
 export const revalidate = 60;
 
@@ -21,11 +23,17 @@ export default async function Home() {
     getClients(),
   ]);
   const floatingImages = buildFloatingImageConfigs(heroProjects);
+  const initialFocusImageSrcs = getInitialFocusImageSrcs(floatingImages);
   const clientLogos = getMarqueeClientLogos(clients);
 
   return (
     <main>
-      <HeroLive floatingImages={floatingImages} />
+      {initialFocusImageSrcs.length > 0 ? (
+        <HeroImagePreloads srcs={initialFocusImageSrcs} />
+      ) : null}
+      <HeroLive floatingImages={floatingImages}>
+        <HeroHeadline />
+      </HeroLive>
       <ClientAboutCurtain clientLogos={clientLogos} />
       <Services />
       <WorkProcess />

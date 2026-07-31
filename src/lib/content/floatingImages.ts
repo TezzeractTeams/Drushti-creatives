@@ -1,11 +1,16 @@
 import type { FloatingImageConfig } from "@/types/floatingImage";
 import type { Project } from "@/lib/content/types";
+import {
+  getFocusSlotIndices,
+  getFocusSlotRevealOrder,
+  INITIAL_FOCUS_BATCH,
+} from "@/lib/hero/focusSlots";
 
 const FLOAT_PARAMS: Pick<
   FloatingImageConfig,
-  "speed" | "phase" | "amplitude" | "priority"
+  "speed" | "phase" | "amplitude"
 >[] = [
-  { speed: 8, phase: 0, amplitude: 18, priority: true },
+  { speed: 8, phase: 0, amplitude: 18 },
   { speed: 11, phase: 1.2, amplitude: 12 },
   { speed: 9, phase: 2.4, amplitude: 16 },
   { speed: 7.5, phase: 0.8, amplitude: 20 },
@@ -57,6 +62,10 @@ function buildHeroImageSources(projects: Project[]): HeroImageSource[] {
 export function buildFloatingImageConfigs(projects: Project[]): FloatingImageConfig[] {
   const sources = buildHeroImageSources(projects);
   const slotCount = FLOAT_PARAMS.length;
+  const focusIndices = getFocusSlotIndices();
+  const focusIndexSet = new Set(focusIndices);
+  const revealOrder = getFocusSlotRevealOrder();
+  const prioritySlots = new Set(revealOrder.slice(0, INITIAL_FOCUS_BATCH));
 
   return Array.from({ length: slotCount }, (_, i) => {
     const source = sources[i % Math.max(sources.length, 1)] ?? {
@@ -64,11 +73,22 @@ export function buildFloatingImageConfigs(projects: Project[]): FloatingImageCon
       alt: "Portfolio",
       href: "/portfolio",
     };
+    const inFocus = focusIndexSet.has(i);
     return {
       src: source.src,
       alt: source.alt,
       href: source.href,
+      inFocus,
+      priority: prioritySlots.has(i),
       ...FLOAT_PARAMS[i],
     };
   });
+}
+
+/** First batch of focus-frame image URLs for early preload. */
+export function getInitialFocusImageSrcs(configs: FloatingImageConfig[]): string[] {
+  return getFocusSlotRevealOrder()
+    .slice(0, INITIAL_FOCUS_BATCH)
+    .map((slot) => configs[slot]?.src)
+    .filter((src): src is string => Boolean(src));
 }

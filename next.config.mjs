@@ -7,7 +7,13 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      { source: "/work/:slug", destination: "/portfolio/:slug", permanent: true },
+      // Only redirect portfolio slugs — skip static assets in public/work/
+      // (e.g. drushtiwhitecopy-trimmed.png) which include a file extension.
+      {
+        source: "/work/:slug((?!.*\\.).+)",
+        destination: "/portfolio/:slug",
+        permanent: true,
+      },
     ];
   },
 };

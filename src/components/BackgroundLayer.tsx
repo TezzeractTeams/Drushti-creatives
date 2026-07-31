@@ -1,59 +1,81 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useAnimationFrame } from "@/hooks/useAnimationFrame";
 import { FloatingImage } from "@/components/FloatingImage";
 import type { FloatingImageConfig } from "@/types/floatingImage";
+import type { HeroLoadPhase } from "@/hooks/useHeroLoadPhase";
+import {
+  CANVAS_H_VH,
+  CANVAS_W_VW,
+  getFocusSlotRevealOrder,
+  INITIAL_FOCUS_BATCH,
+  IMAGE_BOX_HEIGHT_VW,
+  IMAGE_BOX_WIDTH_VW,
+  IMAGE_POSITIONS,
+} from "@/lib/hero/focusSlots";
 
-// Canvas: 200vw wide × 200vh tall (100vw/100vh overshoot beyond the viewport,
-// so mouse travel pans the canvas by at most ±50vw/±50vh from rest).
-// Image size: 20vw × 12.5vw (8:5 aspect ratio)
-//
-// At mouse-center the viewport shows canvas x: 50→150vw, y: 50→150vh.
-// Positions are defined so that, at rest, images land at these viewport spots.
-// Canvas coord = viewport coord + 50.
-const IMAGE_POSITIONS = [
-  // 3 rows × 4 cols (12 total), row-major
-  // Preserve corner boxes exactly (current corners):
-  //   top-left     (15vw,  25vh)
-  //   top-right    (165vw, 25vh)
-  //   bottom-left  (15vw,  165vh)
-  //   bottom-right (165vw, 165vh)
-  //
-  // Spread the two middle columns outward while keeping a consistent grid:
-  //   cols: 15vw, 50vw, 130vw, 165vw
-  //   rows: 25vh, 90vh, 165vh
-  { left: "15vw",  top: "15vh" },   // row 0, col 0 (corner)
-  { left: "75vw",  top: "25vh" },   // row 0, col 1 (middle)
-  { left: "125vw", top: "55vh" },   // row 0, col 2 (middle)
-  { left: "175vw", top: "25vh" },   // row 0, col 3 (corner)
-
-  { left: "5vw",  top: "90vh" },   // row 1, col 0
-  { left: "50vw",  top: "65vh" },   // row 1, col 1
-  { left: "110vw", top: "110vh" },   // row 1, col 2
-  { left: "155vw", top: "90vh" },   // row 1, col 3
-
-  { left: "15vw",  top: "165vh" },  // row 2, col 0 (corner)
-  { left: "60vw",  top: "125vh" },  // row 2, col 1
-  { left: "100vw", top: "175vh" },  // row 2, col 2
-  { left: "175vw", top: "160vh" },  // row 2, col 3 (corner)
-] as const;
-
-// Mouse center (0.5, 0.5) → canvas center aligned to viewport center
-// Mouse top-right (1, 0)  → canvas top-right aligned to viewport top-right
-// offsetX = −mouseX × (200vw − 100vw) = −mouseX × 100vw
-// offsetY = −mouseY × (200vh − 100vh) = −mouseY × 100vh
-const CANVAS_W_VW = 200;
-const CANVAS_H_VH = 200;
+/** Wait for entrance animation before revealing the next focus box. */
+const FOCUS_ENTRANCE_MS = 500;
+const FOCUS_SLOT_TIMEOUT_MS = 3000;
 
 interface Props {
   containerRef: React.RefObject<HTMLElement | null>;
   floatingImages: FloatingImageConfig[];
+  loadPhase: HeroLoadPhase;
+  onFocusSequenceComplete: () => void;
 }
 
-export function BackgroundLayer({ containerRef, floatingImages }: Props) {
+function initialFocusStep(revealCount: number): number {
+  if (revealCount === 0) return -1;
+  return Math.min(INITIAL_FOCUS_BATCH - 1, revealCount - 1);
+}
+
+export function BackgroundLayer({
+  containerRef,
+  floatingImages,
+  loadPhase,
+  onFocusSequenceComplete,
+}: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ targetX: 0.5, targetY: 0.5, x: 0.5, y: 0.5 });
+  const [focusStep, setFocusStep] = useState(-1);
+  const focusStepRef = useRef(-1);
+  const loadedFocusSlotsRef = useRef(new Set<number>());
+
+  const focusRevealOrder = useMemo(() => getFocusSlotRevealOrder(), []);
+  const initialBatchEnd = useMemo(
+    () => initialFocusStep(focusRevealOrder.length),
+    [focusRevealOrder.length],
+  );
+
+  focusStepRef.current = focusStep;
+
+  const goToNextFocusSlot = useCallback(() => {
+    const next = focusStepRef.current + 1;
+    if (next >= focusRevealOrder.length) {
+      onFocusSequenceComplete();
+    } else {
+      setFocusStep(next);
+    }
+  }, [focusRevealOrder.length, onFocusSequenceComplete]);
+
+  useEffect(() => {
+    if (loadPhase === "focus") {
+      const start = initialFocusStep(focusRevealOrder.length);
+      setFocusStep(start);
+      focusStepRef.current = start;
+      loadedFocusSlotsRef.current = new Set();
+    }
+  }, [loadPhase, focusRevealOrder.length]);
+
+  useEffect(() => {
+    if (loadPhase !== "focus") return;
+    if (focusStep < 0 || focusStep >= focusRevealOrder.length) return;
+
+    const timeout = window.setTimeout(goToNextFocusSlot, FOCUS_SLOT_TIMEOUT_MS);
+    return () => window.clearTimeout(timeout);
+  }, [loadPhase, focusStep, focusRevealOrder.length, goToNextFocusSlot]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -68,6 +90,8 @@ export function BackgroundLayer({ containerRef, floatingImages }: Props) {
   }, [containerRef]);
 
   useAnimationFrame(() => {
+    if (loadPhase === "shell") return;
+
     const m = mouseRef.current;
     m.x += (m.targetX - m.x) * 0.08;
     m.y += (m.targetY - m.y) * 0.08;
@@ -83,6 +107,27 @@ export function BackgroundLayer({ containerRef, floatingImages }: Props) {
     canvas.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0)`;
   });
 
+  function shouldAdvanceFocusSequence(step: number, slotIndex: number): boolean {
+    const orderIndex = focusRevealOrder.indexOf(slotIndex);
+    if (orderIndex === -1 || orderIndex > step) return false;
+
+    loadedFocusSlotsRef.current.add(slotIndex);
+
+    if (step <= initialBatchEnd) {
+      const batch = focusRevealOrder.slice(0, initialBatchEnd + 1);
+      return batch.every((slot) => loadedFocusSlotsRef.current.has(slot));
+    }
+
+    return focusRevealOrder[step] === slotIndex;
+  }
+
+  function handleFocusLoaded(slotIndex: number) {
+    if (loadPhase !== "focus") return;
+    if (!shouldAdvanceFocusSequence(focusStepRef.current, slotIndex)) return;
+
+    window.setTimeout(goToNextFocusSlot, FOCUS_ENTRANCE_MS);
+  }
+
   return (
     <div
       ref={canvasRef}
@@ -96,20 +141,47 @@ export function BackgroundLayer({ containerRef, floatingImages }: Props) {
       }}
     >
       <div className="pointer-events-auto relative h-full w-full">
-        {floatingImages.map((img, i) => (
-          <div
-            key={i}
-            className="absolute z-0 hover:z-20"
-            style={{
-              left:   IMAGE_POSITIONS[i].left,
-              top:    IMAGE_POSITIONS[i].top,
-              width:  "20vw",
-              height: "12.5vw",
-            }}
-          >
-            <FloatingImage {...img} />
-          </div>
-        ))}
+        {floatingImages.map((img, i) => {
+          const orderIndex = focusRevealOrder.indexOf(i);
+
+          if (img.inFocus) {
+            if (loadPhase === "shell") return null;
+            if (orderIndex === -1 || orderIndex > focusStep) return null;
+          } else if (loadPhase !== "complete") {
+            return null;
+          }
+
+          const isPriorityFocus =
+            img.inFocus &&
+            (orderIndex <= initialBatchEnd || orderIndex === focusStep);
+
+          const entranceDelay =
+            img.inFocus && orderIndex <= initialBatchEnd ? orderIndex * 0.08 : 0;
+
+          return (
+            <div
+              key={i}
+              className="absolute z-0 hover:z-20"
+              style={{
+                left: IMAGE_POSITIONS[i].left,
+                top: IMAGE_POSITIONS[i].top,
+                width: `${IMAGE_BOX_WIDTH_VW}vw`,
+                height: `${IMAGE_BOX_HEIGHT_VW}vw`,
+              }}
+            >
+              <FloatingImage
+                {...img}
+                priority={isPriorityFocus || img.priority}
+                visible
+                animateEntrance={img.inFocus ? "full" : "fade"}
+                entranceDelay={entranceDelay}
+                onLoadingComplete={
+                  img.inFocus ? () => handleFocusLoaded(i) : undefined
+                }
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

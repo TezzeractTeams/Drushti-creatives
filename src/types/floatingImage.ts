@@ -8,6 +8,8 @@ export interface FloatingImageConfig {
   /** Idle float amplitude in pixels */
   amplitude: number;
   priority?: boolean;
+  /** Visible in the viewport when the hero canvas is at rest */
+  inFocus?: boolean;
   /** Where to navigate when clicked */
   href?: string;
   /** Next/Image `sizes` attribute */
