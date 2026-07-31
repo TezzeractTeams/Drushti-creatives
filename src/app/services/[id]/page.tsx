@@ -177,12 +177,9 @@ export default function ServiceDetailPage() {
 
     return (
         <main className="min-h-screen bg-cream text-ink pb-20 md:pb-28">
-            {/* Hero Section: no top padding on <main> and no top border-radius
-                here, so this block sits flush against the very top of the
-                viewport with zero gap — rounding only the bottom corners
-                avoids the small triangle of page background that would
-                otherwise peek through rounded top corners at the edge. */}
-            <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 rounded-b-[2.5rem] overflow-hidden`}>
+            {/* Hero Section: no top padding on <main> so this block sits
+                flush against the very top of the viewport with zero gap. */}
+            <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 overflow-hidden`}>
                 <Container>
                     <div className="max-w-4xl">
                         <Link href="/services" className="inline-flex items-center gap-2 mb-8 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity">

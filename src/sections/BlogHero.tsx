@@ -5,52 +5,52 @@ import { motion } from "motion/react";
 import Container from "@/components/Container";
 import PillButton from "@/components/PillButton";
 import { fadeUp } from "@/lib/motion";
-import { FEATURED_POST } from "@/data/blog";
+import { BLOG_POSTS } from "@/data/blogPosts";
 
 /** Blog landing page */
 export default function BlogHero() {
-  const POSTS = [
-    FEATURED_POST,
-    {
-      title: "Building Brands That People Remember",
-      author: "Drushti Team",
-      image: "/blog-2.jpg",
-    },
-    {
-      title: "Why Consistency Beats Creativity",
-      author: "Drushti Team",
-      image: "/blog-3.jpg",
-    },
-  ];
+  const POSTS = BLOG_POSTS.map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    author: post.author,
+    excerpt: post.intro[0],
+    image: post.image,
+  }));
 
   return (
-    <section className="bg-white pb-16 pt-32 sm:pb-24 sm:pt-40">
-      <Container>
-        {/* Hero */}
-        <motion.div {...fadeUp()} className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center rounded-full border border-ink/15 px-4 py-1.5 text-xs font-medium text-ink/70">
-            Our Journal
-          </span>
+    <>
+      {/* Hero */}
+      <section className="bg-blue pb-16 pt-32 sm:pb-24 sm:pt-40">
+        <Container>
+          <motion.div {...fadeUp()} className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-white/70">
+              Our Journal
+            </span>
 
-          <h1 className="mt-5 font-heading text-heading-5xl font-bold leading-heading tracking-tight text-ink sm:text-heading-6xl">
-            Creative <span className="text-orange">Perspectives</span>
-          </h1>
+            <h1 className="mt-5 font-heading text-heading-5xl font-bold leading-heading tracking-tight text-white sm:text-heading-6xl">
+              Creative <span className="text-orange">Perspectives</span>
+            </h1>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink/60 sm:text-base">
-            Ideas, lessons, and behind-the-scenes thinking from the Drushti
-            team—helping you build a brand that stays consistent,
-            professional, and always moving forward.
-          </p>
-        </motion.div>
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
+              Ideas, lessons, and behind-the-scenes thinking from the Drushti
+              team—helping you build a brand that stays consistent,
+              professional, and always moving forward.
+            </p>
+          </motion.div>
+        </Container>
+      </section>
 
+      <section className="bg-white pb-16 pt-16 sm:pb-24 sm:pt-24">
+        <Container>
         {/* Blog Cards */}
         <motion.div
           {...fadeUp(0.1)}
+          viewport={{ once: true, amount: 0.1 }}
           className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-3"
         >
           {POSTS.map((post) => (
             <article
-              key={post.title}
+              key={post.slug}
               className="group overflow-hidden rounded-3xl border border-ink/10 bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
@@ -72,14 +72,12 @@ export default function BlogHero() {
                   {post.title}
                 </h2>
 
-                <p className="mt-4 text-sm leading-relaxed text-ink/60">
-                  Discover practical branding, design, and marketing insights
-                  that help businesses create memorable experiences and grow
-                  with confidence.
+                <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-ink/60">
+                  {post.excerpt}
                 </p>
 
                 <div className="mt-6">
-                  <PillButton href="/blog">
+                  <PillButton href={`/blog/${post.slug}`}>
                     Read article
                   </PillButton>
                 </div>
@@ -122,7 +120,8 @@ export default function BlogHero() {
             />
           </div>
         </motion.div>
-      </Container>
-    </section>
+        </Container>
+      </section>
+    </>
   );
 }

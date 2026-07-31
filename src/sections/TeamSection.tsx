@@ -17,39 +17,33 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // Brand palette used for each card's frame fill, cycled across members.
 // Blue/sky are excluded here since the section background is now blue —
 // using them for the frames too would blend in instead of standing out.
-const FRAME_COLORS = ["bg-orange", "bg-yellow", "bg-green"] as const;
+const FRAME_COLORS = ["bg-sky", "bg-yellow", "bg-green"] as const;
 
-// TODO: replace placeholder members/photos with the real Drushti team
 const TEAM = [
   {
-    name: "Member One",
-    role: "Creative Director",
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600",
+    name: "Shameem Naffeel",
+    role: "Co-Founder / Social Media Strategist",
+    photo: "/SHAMEEM NAFFEEL.png",
   },
   {
-    name: "Member Two",
-    role: "Lead Designer",
-    photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+    name: "Farhan Imamudeen",
+    role: "Co-Founder / Creative Director",
+    photo: "/FARHAN IMAMUDEEN.png",
   },
   {
-    name: "Member Three",
-    role: "Design Engineer",
-    photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600",
+    name: "Shareena Faleel",
+    role: "Graphic Designer",
+    photo: "/SHAREENA FALEEL.png",
   },
   {
-    name: "Member Four",
-    role: "Project Manager",
-    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=600",
+    name: "Pujitha Chandima",
+    role: "Videographer",
+    photo: "/PUJITHA CHANDIMA.png",
   },
   {
-    name: "Member Five",
-    role: "Content Strategist",
-    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600",
-  },
-  {
-    name: "Member Six",
-    role: "Motion Designer",
-    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600",
+    name: "Minura Pieris",
+    role: "Social Media Manager",
+    photo: "/Minura Pieris.png",
   },
 ].map((member, i) => ({ ...member, frameColor: FRAME_COLORS[i % FRAME_COLORS.length] }));
 

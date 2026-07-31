@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
@@ -13,6 +14,7 @@ const CARDS = [
       "We step into your shoes to ensure every design and strategy feels like an honest reflection of your vision.",
     color: "#284F9F", // Drushti blue
     rotate: -6,
+    image: "/why we exist/DEEP ALIGNMENT.png",
   },
   {
     title: "Radical Clarity",
@@ -20,6 +22,7 @@ const CARDS = [
       "We strip away the noise to turn your complex ideas into a simple, professional message that everyone understands.",
     color: "#DC5C26", // Drushti orange
     rotate: 4,
+    image: "/why we exist/RADICAL CLARITY.png",
   },
   {
     title: "Genuine Rapport",
@@ -27,6 +30,7 @@ const CARDS = [
       "We move past generic content to build authentic visuals and words that create a real human bond with your audience.",
     color: "#257FC2", // Drushti sky blue — swapped from green since the section background is now green
     rotate: -3,
+    image: "/why we exist/GENUINE RAPPORT.png",
   },
   {
     title: "Total Accountability",
@@ -34,6 +38,7 @@ const CARDS = [
       "We handle the creative & strategic thinking focus on the fine details, giving you the freedom to focus entirely on leading your business.",
     color: "#E0B624", // Drushti yellow
     rotate: 5,
+    image: "/why we exist/TOTAL ACCOUNTABLITY.png",
   },
 ] as const;
 
@@ -72,8 +77,11 @@ function ContentCard({
       {/* Mobile: flat, static, stacked — no scroll or hover motion at all */}
       <div
         style={{ backgroundColor: card.color }}
-        className="flex h-64 w-full max-w-sm flex-col justify-end rounded-2xl p-6 shadow-xl sm:hidden"
+        className="flex h-80 w-full max-w-sm flex-col justify-end rounded-2xl p-6 shadow-xl sm:hidden"
       >
+        <div className="relative mb-auto h-20 w-20">
+          <Image src={card.image} alt={card.title} fill className="object-contain" />
+        </div>
         <h3 className="font-heading text-xl font-bold leading-tight text-white">{card.title}</h3>
         <p className="mt-3 text-sm leading-relaxed text-white/85">{card.description}</p>
       </div>
@@ -91,6 +99,9 @@ function ContentCard({
           style={{ backgroundColor: card.color }}
           className="flex h-full w-full flex-col justify-end rounded-2xl p-7 shadow-xl"
         >
+          <div className="relative mb-auto h-28 w-28">
+            <Image src={card.image} alt={card.title} fill className="object-contain" />
+          </div>
           <h3 className="font-heading text-2xl font-bold leading-tight text-white">{card.title}</h3>
           <p className="mt-3 text-base leading-relaxed text-white/85">{card.description}</p>
         </div>

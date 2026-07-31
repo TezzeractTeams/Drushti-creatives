@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
+import { Burst } from "@/components/HeroShapes";
+import { EASE } from "@/lib/motion";
 
 export interface ProcessStep {
   step: string;
@@ -10,179 +12,277 @@ export interface ProcessStep {
   description: string;
 }
 
-const HEADER_HEIGHT = 72; // collapsed card bar height, px
-const PANEL_HEIGHT = 520; // fixed panel height, px
-const SEGMENT_VH = 55; // scroll runway per card, vh — matches FeaturedWork's pacing
-// Each transition between card i and i+1 occupies this fraction of one
-// segment's scroll distance, centered on the segment boundary — the rest of
-// each segment is "dwell" time where the active card just sits still.
-const TRANSITION_FRACTION = 0.5;
-
-// Panel background cycles through these while each step is active.
-const STEP_COLORS = [
-  "rgb(var(--blue))",
-  "rgb(var(--orange))",
-  "rgb(var(--green))",
-  "rgb(var(--sky))",
+// Each card gets its own color (cycled) instead of every card sharing one
+// section-wide background — traced from WorkProcess.tsx's horizontal
+// expanding cards, but with per-card color and a centered title block.
+// Orange is left out since the section background itself is orange (an
+// inactive orange card would disappear into it). Each entry carries its own
+// inactive-state text color, since yellow needs dark ink text rather than
+// the white used by the darker colors.
+const CARD_COLORS = [
+  { bg: "rgb(var(--blue))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
+  { bg: "rgb(var(--green))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
+  { bg: "rgb(var(--sky))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
+  { bg: "rgb(var(--yellow))", text: "rgb(var(--ink))", textMuted: "rgba(var(--ink) / 0.8)" },
 ];
 
-/** [start, end] scrollYProgress window for the transition FROM card i TO
- *  card i+1, for i in 0..n-2. */
-function buildTransitions(n: number): [number, number][] {
-  const segment = 1 / n;
-  const half = (segment * TRANSITION_FRACTION) / 2;
-  return Array.from({ length: n - 1 }, (_, i) => {
-    const center = (i + 1) * segment;
-    return [Math.max(0, center - half), Math.min(1, center + half)] as [number, number];
-  });
-}
+// Tailwind rem scale: 7xl=4.5rem, 12xl=12rem, 14xl=14rem
+const CONTRACTED_SIZE_PX = 72; // text-7xl (4.5rem)
+const EXPANDED_SIZE_MIN_PX = 192;
+const EXPANDED_SIZE_MAX_PX = 224;
 
-function StackCard({
-  item,
-  index,
-  total,
-  transitions,
-  scrollYProgress,
+function ProcessStepNumber({
+  step,
+  strokeColor,
+  isActive,
+  cardRef,
 }: {
-  item: ProcessStep;
-  index: number;
-  total: number;
-  transitions: [number, number][];
-  scrollYProgress: MotionValue<number>;
+  step: number;
+  strokeColor: string;
+  isActive: boolean;
+  cardRef: React.RefObject<HTMLElement | null>;
 }) {
-  const fullSpace = PANEL_HEIGHT - index * HEADER_HEIGHT;
+  const [fontSize, setFontSize] = useState(0);
 
-  // Each card's height is one continuous keyframe list spanning the whole
-  // scroll range: 0 (not reached yet) -> fullSpace (its own active dwell) ->
-  // HEADER_HEIGHT (collapsed, once the next card takes over). Because the
-  // outgoing and incoming card in any transition share the same [start, end]
-  // window and move linearly, their heights always sum to a constant — so
-  // cards sit in plain block flow (no absolute positioning/z-index) and
-  // never leave a gap or overlap.
-  let inputs: number[];
-  let outputs: number[];
-  if (index === 0) {
-    const [tStart, tEnd] = transitions[0] ?? [1, 1];
-    inputs = [0, tStart, tEnd, 1];
-    outputs = [PANEL_HEIGHT, PANEL_HEIGHT, HEADER_HEIGHT, HEADER_HEIGHT];
-  } else if (index === total - 1) {
-    const [pStart, pEnd] = transitions[index - 1];
-    inputs = [0, pStart, pEnd, 1];
-    outputs = [0, 0, fullSpace, fullSpace];
-  } else {
-    const [pStart, pEnd] = transitions[index - 1];
-    const [nStart, nEnd] = transitions[index];
-    inputs = [0, pStart, pEnd, nStart, nEnd, 1];
-    outputs = [0, 0, fullSpace, fullSpace, HEADER_HEIGHT, HEADER_HEIGHT];
-  }
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
 
-  const height = useTransform(scrollYProgress, inputs, outputs, { clamp: true });
-  // Content scale (1 -> 1.05) derived straight from this card's own height,
-  // so it grows in as the card expands and eases back as it collapses.
-  const contentScale = useTransform(height, [HEADER_HEIGHT, fullSpace], [1, 1.05], {
-    clamp: true,
-  });
+    const updateSize = () => {
+      const { width: cardWidth } = card.getBoundingClientRect();
+
+      if (cardWidth < 48) {
+        setFontSize(0);
+        return;
+      }
+
+      const widthTarget = isActive
+        ? EXPANDED_SIZE_MIN_PX +
+        (EXPANDED_SIZE_MAX_PX - EXPANDED_SIZE_MIN_PX) *
+        Math.min(1, Math.max(0, (cardWidth - 64) / (560 - 64)))
+        : CONTRACTED_SIZE_PX;
+
+      const fitByCardWidth = cardWidth * 0.82;
+      const size = Math.min(widthTarget, fitByCardWidth);
+      setFontSize(size < 40 ? 0 : Math.round(size));
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [cardRef, isActive]);
 
   return (
-    <motion.div style={{ height }} className="relative w-full shrink-0 overflow-hidden">
-      {/* The header bar's own position never animates — it's always drawn
-          at this card's top edge; only the card's overall height changes,
-          which is what makes collapsed headers read as a fixed stack. */}
-      <div
-        className="absolute inset-x-0 top-0 flex items-center justify-between gap-4 border-b border-white/10 px-6 sm:px-8"
-        style={{ height: HEADER_HEIGHT }}
-      >
-        <span className="font-heading text-sm font-bold uppercase tracking-wide text-white sm:text-base">
-          {item.title}
-        </span>
-        <span className="shrink-0 font-heading text-xs text-white/60">{item.step}</span>
+    <motion.span
+      initial={false}
+      animate={{
+        fontSize,
+        opacity: fontSize > 0 ? 1 : 0,
+      }}
+      transition={{ duration: 0.5, ease: EASE }}
+      aria-hidden={fontSize === 0}
+      className="shrink-0 font-heading leading-none select-none"
+      style={{
+        color: "transparent",
+        WebkitTextFillColor: "transparent",
+        WebkitTextStroke: `1px ${strokeColor}`,
+      }}
+    >
+      {step}
+    </motion.span>
+  );
+}
+
+function ProcessCard({
+  step,
+  index,
+  isActive,
+  onActivate,
+}: {
+  step: ProcessStep;
+  index: number;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const cardColor = CARD_COLORS[index % CARD_COLORS.length];
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={false}
+      animate={{
+        flex: isActive ? 4 : 1,
+        padding: "1.5rem",
+        backgroundColor: isActive ? "#ffffff" : cardColor.bg,
+      }}
+      transition={{ duration: 0.5, ease: EASE }}
+      style={{
+        overflow: "hidden",
+        borderRadius: "1.5rem",
+      }}
+      onClick={onActivate}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onActivate();
+        }
+      }}
+      aria-pressed={isActive}
+      className="relative flex cursor-pointer flex-col justify-between"
+    >
+      <div className="flex flex-col">
+        <ProcessStepNumber
+          step={index + 1}
+          strokeColor={isActive ? "rgb(var(--ink))" : cardColor.text}
+          isActive={isActive}
+          cardRef={cardRef}
+        />
+
+        <motion.h3
+          initial={false}
+          animate={{ color: isActive ? "rgb(var(--ink))" : cardColor.text }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="mt-2 shrink-0 font-heading text-heading-xl leading-heading sm:text-heading-2xl"
+        >
+          {step.title}
+        </motion.h3>
       </div>
 
-      <motion.div
-        style={{ top: HEADER_HEIGHT, scale: contentScale }}
-        className="absolute inset-x-0 bottom-0 flex origin-top-left flex-col justify-center px-6 sm:px-8"
+      <motion.p
+        initial={false}
+        animate={{
+          color: isActive ? "rgba(var(--ink) / 0.8)" : cardColor.textMuted,
+        }}
+        transition={{ duration: 0.5, ease: EASE }}
+        className="shrink-0 text-xs sm:text-sm"
       >
-        <span className="font-heading text-6xl font-black leading-none text-white/20 sm:text-7xl">
-          {item.step}
-        </span>
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-white/85 sm:text-base">
-          {item.description}
-        </p>
-      </motion.div>
+        {step.description}
+      </motion.p>
     </motion.div>
   );
 }
 
-/** "Our Process" for a single-service page: a pinned scroll section where a
- *  stack of process steps steps through one at a time — the active step
- *  expands to fill the panel while finished ones collapse to a thin header
- *  bar stacked above it, and the panel's background crossfades to match
- *  whichever step is active. */
-export default function OurProcess({ steps }: { steps: ProcessStep[] }) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
+/** Static mobile card — plain layout, no scroll-driven flex/color/number
+ *  animation, no click-to-expand. Just a stacked, always-expanded step. */
+function ProcessCardStatic({ step, index }: { step: ProcessStep; index: number }) {
+  const cardColor = CARD_COLORS[index % CARD_COLORS.length];
 
-  const { scrollYProgress: rawProgress } = useScroll({
-    target: wrapperRef,
+  return (
+    <div className="rounded-2xl p-5" style={{ backgroundColor: cardColor.bg }}>
+      <span
+        className="block font-heading text-5xl leading-none"
+        style={{
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          WebkitTextStroke: `1px ${cardColor.text}`,
+        }}
+      >
+        {index + 1}
+      </span>
+      <h3 className="mt-2 font-heading text-heading-xl leading-heading" style={{ color: cardColor.text }}>
+        {step.title}
+      </h3>
+      <p className="mt-2 text-sm" style={{ color: cardColor.textMuted }}>
+        {step.description}
+      </p>
+    </div>
+  );
+}
+
+/** "Our Process" for a single-service page: a horizontal row of cards where
+ *  clicking (or scrolling, on desktop) expands one card to white while the
+ *  rest contract — each card keeping its own distinct color instead of all
+ *  sharing one section-wide background. Traced from the homepage's
+ *  WorkProcess.tsx, with a centered title block instead of left-aligned. */
+export default function OurProcess({ steps }: { steps: ProcessStep[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
     offset: ["start start", "end end"],
   });
-  const scrollYProgress = useSpring(rawProgress, { stiffness: 120, damping: 26, mass: 0.5 });
 
-  const transitions = steps.length > 1 ? buildTransitions(steps.length) : [];
-  const colors = steps.map((_, i) => STEP_COLORS[i % STEP_COLORS.length]);
-
-  // One continuous color keyframe list spanning the whole scroll range,
-  // holding each step's color flat during its dwell and crossfading during
-  // the shared transition windows — same technique as the height keyframes.
-  const colorInputs: number[] = [0];
-  const colorOutputs: string[] = [colors[0] ?? "rgb(var(--ink))"];
-  transitions.forEach(([start, end], i) => {
-    colorInputs.push(start, end);
-    colorOutputs.push(colors[i], colors[i + 1]);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    let index = Math.floor(Math.max(0, latest) * steps.length);
+    if (index >= steps.length) index = steps.length - 1;
+    if (index < 0) index = 0;
+    setActiveIndex(index);
   });
-  colorInputs.push(1);
-  colorOutputs.push(colors[colors.length - 1] ?? "rgb(var(--ink))");
-  const panelColor = useTransform(scrollYProgress, colorInputs, colorOutputs);
 
   if (steps.length === 0) return null;
 
   return (
-    <section
-      ref={wrapperRef}
-      className="relative bg-white/40 border-y border-ink/5"
-      style={{ height: `${steps.length * SEGMENT_VH}vh` }}
-    >
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <Container>
-          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
-            <div>
+    <section ref={containerRef} className="relative bg-orange" style={{ height: "auto" }}>
+      {/* ---------- Mobile: plain stacked list, no sticky, no scroll effect ---------- */}
+      <div className="sm:hidden">
+        <Container className="py-12">
+          <div className="mb-6 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white">
+            <Burst className="h-4 w-4 text-white" />
+            Our Process
+          </div>
 
-              <h2 className="mt-4 font-heading text-5xl font-black uppercase leading-[0.95] tracking-tight text-ink sm:text-6xl">
-                Our
-                <br />
-                Process
-              </h2>
-              <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/65 sm:text-base">
-                How we collaborate with you from discovery to management &amp; growth.
-              </p>
-            </div>
+          <h2 className="mb-8 text-center font-heading text-heading-3xl leading-heading text-white">
+            How we collaborate with you from discovery to management &amp; growth.
+          </h2>
 
-            <motion.div
-              style={{ height: PANEL_HEIGHT, backgroundColor: panelColor }}
-              className="relative flex w-full flex-col overflow-hidden rounded-3xl border border-ink/10"
-            >
-              {steps.map((step, index) => (
-                <StackCard
-                  key={step.step}
-                  item={step}
-                  index={index}
-                  total={steps.length}
-                  transitions={transitions}
-                  scrollYProgress={scrollYProgress}
-                />
-              ))}
-            </motion.div>
+          <div className="flex flex-col gap-3">
+            {steps.map((step, i) => (
+              <ProcessCardStatic key={step.step} step={step} index={i} />
+            ))}
           </div>
         </Container>
+      </div>
+
+      {/* ---------- Desktop: pinned, scroll-driven expanding cards ---------- */}
+      <div className="hidden sm:block" style={{ height: `${steps.length * 55}vh` }}>
+        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-10 lg:py-20">
+          <Container className="flex h-full w-full flex-col justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.6, ease: EASE }}
+              className="mb-6 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-white lg:mb-10"
+            >
+              <Burst className="h-4 w-4 text-white" />
+              Our Process
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="mx-auto mb-8 max-w-4xl text-center lg:mb-12"
+            >
+              <h2 className="font-heading text-heading-3xl leading-heading text-white sm:text-heading-4xl lg:text-heading-5xl">
+                How we collaborate with you from discovery to management &amp; growth.
+              </h2>
+            </motion.div>
+
+            {/* The Horizontal Expanding Cards */}
+            <div className="flex flex-1 w-full min-h-[300px] max-h-[500px] gap-2">
+              {steps.map((step, i) => {
+                const isActive = activeIndex === i;
+
+                return (
+                  <ProcessCard
+                    key={step.step}
+                    step={step}
+                    index={i}
+                    isActive={isActive}
+                    onActivate={() => setActiveIndex(i)}
+                  />
+                );
+              })}
+            </div>
+          </Container>
+        </div>
       </div>
     </section>
   );

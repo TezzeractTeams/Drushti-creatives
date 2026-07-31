@@ -9,8 +9,8 @@ import { SERVICE_WORK } from "@/data/serviceWork";
 
 /** Grid of case-study cards for a single-service page — each service shows
  *  its own distinct set of work (via SERVICE_WORK[serviceId]), not one
- *  shared global list. On hover, the project's title/tags slide in from the
- *  top and sit INSIDE the card, over the image — not appended below it —
+ *  shared global list. On hover, the project's title/tags slide up from the
+ *  bottom and sit INSIDE the card, over the image — not appended below it —
  *  while every other card dims to spotlight the one being hovered. Renders
  *  nothing if that service has no work assigned yet. */
 export default function OurWork({ serviceId }: { serviceId: string }) {
@@ -20,7 +20,7 @@ export default function OurWork({ serviceId }: { serviceId: string }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="bg-yellow py-16 md:py-24">
       <Container>
         <div className="mb-12 max-w-2xl">
           <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-tight">Our Work</h2>
@@ -50,10 +50,10 @@ export default function OurWork({ serviceId }: { serviceId: string }) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
 
-                {/* Anchored to the card's own top edge (not the page flow
+                {/* Anchored to the card's own bottom edge (not the page flow
                     below it) so the reveal reads as "inside the card". */}
                 <div
-                  className={`absolute inset-x-0 top-0 bg-white/90 px-5 py-4 backdrop-blur-sm transition-all duration-300 ease-out ${isHovered ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+                  className={`absolute inset-x-0 bottom-0 bg-white px-5 py-4 transition-all duration-300 ease-out ${isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
                     }`}
                 >
                   <h3 className="font-heading text-base font-semibold text-ink">{project.name}</h3>
