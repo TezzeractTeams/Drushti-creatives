@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project with [Payload CMS](https://payloadcms.com) for portfolio, clients, and team content.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Set up Payload (database + admin users + content)
+
+Payload stores CMS data in a local SQLite file (`payload.db`) and uploaded media in `media/`. Both are gitignored, so each developer needs to initialize them locally.
+
+Run the setup script after cloning:
+
+```bash
+npm run setup
+```
+
+This will:
+
+1. Copy `.env.example` → `.env` if you don't have one yet
+2. Seed admin users from `data/payload/seed-users.json`
+3. Seed portfolio, clients, and team content from `src/data/static*.ts`
+
+Then start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Site: [http://localhost:3000](http://localhost:3000)
+- Payload admin: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Log in with an email from `data/payload/seed-users.json` and the password from `PAYLOAD_SEED_PASSWORD` in your `.env`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Adding or updating admin users for the team
 
-## Learn More
+1. Add the email to `data/payload/seed-users.json`
+2. Commit and push that file
+3. Teammates run `npm run seed` (or `npm run setup` on first clone)
 
-To learn more about Next.js, take a look at the following resources:
+Passwords are **not** stored in git. Everyone uses the shared dev password from `PAYLOAD_SEED_PASSWORD` in `.env` (set your own locally; `.env.example` shows the default).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Updating CMS content for everyone
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Portfolio, client, and team seed data lives in:
+
+- `src/data/staticProjects.ts`
+- `src/data/staticClients.ts`
+- `src/data/staticTeam.ts`
+
+After editing those files, run `npm run seed` and commit the changes. Teammates pull and run `npm run seed` to sync their local database.
+
+If you edit content directly in the Payload admin UI, those changes stay in your local `payload.db` only. To share them, update the corresponding `src/data/static*.ts` files (or ask to add an export workflow).
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start Next.js dev server |
+| `npm run setup` | First-time Payload setup (`.env` + seed) |
+| `npm run seed` | Re-seed users and CMS content |
+| `npm run generate:types` | Regenerate Payload TypeScript types |
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying). For production, use a hosted database (Postgres) instead of the local SQLite file and set `DATABASE_URL`, `PAYLOAD_SECRET`, and `NEXT_PUBLIC_SERVER_URL` in your hosting environment.

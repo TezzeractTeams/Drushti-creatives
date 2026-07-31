@@ -8,6 +8,7 @@ import { STATIC_CLIENTS } from "../src/data/staticClients";
 import { STATIC_PROJECTS } from "../src/data/staticProjects";
 import { STATIC_TEAM } from "../src/data/staticTeam";
 import config from "../src/payload.config";
+import { seedUsers } from "./seed-users";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -115,6 +116,8 @@ async function ensureTeamMember(
 
 async function seed() {
   const payload = await getPayload({ config });
+
+  await seedUsers(payload);
 
   const clientIds = new Map<string, number>();
   for (const client of STATIC_CLIENTS) {
