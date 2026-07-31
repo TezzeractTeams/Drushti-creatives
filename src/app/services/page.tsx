@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import ServicesHero from "@/sections/ServicesHero";
-import ServicesShowcase from "@/sections/ServicesShowcase";
 import WorkProcess from "@/sections/WorkProcess";
 import Testimonials from "@/sections/Testimonials";
 

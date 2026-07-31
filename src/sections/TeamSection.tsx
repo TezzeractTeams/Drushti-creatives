@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -118,7 +119,7 @@ function TeamCard({ member }: { member: (typeof TEAM)[number] }) {
         className={`relative overflow-hidden rounded-2xl p-3 ${member.frameColor}`}
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl">
-          <img src={member.photo} alt={member.name} className="h-full w-full object-cover" />
+          <Image src={member.photo} alt={member.name} fill className="object-cover" />
         </div>
 
         {/* Name / role / LinkedIn — inside the blurred frame */}

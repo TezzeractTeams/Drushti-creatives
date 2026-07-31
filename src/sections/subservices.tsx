@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { motion, useMotionValue, animate, type PanInfo } from "motion/react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
@@ -214,10 +215,11 @@ export default function SubServicesCarousel() {
                                         aria-label={item.title}
                                         aria-current={isActive ? "true" : undefined}
                                     >
-                                        <img
+                                        <Image
                                             src={item.image}
                                             alt=""
-                                            className="absolute inset-0 h-full w-full object-cover"
+                                            fill
+                                            className="object-cover"
                                             draggable={false}
                                         />
 
