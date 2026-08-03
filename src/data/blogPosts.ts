@@ -131,7 +131,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "communicating-with-purpose",
     title: "Is Your Brand Communicating With Purpose or Just Making Noise?",
-    image: "/team-member-1.png",
+    image: "/article 04.png",
     author: "Farhan Imamudeen",
     authorRole: "Co-Founder / Creative Director",
     date: "July 24, 2026",

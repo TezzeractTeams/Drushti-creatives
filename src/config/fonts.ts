@@ -45,6 +45,9 @@ const specialGothicExpandedOne = Special_Gothic_Expanded_One({
   weight: "400",
   variable: "--font-heading",
   display: "swap",
+  // Next 15.4's capsize metrics table has no entry for this face, so the
+  // automatic fallback-metrics lookup throws during build.
+  adjustFontFallback: false,
 });
 
 const FONT_VARIABLES: Record<FontSystemId, string> = {

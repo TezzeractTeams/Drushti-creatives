@@ -1,315 +1,158 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import Image from "next/image";
-import { motion, useMotionValue, animate, type PanInfo } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
-import Button from "@/components/Button";
+import PillButton from "@/components/PillButton";
 
-type SubService = {
+type Band = {
     id: string;
-    title: string;
-    image: string;
+    label: string;
+    // Tailwind background class — solid brand-color fill instead of a photo.
+    bg: string;
+    // Light backgrounds (yellow) need dark text/button for contrast; dark
+    // backgrounds (blue/green/orange/sky) keep white.
+    text: string;
+    buttonVariant?: "light";
 };
 
-const SUB_SERVICES: SubService[] = [
-    {
-        id: "marketing",
-        title: "Digital Marketing",
-        image: "/images/sub-services/content-front.png",
-    },
-    {
-        id: "brand",
-        title: "Brand Identity",
-        image: "/images/sub-services/brand-front.png",
-    },
-    {
-        id: "web",
-        title: "Web Design",
-        image: "/images/sub-services/web-front.jpg",
-    },
-    {
-        id: "video",
-        title: "Video Production",
-        image: "/images/sub-services/innovative.png",
-    },
-    {
-        id: "graphic",
-        title: "Graphic Design",
-        image: "/images/sub-services/landscape-front.jpg",
-    },
+// Same 5 sub-services as SubServicesCarousel/ServicesHero's arc version —
+// now presented as flat brand-color bands instead of photos. Each band's
+// id matches a key in SERVICES_DATA in services/[id]/page.tsx, so the
+// button links straight to that service's detail page.
+const BANDS: Band[] = [
+    { id: "marketing", label: "Social Media & Digital Marketing", bg: "bg-sky", text: "text-white", buttonVariant: "light" },
+    { id: "logo", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
+    { id: "web", label: "Website & UI Designing", bg: "bg-orange", text: "text-white", buttonVariant: "light" },
+    /*{ id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },*/
+    { id: "content", label: "Content Development", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
 ];
 
-/** Depth layout — side cards stay clearly peeking past the active card. */
-function getCardTransform(offset: number, spread: number) {
-    const abs = Math.abs(offset);
-    const dir = Math.sign(offset);
+// Each band owns a slice of the section's overall scroll progress, with a
+// slight overlap so the next band starts expanding a beat before the
+// previous one finishes — that's what produces the "one after another"
+// cascade rather than every band expanding in lockstep.
+const BAND_WINDOWS: [number, number][] = [
+    [0.0, 0.22],
+    [0.15, 0.37],
+    [0.3, 0.52],
+    [0.45, 0.67],
+    [0.6, 0.82],
+];
 
-    if (abs === 0) {
-        return { x: 0, z: 0, rotateY: 0, scale: 1, blur: 0, opacity: 1 };
-    }
+const COLLAPSED_HEIGHT = "9vh";
+const EXPANDED_HEIGHT = "34vh";
 
-    if (abs === 1) {
-        return {
-            x: dir * 340 * spread,
-            z: -140,
-            rotateY: dir * -18,
-            scale: 0.82,
-            blur: 1.5,
-            opacity: 1,
-        };
-    }
+// How many pixels of scrolling map across the full 0..1 band cascade above.
+// Deliberately NOT derived from the bands' own layout size — see the note
+// on scrollYProgress in ServicesHero for why.
+const SCROLL_DISTANCE = 1400;
 
-    if (abs === 2) {
-        return {
-            x: dir * 560 * spread,
-            z: -260,
-            rotateY: dir * -26,
-            scale: 0.68,
-            blur: 3,
-            opacity: 0.95,
-        };
-    }
-
-    return {
-        x: dir * 720 * spread,
-        z: -360,
-        rotateY: dir * -30,
-        scale: 0.55,
-        blur: 5,
-        opacity: 0,
-    };
+// Framer's `style={{ opacity: motionValue }}` binding doesn't reliably push
+// updates to the DOM in this project's setup (confirmed by comparison: the
+// same motionValue's "change" events fire correctly, and other style keys
+// like height/scale/color update fine on the same elements — only opacity
+// gets stuck at its initial value). Subscribing manually and writing
+// `el.style.opacity` ourselves sidesteps it.
+function useOpacity(value: MotionValue<number>) {
+    const ref = useRef<HTMLDivElement>(null);
+    useMotionValueEvent(value, "change", (v) => {
+        if (ref.current) ref.current.style.opacity = String(v);
+    });
+    return ref;
 }
 
-const SPRING = { type: "spring" as const, stiffness: 220, damping: 28, mass: 0.9 };
-const DRAG_THRESHOLD = 80;
-
-export default function SubServicesCarousel() {
-    const [active, setActive] = useState(2);
-    const [spread, setSpread] = useState(1);
-    const count = SUB_SERVICES.length;
-    const dragX = useMotionValue(0);
-    const isDragging = useRef(false);
-    const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-    useEffect(() => {
-        const updateSpread = () => {
-            const w = window.innerWidth;
-            // Extra tier below 400px so the peeking side cards don't push
-            // past the viewport edge on the smallest phones (e.g. iPhone SE
-            // at 320-375px), where 0.48 was still too wide.
-            if (w < 380) setSpread(0.34);
-            else if (w < 480) setSpread(0.48);
-            else if (w < 768) setSpread(0.68);
-            else if (w < 1024) setSpread(0.86);
-            else setSpread(1);
-        };
-        updateSpread();
-        window.addEventListener("resize", updateSpread);
-        return () => window.removeEventListener("resize", updateSpread);
-    }, []);
-
-    const normalizeOffset = useCallback(
-        (index: number) => {
-            let offset = index - active;
-            if (offset > count / 2) offset -= count;
-            if (offset < -count / 2) offset += count;
-            return offset;
-        },
-        [active, count]
-    );
-
-    const go = useCallback(
-        (dir: 1 | -1) => {
-            setActive((prev) => (prev + dir + count) % count);
-        },
-        [count]
-    );
-
-    const stopAutoplay = useCallback(() => {
-        if (autoplayRef.current) {
-            clearInterval(autoplayRef.current);
-            autoplayRef.current = null;
-        }
-    }, []);
-
-    const startAutoplay = useCallback(() => {
-        stopAutoplay();
-        autoplayRef.current = setInterval(() => go(1), 4200);
-    }, [go, stopAutoplay]);
-
-    useEffect(() => {
-        startAutoplay();
-        return stopAutoplay;
-    }, [startAutoplay, stopAutoplay]);
-
-    const onDragStart = () => {
-        isDragging.current = true;
-        stopAutoplay();
-    };
-
-    const onDragEnd = (_: unknown, info: PanInfo) => {
-        isDragging.current = false;
-        const { offset, velocity } = info;
-        const shouldAdvance =
-            Math.abs(offset.x) > DRAG_THRESHOLD || Math.abs(velocity.x) > 500;
-
-        if (shouldAdvance) {
-            go(offset.x < 0 || velocity.x < 0 ? 1 : -1);
-        }
-
-        animate(dragX, 0, { type: "spring", stiffness: 400, damping: 40 });
-        startAutoplay();
-    };
-
-    return (
-        <section className="relative overflow-hidden bg-cream py-12 sm:py-16 md:py-28">
-            <Container>
-                <div
-                    className="relative flex h-[420px] items-center justify-center xs:h-[460px] sm:h-[640px] md:h-[760px]"
-                    style={{ perspective: "1800px", perspectiveOrigin: "50% 48%" }}
-                >
-                    <motion.div
-                        className="absolute inset-0 flex cursor-grab items-center justify-center active:cursor-grabbing"
-                        style={{ x: dragX, transformStyle: "preserve-3d", touchAction: "pan-y" }}
-                        drag="x"
-                        dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={0.18}
-                        onDragStart={onDragStart}
-                        onDragEnd={onDragEnd}
-                    >
-                        {SUB_SERVICES.map((item, index) => {
-                            const offset = normalizeOffset(index);
-                            const absOffset = Math.abs(offset);
-                            const isActive = offset === 0;
-                            const isVisible = absOffset <= 2;
-                            const t = getCardTransform(offset, spread);
-
-                            return (
-                                <motion.div
-                                    key={item.id}
-                                    className="absolute"
-                                    style={{ transformStyle: "preserve-3d" }}
-                                    initial={false}
-                                    animate={{
-                                        x: t.x,
-                                        z: t.z,
-                                        rotateY: t.rotateY,
-                                        scale: t.scale,
-                                        opacity: isVisible ? t.opacity : 0,
-                                        filter: t.blur > 0 ? `blur(${t.blur}px)` : "blur(0px)",
-                                        zIndex: 20 - absOffset,
-                                    }}
-                                    transition={SPRING}
-                                >
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            if (isDragging.current) return;
-                                            if (!isActive) {
-                                                setActive(index);
-                                                startAutoplay();
-                                            }
-                                        }}
-                                        className="group relative block h-[280px] w-[220px] overflow-hidden rounded-2xl shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 xs:h-[320px] xs:w-[250px] sm:h-[520px] sm:w-[400px] sm:rounded-[2rem] md:h-[600px] md:w-[480px]"
-                                        aria-label={item.title}
-                                        aria-current={isActive ? "true" : undefined}
-                                    >
-                                        <Image
-                                            src={item.image}
-                                            alt=""
-                                            fill
-                                            className="object-cover"
-                                            draggable={false}
-                                        />
-
-                                        <div
-                                            className={`absolute inset-0 bg-black/20 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0"
-                                                }`}
-                                        />
-
-                                        {isActive && (
-                                            <motion.div
-                                                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6"
-                                                initial={{ opacity: 0, y: 15 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.15, duration: 0.4 }}
-                                            >
-                                                <h3 className="font-heading text-center text-xl font-normal leading-none tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)] xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
-                                                    {item.title}
-                                                </h3>
-                                                <div className="pointer-events-auto mt-4 xs:mt-6 sm:mt-10">
-                                                    <Button
-                                                        href={`/services/${item.id}`}
-                                                        variant="primary"
-                                                        className="!rounded-md !px-4 !py-2 !text-sm sm:!px-6 sm:!py-3 sm:!text-base"
-                                                    >
-                                                        View More
-                                                    </Button>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </button>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
-                </div>
-
-                <div className="mt-8 flex items-center justify-center gap-4 sm:mt-16 sm:gap-5">
-                    <NavButton
-                        label="Previous"
-                        onClick={() => {
-                            go(-1);
-                            startAutoplay();
-                        }}
-                    >
-                        <path d="M15 18l-6-6 6-6" />
-                    </NavButton>
-                    <NavButton
-                        label="Next"
-                        onClick={() => {
-                            go(1);
-                            startAutoplay();
-                        }}
-                    >
-                        <path d="M9 6l6 6-6 6" />
-                    </NavButton>
-                </div>
-            </Container>
-        </section>
-    );
-}
-
-function NavButton({
-    label,
-    onClick,
-    children,
+function ParallaxBand({
+    band,
+    window: [start, end],
+    scrollYProgress,
 }: {
-    label: string;
-    onClick: () => void;
-    children: ReactNode;
+    band: Band;
+    window: [number, number];
+    scrollYProgress: MotionValue<number>;
 }) {
+    // Band grows taller as scroll passes through its own window, pushing the
+    // bands below it down the page — a real layout height change (not an
+    // absolute-positioned overlay), so collapsed cards stay flush against
+    // each other with no gap, and an expanding card never covers the next one.
+    const height = useTransform(
+        scrollYProgress,
+        [start, end],
+        [COLLAPSED_HEIGHT, EXPANDED_HEIGHT],
+        { clamp: true }
+    );
+    // The button fades/scales in during the back half of the window, once
+    // the card has mostly finished expanding.
+    const mid = start + (end - start) * 0.55;
+    const buttonOpacity = useTransform(scrollYProgress, [mid, end], [0, 1]);
+    const buttonOpacityRef = useOpacity(buttonOpacity);
+    const buttonScale = useTransform(scrollYProgress, [mid, end], [0.85, 1]);
+
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            aria-label={label}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-lg transition-colors hover:bg-ink/80 sm:h-14 sm:w-14"
-        >
-            <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="sm:h-[22px] sm:w-[22px]"
+        <motion.div style={{ height }} className={`relative w-full overflow-hidden ${band.bg}`}>
+            <div className={`absolute inset-0 flex items-center justify-start px-6 sm:px-12 ${band.text}`}>
+                <span className="font-heading text-heading-4xl font-black uppercase leading-heading tracking-tight sm:text-heading-5xl lg:text-heading-6xl">
+                    {band.label}
+                </span>
+            </div>
+
+            {/* Revealed once the band has (mostly) finished expanding */}
+            <motion.div
+                ref={buttonOpacityRef}
+                style={{ scale: buttonScale, opacity: buttonOpacity.get() }}
+                className="absolute bottom-6 left-6 sm:bottom-8 sm:left-12"
             >
-                {children}
-            </svg>
-        </button>
+                <PillButton href={`/services/${band.id}`} variant={band.buttonVariant}>
+                    Explore service
+                </PillButton>
+            </motion.div>
+        </motion.div>
+    );
+}
+
+export default function ServicesHero() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const [sectionTop, setSectionTop] = useState(0);
+
+    // Measured once (and on viewport resize) rather than tracked live: the
+    // bands inside this section grow in real layout height as they expand,
+    // so if scrollYProgress were computed from THIS section's own live
+    // bounding rect (via useScroll's target option), growing a band would
+    // resize the section, which would shift scrollYProgress, which would
+    // grow the band again — a self-referential loop that threw a "cannot
+    // update a component while rendering" React warning. Anchoring to a
+    // one-time measurement of the section's starting position breaks the
+    // loop while still letting the bands' heights genuinely push the layout.
+    useEffect(() => {
+        if (!sectionRef.current) return;
+        const measure = () => {
+            const rect = sectionRef.current!.getBoundingClientRect();
+            setSectionTop(rect.top + window.scrollY);
+        };
+        measure();
+        window.addEventListener("resize", measure);
+        return () => window.removeEventListener("resize", measure);
+    }, []);
+
+    const { scrollY } = useScroll();
+    const scrollYProgress = useTransform(scrollY, (v) => {
+        const p = (v - sectionTop) / SCROLL_DISTANCE;
+        return Math.min(1, Math.max(0, p));
+    });
+
+    return (
+        <section ref={sectionRef} className="relative overflow-hidden bg-blue pt-16 md:pt-24">
+
+            <div className="relative mt-14 md:mt-20">
+                {BANDS.map((band, i) => (
+                    <ParallaxBand
+                        key={band.id}
+                        band={band}
+                        window={BAND_WINDOWS[i]}
+                        scrollYProgress={scrollYProgress}
+                    />
+                ))}
+            </div>
+        </section>
     );
 }

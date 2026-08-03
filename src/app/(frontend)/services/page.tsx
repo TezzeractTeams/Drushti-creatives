@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ServicesHero from "@/sections/ServicesHero";
+import SubServicesBands from "@/sections/subservices";
 
 export const metadata: Metadata = {
   title: "Services | Drushti Creatives",
@@ -11,6 +12,7 @@ export default function ServicesPage() {
   return (
     <main>
       <ServicesHero />
+      <SubServicesBands />
     </main>
   );
 }
