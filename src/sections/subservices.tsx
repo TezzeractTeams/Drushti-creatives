@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "motion/react";
+import { motion, useScroll, useTransform, useMotionValue, useMotionValueEvent, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import PillButton from "@/components/PillButton";
 
@@ -110,9 +110,13 @@ function ParallaxBand({
     );
 }
 
-export default function ServicesHero() {
+export default function ServicesHero({ selectedId = null }: { selectedId?: string | null } = {}) {
     const sectionRef = useRef<HTMLElement>(null);
     const [sectionTop, setSectionTop] = useState(0);
+    // Reused for the filtered single-band view below: a constant progress of
+    // 1 makes ParallaxBand's own scroll-driven transforms evaluate to their
+    // end state (fully expanded, button visible) with no scroll needed.
+    const staticProgress = useMotionValue(1);
 
     // Measured once (and on viewport resize) rather than tracked live: the
     // bands inside this section grow in real layout height as they expand,
@@ -140,18 +144,26 @@ export default function ServicesHero() {
         return Math.min(1, Math.max(0, p));
     });
 
+    const selectedBand = selectedId ? BANDS.find((band) => band.id === selectedId) : null;
+
     return (
         <section ref={sectionRef} className="relative overflow-hidden bg-blue pt-16 md:pt-24">
 
             <div className="relative mt-14 md:mt-20">
-                {BANDS.map((band, i) => (
-                    <ParallaxBand
-                        key={band.id}
-                        band={band}
-                        window={BAND_WINDOWS[i]}
-                        scrollYProgress={scrollYProgress}
-                    />
-                ))}
+                {selectedBand ? (
+                    // Filtered: only the selected tag's band, already fully
+                    // expanded — replaces the scroll-driven cascade entirely.
+                    <ParallaxBand band={selectedBand} window={[0, 1]} scrollYProgress={staticProgress} />
+                ) : (
+                    BANDS.map((band, i) => (
+                        <ParallaxBand
+                            key={band.id}
+                            band={band}
+                            window={BAND_WINDOWS[i]}
+                            scrollYProgress={scrollYProgress}
+                        />
+                    ))
+                )}
             </div>
         </section>
     );

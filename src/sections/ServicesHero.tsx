@@ -20,27 +20,29 @@ type ServiceItem = {
 };
 
 // Paths are root-relative to /public — public/art/halfcircle.png -> "/art/halfcircle.png"
+// ids match subservices.tsx's BANDS ids (and /services/[id] routes) — this
+// is what lets a hero tag select/filter the matching band below.
 const SERVICES: ServiceItem[] = [
   {
-    id: "branding",
+    id: "marketing",
     label: "Social Media & Digital Marketing",
     src: "/art/halfcircle.png",
     scatter: { x: -260, y: -40, rotate: -20 },
   },
   {
-    id: "marketing",
+    id: "logo",
     label: "Logo Design & Graphic Design",
     src: "/art/element1.png",
     scatter: { x: 40, y: -70, rotate: 15 },
   },
   {
-    id: "design",
+    id: "content",
     label: "Content Development",
     src: "/art/element2.png",
     scatter: { x: -90, y: 170, rotate: 30 },
   },
   {
-    id: "content",
+    id: "web",
     label: "Website & UI Designing",
     src: "/art/circle.png",
     scatter: { x: 300, y: 150, rotate: -18 },
@@ -61,9 +63,13 @@ function useOpacity(value: MotionValue<number>) {
 function ServiceIcon({
   service,
   progress,
+  selected,
+  onSelect,
 }: {
   service: ServiceItem;
   progress: MotionValue<number>;
+  selected: boolean;
+  onSelect?: (id: string) => void;
 }) {
   // Converge well before the pinned section actually releases (scroll
   // progress 1) — the spring's own settle time otherwise oozes past the
@@ -72,41 +78,82 @@ function ServiceIcon({
   const x = useTransform(progress, [0, 0.6], [service.scatter.x, 0], { clamp: true });
   const y = useTransform(progress, [0, 0.6], [service.scatter.y, 0], { clamp: true });
   const rotate = useTransform(progress, [0, 0.6], [service.scatter.rotate, 0], { clamp: true });
+  // Shape starts at 5x its landed icon size and shrinks in as it lands —
+  // transform: scale doesn't affect layout, so the oversized shape floats
+  // freely over the (still-invisible) pill without pushing its bounds out.
+  const iconScale = useTransform(progress, [0, 0.6], [5, 1], { clamp: true });
 
   // Spring on top of the scroll-linked values for the settle feel
   const springX = useSpring(x, { stiffness: 120, damping: 18 });
   const springY = useSpring(y, { stiffness: 120, damping: 18 });
   const springRotate = useSpring(rotate, { stiffness: 120, damping: 18 });
+  const springIconScale = useSpring(iconScale, { stiffness: 120, damping: 18 });
 
-  const labelOpacity = useTransform(progress, [0.45, 0.75], [0, 1], { clamp: true });
+  // The shape flies in on its own (always visible); the pill outline and
+  // label only appear once it's essentially landed — so the loose shape
+  // visibly "becomes" a selectable tag/button rather than the button just
+  // popping in already-formed.
+  const pillOpacity = useTransform(progress, [0.45, 0.75], [0, 1], { clamp: true });
+  const pillOpacityRef = useOpacity(pillOpacity);
+  const labelOpacity = pillOpacity;
   const labelOpacityRef = useOpacity(labelOpacity);
 
   return (
-    <div className="flex w-[45%] shrink-0 flex-col items-center gap-3 sm:w-auto sm:gap-4">
-      <motion.div style={{ x: springX, y: springY, rotate: springRotate }}>
-        <Image
-          src={service.src}
-          alt=""
-          width={280}
-          height={280}
-          className="h-auto w-20 sm:w-44 md:w-52"
-        />
-      </motion.div>
+    <motion.button
+      type="button"
+      onClick={() => onSelect?.(service.id)}
+      aria-pressed={selected}
+      style={{ x: springX, y: springY, rotate: springRotate }}
+      className="relative flex shrink-0 cursor-pointer items-center"
+    >
       <div
-        ref={labelOpacityRef}
-        style={{ opacity: labelOpacity.get() }}
-        className="max-w-[9rem] text-center text-xs leading-snug text-white/70 sm:max-w-none sm:text-sm"
-      >
-        {service.label}
+        ref={pillOpacityRef}
+        style={{ opacity: pillOpacity.get() }}
+        aria-hidden
+        className={`absolute inset-0 rounded-full border-2 transition-colors duration-300 ${selected ? "border-white" : "border-white/50"}`}
+      />
+      <div className="relative flex items-center gap-2.5 px-2.5 py-1.5 sm:gap-3 sm:px-3.5 sm:py-2">
+        <motion.div style={{ scale: springIconScale }} className="shrink-0">
+          <Image
+            src={service.src}
+            alt=""
+            width={200}
+            height={200}
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          />
+        </motion.div>
+        <span
+          ref={labelOpacityRef}
+          style={{ opacity: labelOpacity.get() }}
+          className="whitespace-nowrap text-base uppercase tracking-wide text-white sm:text-lg"
+        >
+          {service.label}
+        </span>
       </div>
-    </div>
+    </motion.button>
   );
 }
 
-export default function ServicesIntro() {
+type ServicesHeroProps = {
+  heading?: string;
+  paragraph?: string;
+  /** Selected service id (matches subservices.tsx's BANDS ids). Omit on
+   *  pages (e.g. Portfolio) that don't filter anything below the hero. */
+  selectedId?: string | null;
+  /** Called with the clicked tag's id, or null when re-clicking the
+   *  already-selected tag to clear the filter. Omit to render inert tags. */
+  onSelectService?: (id: string | null) => void;
+};
+
+export default function ServicesIntro({
+  heading = "Clear solutions for your brand's growth.",
+  paragraph = "We handle everything from strategy to execution — branding, digital marketing, web, video, and graphic design — so your brand stays consistent, professional, and always moving forward.",
+  selectedId = null,
+  onSelectService,
+}: ServicesHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Tune h-[300vh] below to control how much scroll the sequence eats up
+  // Tune h-[100vh] below to control how much scroll the sequence eats up
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -116,26 +163,33 @@ export default function ServicesIntro() {
   const paragraphOpacityRef = useOpacity(paragraphOpacity);
 
   return (
-    <section ref={containerRef} className="relative h-[220vh] bg-blue sm:h-[300vh]">
-      <div className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden px-4">
+    <section ref={containerRef} className="relative h-[85vh] bg-blue sm:h-[100vh]">
+      {/* h-[70svh], not 70vh: svh stays fixed as mobile browser chrome
+          shows/hides on scroll, so the pinned content doesn't resize (and
+          re-center) under the user mid-scroll. */}
+      <div className="sticky top-0 flex h-[70svh] flex-col items-center justify-center overflow-hidden px-4">
         <Container>
           <h1 className="font-heading text-center text-heading-hero-half font-bold leading-[0.85] tracking-tight text-white">
-            Clear solutions for your brand&apos;s growth.
+            {heading}
           </h1>
 
           <div
             ref={paragraphOpacityRef}
             style={{ opacity: paragraphOpacity.get() }}
-            className="mx-auto mt-8 max-w-xs text-center text-sm leading-relaxed text-white/70 sm:mt-10 sm:max-w-xl sm:text-base"
+            className="mx-auto mt-6 max-w-xs text-center text-sm leading-relaxed text-white/70 sm:mt-8 sm:max-w-xl sm:text-base"
           >
-            We handle everything from strategy to execution — branding, digital
-            marketing, web, video, and graphic design — so your brand stays
-            consistent, professional, and always moving forward.
+            {paragraph}
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-8 sm:mt-16 sm:flex-nowrap sm:gap-10">
+          <div className="mt-8 flex flex-wrap justify-center gap-3 sm:mt-10 sm:gap-4">
             {SERVICES.map((service) => (
-              <ServiceIcon key={service.id} service={service} progress={scrollYProgress} />
+              <ServiceIcon
+                key={service.id}
+                service={service}
+                progress={scrollYProgress}
+                selected={selectedId === service.id}
+                onSelect={(id) => onSelectService?.(selectedId === id ? null : id)}
+              />
             ))}
           </div>
         </Container>
