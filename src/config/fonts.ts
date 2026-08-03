@@ -1,4 +1,4 @@
-import { Montserrat, Space_Grotesk } from "next/font/google";
+import { Montserrat, Space_Grotesk, Special_Gothic_Expanded_One } from "next/font/google";
 import {
   ACTIVE_FONT_SYSTEM,
   activeFontSystem,
@@ -40,12 +40,19 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+const specialGothicExpandedOne = Special_Gothic_Expanded_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-heading",
+  display: "swap",
+});
+
 const FONT_VARIABLES: Record<FontSystemId, string> = {
   boldonse: montserrat.variable,
   spaceGrotesk: `${spaceGrotesk.variable} ${montserrat.variable}`,
   notable: montserrat.variable,
   bbhHegarty: montserrat.variable,
-  specialGothicExpandedOne: montserrat.variable,
+  specialGothicExpandedOne: `${specialGothicExpandedOne.variable} ${montserrat.variable}`,
 };
 
 /** Apply to <html className> in layout.tsx */

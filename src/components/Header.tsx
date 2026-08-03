@@ -66,6 +66,8 @@ export default function Header() {
   });
 
   const isContactPage = pathname === "/contact";
+  const isPortfolioPage =
+    pathname === "/portfolio" || pathname.startsWith("/portfolio/");
 
   // Only the Blog link gets the curtain treatment (see CURTAIN_* constants
   // above): cover the screen, navigate underneath it, then curl the panel
@@ -95,7 +97,9 @@ export default function Header() {
         ? "bg-blue border-white/25"
         : isContactPage
           ? "bg-transparent border-[#1A1A1A]/10"
-          : "bg-transparent border-white/25"
+          : isPortfolioPage
+            ? "bg-blue border-white/25"
+            : "bg-transparent border-white/25"
         }`}
     >
       <Container className="flex items-center justify-between py-0">

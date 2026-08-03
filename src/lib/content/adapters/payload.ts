@@ -142,24 +142,18 @@ export async function fetchProjectBySlug(slug: string): Promise<Project | undefi
   return doc ? mapPortfolioDoc(doc) : undefined;
 }
 
-export async function fetchFeaturedHomepageProjects(): Promise<Project[]> {
+/** Single query covering both the homepage-featured and hero-featured sets —
+ *  callers split the result by flag. Replaces two separate depth:2 queries
+ *  against the same collection (each fetching up to 100 fully-populated
+ *  docs) with one, cut down to a realistic homepage-sized limit. */
+export async function fetchHomepageAndHeroFeaturedProjects(): Promise<Project[]> {
   const payload = await getPayloadClient();
   const result = await payload.find({
     collection: "portfolio",
-    where: { featuredOnHomepage: { equals: true } },
-    limit: 100,
-    depth: 2,
-    sort: "-updatedAt",
-  });
-  return result.docs.map(mapPortfolioDoc);
-}
-
-export async function fetchHeroFeaturedProjects(): Promise<Project[]> {
-  const payload = await getPayloadClient();
-  const result = await payload.find({
-    collection: "portfolio",
-    where: { featuredOnHero: { equals: true } },
-    limit: 100,
+    where: {
+      or: [{ featuredOnHomepage: { equals: true } }, { featuredOnHero: { equals: true } }],
+    },
+    limit: 50,
     depth: 2,
     sort: "-updatedAt",
   });

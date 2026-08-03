@@ -32,7 +32,7 @@ export default function PortfolioCard({
       href={href}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      className={`group relative block aspect-[4/3] overflow-hidden rounded-3xl border border-ink/5 bg-white transition-opacity duration-300 ${
+      className={`group relative block aspect-[4/3] overflow-hidden rounded-2xl border border-ink/5 bg-white transition-opacity duration-300 ${
         isDimmed ? "opacity-40" : "opacity-100"
       }`}
     >
@@ -53,11 +53,9 @@ export default function PortfolioCard({
       >
         <h3 className="font-heading text-base font-semibold text-ink">{name}</h3>
         <p className="mt-0.5 text-xs text-ink/60">{client}</p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-2">
           {tags.slice(0, 2).map((tag) => (
-            <Tag key={tag} className="h-6 px-2 text-[0.6rem]">
-              {tag}
-            </Tag>
+            <Tag key={tag}>{tag}</Tag>
           ))}
         </div>
       </div>

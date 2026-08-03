@@ -91,18 +91,36 @@ export default function CustomCursor() {
     setEnabled(true);
     document.body.classList.add("cursor-none");
 
-    const handleMove = (e: MouseEvent) => {
-      x.set(e.clientX - half);
-      y.set(e.clientY - half);
+    // getClickableNear does up to 11 elementFromPoint() calls — cheap once,
+    // expensive on every raw mousemove (which can fire far more than 60/s on
+    // high-poll-rate mice). Position tracking stays on every event (just a
+    // motion-value set); the clickable-proximity check is gated to at most
+    // once per animation frame via rafId.
+    let rafId: number | null = null;
+    let lastX = 0;
+    let lastY = 0;
 
-      const clickable = getClickableNear(e.clientX, e.clientY, PROXIMITY_RADIUS);
+    const checkProximity = () => {
+      rafId = null;
+      const clickable = getClickableNear(lastX, lastY, PROXIMITY_RADIUS);
       const nearClickable = Boolean(clickable);
       interactive.set(nearClickable ? 1 : 0);
 
       if (nearClickable && !wasInteractive.current) {
-        spawnRipple(e.clientX, e.clientY);
+        spawnRipple(lastX, lastY);
       }
       wasInteractive.current = nearClickable;
+    };
+
+    const handleMove = (e: MouseEvent) => {
+      x.set(e.clientX - half);
+      y.set(e.clientY - half);
+
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(checkProximity);
+      }
     };
 
     const handleDown = (e: MouseEvent) => {
@@ -114,6 +132,7 @@ export default function CustomCursor() {
     window.addEventListener("mousedown", handleDown);
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mousedown", handleDown);
       document.body.classList.remove("cursor-none");

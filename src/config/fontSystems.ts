@@ -163,9 +163,10 @@ export const FONT_SYSTEMS = {
     id: "specialGothicExpandedOne",
     label: "Special Gothic Expanded One + Montserrat",
     heading: {
-      cssFamily: '"Special Gothic Expanded One", sans-serif',
-      googleFontsUrl:
-        "https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&display=swap",
+      // Self-hosted via next/font/google (fonts.ts) instead — the cssFamily/
+      // googleFontsUrl path was an extra render-blocking request to Google Fonts.
+      cssFamily: undefined,
+      googleFontsUrl: undefined,
       weight: 400,
       letterSpacing: "-0.02em",
       textTransform: "none",
