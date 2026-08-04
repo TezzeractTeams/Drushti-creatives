@@ -62,6 +62,46 @@ const PORTFOLIO_CLIENTS: Client[] = [
     logoSquare: "/Drushti Company Profile Designs/Speak/Company Profile SM Desings-17.png",
     logoFocus: "/Drushti Company Profile Designs/Speak/Company Profile SM Desings-17.png",
   },
+  // Same placeholder-logo situation as above, sourced from each client's own
+  // social media design folder instead (a different image than the one used
+  // as that client's featured/gallery project images, so no single source
+  // file gets uploaded twice under this client).
+  {
+    slug: "afi",
+    name: "AFI",
+    logoSquare: "/Drushti Social Media/AFI/AFI-13.png",
+    logoFocus: "/Drushti Social Media/AFI/AFI-13.png",
+  },
+  {
+    slug: "aarrya",
+    name: "Aarrya",
+    logoSquare: "/Drushti Social Media/Aarrya/Aarrya.png",
+    logoFocus: "/Drushti Social Media/Aarrya/Aarrya.png",
+  },
+  {
+    slug: "nlpl",
+    name: "NLPL",
+    logoSquare: "/Drushti Social Media/NLPL/NLPL SM-02.png",
+    logoFocus: "/Drushti Social Media/NLPL/NLPL SM-02.png",
+  },
+  {
+    slug: "oak",
+    name: "OAK",
+    logoSquare: "/Drushti Social Media/OAK/Oak-07.png",
+    logoFocus: "/Drushti Social Media/OAK/Oak-07.png",
+  },
+  {
+    slug: "semi-colon",
+    name: "Semi Colon",
+    logoSquare: "/Drushti Social Media/Semi Colon/Semicolon-12.png",
+    logoFocus: "/Drushti Social Media/Semi Colon/Semicolon-12.png",
+  },
+  {
+    slug: "uber-rides",
+    name: "Uber Rides",
+    logoSquare: "/Drushti Social Media/Uber Rides/Uber Rides-10.png",
+    logoFocus: "/Drushti Social Media/Uber Rides/Uber Rides-10.png",
+  },
 ];
 
 export const STATIC_CLIENTS: Client[] = [

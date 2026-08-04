@@ -11,8 +11,22 @@ export const metadata: Metadata = {
     "Explore real projects we've delivered for our clients — from brand identity and social media to digital campaigns.",
 };
 
+// Only the original 5 case studies are shown on this page — the later
+// company-profile and social-media batches were seeded for other pages
+// (e.g. service detail "Our Work" sections) but shouldn't clutter this grid.
+const ORIGINAL_PORTFOLIO_SLUGS = [
+  "advantis",
+  "norlanka",
+  "uber-sri-lanka",
+  "uber-eats",
+  "wild-drift",
+];
+
 export default async function PortfolioPage() {
-  const projects = await getProjects();
+  const allProjects = await getProjects();
+  const projects = ORIGINAL_PORTFOLIO_SLUGS.map((slug) =>
+    allProjects.find((p) => p.slug === slug),
+  ).filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <main>
