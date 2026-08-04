@@ -24,7 +24,7 @@ export default function OurWork({
   if (items.length === 0) return null;
 
   return (
-    <section className="bg-yellow py-16 md:py-24">
+    <section className="bg-white py-16 md:py-24">
       <Container>
         <div className="mb-12 max-w-2xl">
           <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-tight">Our Work</h2>

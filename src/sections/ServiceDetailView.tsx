@@ -198,6 +198,8 @@ export default function ServiceDetailView({
                 </Container>
             </section>
 
+            <OurWork serviceId={id} items={workItems} />
+
             {/* Our Focus Section */}
             <section className="py-16 md:py-24">
                 <Container>
@@ -224,8 +226,6 @@ export default function ServiceDetailView({
             </section>
 
             <OurProcess steps={details.process} />
-
-            <OurWork serviceId={id} items={workItems} />
 
             {/* FAQ Section */}
             <section className="py-16 md:py-24">
@@ -256,14 +256,30 @@ export default function ServiceDetailView({
                                         <AnimatePresence initial={false}>
                                             {isOpen && (
                                                 <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                    className="grid gap-6 sm:grid-cols-2"
+                                                    initial="hidden"
+                                                    whileInView="visible"
+                                                    viewport={{ once: true, amount: 0.2 }}
+                                                    variants={{
+                                                        visible: { transition: { staggerChildren: 0.1 } }
+                                                    }}
                                                 >
-                                                    <div className="px-6 pb-6 pt-2 sm:px-8 sm:pb-8 border-t border-ink/5 text-sm sm:text-base text-ink/70 leading-relaxed">
-                                                        {faq.answer}
-                                                    </div>
+                                                    {details.focus.map((item, index) => {
+                                                        const [title, description] = item.split(": ");
+                                                        return (
+                                                            <motion.div
+                                                                key={index}
+                                                                variants={{
+                                                                    hidden: { opacity: 0, y: 24 },
+                                                                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                                                                }}
+                                                                className="bg-white p-8 rounded-3xl border border-ink/5 shadow-sm hover:shadow-md transition-shadow"
+                                                            >
+                                                                <h3 className="font-heading text-lg font-semibold mb-2">{title}</h3>
+                                                                <p className="text-sm text-ink/70 leading-relaxed">{description}</p>
+                                                            </motion.div>
+                                                        );
+                                                    })}
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
