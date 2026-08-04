@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
+import {
+    motion,
+    AnimatePresence,
+    useMotionValue,
+    useSpring,
+    useTransform,
+    useReducedMotion,
+} from "motion/react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import Link from "next/link";
@@ -156,6 +164,74 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
     }
 };
 
+// Right-side hero art: fades/scales in once (whileInView), floats gently at
+// idle, and tilts in 3D toward the cursor on hover — three separate motion
+// layers so the entrance, idle float, and pointer tilt never fight over the
+// same animated property.
+function ServiceHeroImage({ src, alt }: { src: string; alt: string }) {
+    const prefersReducedMotion = useReducedMotion();
+
+    const px = useMotionValue(0.5);
+    const py = useMotionValue(0.5);
+    const springX = useSpring(px, { stiffness: 150, damping: 15, mass: 0.5 });
+    const springY = useSpring(py, { stiffness: 150, damping: 15, mass: 0.5 });
+
+    const rotateX = useTransform(springY, (v) => (v - 0.5) * -16);
+    const rotateY = useTransform(springX, (v) => (v - 0.5) * 16);
+
+    const handlePointer = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (prefersReducedMotion) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        px.set((e.clientX - rect.left) / rect.width);
+        py.set((e.clientY - rect.top) / rect.height);
+    };
+    const reset = () => {
+        px.set(0.5);
+        py.set(0.5);
+    };
+
+    return (
+        // Layer 1: one-time entrance
+        <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="relative mx-auto w-full max-w-sm lg:max-w-md"
+        >
+            {/* Layer 2: idle float, disabled under reduced motion */}
+            <motion.div
+                animate={
+                    prefersReducedMotion
+                        ? undefined
+                        : { y: [0, -10, 0] }
+                }
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            >
+                {/* Layer 3: cursor-driven 3D tilt */}
+                <motion.div
+                    onMouseMove={handlePointer}
+                    onMouseLeave={reset}
+                    style={
+                        prefersReducedMotion
+                            ? undefined
+                            : { rotateX, rotateY, transformPerspective: 1000 }
+                    }
+                >
+                    <Image
+                        src={src}
+                        alt={alt}
+                        width={640}
+                        height={640}
+                        priority
+                        className="h-auto w-full drop-shadow-2xl"
+                    />
+                </motion.div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
 export default function ServiceDetailView({
     id,
     workItems,
@@ -184,16 +260,27 @@ export default function ServiceDetailView({
                 flush against the very top of the viewport with zero gap. */}
             <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 overflow-hidden`}>
                 <Container>
-                    <div className="max-w-4xl">
-                        <Link href="/services" className="inline-flex items-center gap-2 mb-8 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity">
-                            ← Back to Services
-                        </Link>
-                        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1] tracking-tight mb-8">
-                            {details.title}
-                        </h1>
-                        <p className="text-lg sm:text-xl md:text-2xl font-medium leading-relaxed opacity-90 max-w-3xl">
-                            {details.description}
-                        </p>
+                    <Link href="/services" className="inline-flex items-center gap-2 mb-8 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity">
+                        ← Back to Services
+                    </Link>
+                    <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+                        <div className="max-w-2xl">
+                            {/* Fluid size (clamp) rather than fixed breakpoints so the
+                                title keeps shrinking to fit a single line as the text
+                                column narrows against the image, instead of jumping
+                                between a few fixed steps. Tune the clamp max (currently
+                                3rem) down further if your longest title still wraps. */}
+                            <h1 className="font-heading whitespace-normal lg:whitespace-nowrap text-[clamp(1.75rem,4vw,3rem)] font-normal leading-[1.05] tracking-tight mb-8">
+                                {details.title}
+                            </h1>
+                            <p className="text-lg sm:text-xl font-medium leading-relaxed opacity-90">
+                                {details.description}
+                            </p>
+                        </div>
+                        <ServiceHeroImage
+                            src="/services/digital-social-media.png"
+                            alt={details.title}
+                        />
                     </div>
                 </Container>
             </section>

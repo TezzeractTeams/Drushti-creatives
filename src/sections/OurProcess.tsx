@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useMotionValueEvent } from "motion/react";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react";
 import Container from "@/components/Container";
 import { Burst } from "@/components/HeroShapes";
 import { EASE } from "@/lib/motion";
@@ -30,6 +30,11 @@ const CARD_COLORS = [
 const CONTRACTED_SIZE_PX = 72; // text-7xl (4.5rem)
 const EXPANDED_SIZE_MIN_PX = 192;
 const EXPANDED_SIZE_MAX_PX = 224;
+
+// How much each card overlaps its left neighbor, collapsed or expanded —
+// negative margin rather than a gap, so cards read as a tightly packed,
+// slightly overlapping stack instead of separated tiles.
+const CARD_OVERLAP = "-3rem";
 
 function ProcessStepNumber({
   step,
@@ -114,13 +119,14 @@ function ProcessCard({
       initial={false}
       animate={{
         flex: isActive ? 4 : 1,
-        padding: "1.5rem",
         backgroundColor: isActive ? "#ffffff" : cardColor.bg,
       }}
       transition={{ duration: 0.5, ease: EASE }}
       style={{
         overflow: "hidden",
         borderRadius: "1.5rem",
+        marginLeft: index === 0 ? 0 : CARD_OVERLAP,
+        zIndex: isActive ? 30 : index,
       }}
       onClick={onActivate}
       role="button"
@@ -134,34 +140,63 @@ function ProcessCard({
       aria-pressed={isActive}
       className="relative flex cursor-pointer flex-col justify-between"
     >
-      <div className="flex flex-col">
-        <ProcessStepNumber
-          step={index + 1}
-          strokeColor={isActive ? "rgb(var(--ink))" : cardColor.text}
-          isActive={isActive}
-          cardRef={cardRef}
-        />
-
-        <motion.h3
-          initial={false}
-          animate={{ color: isActive ? "rgb(var(--ink))" : cardColor.text }}
-          transition={{ duration: 0.5, ease: EASE }}
-          className="mt-2 shrink-0 font-heading text-heading-xl leading-heading sm:text-heading-2xl"
-        >
-          {step.title}
-        </motion.h3>
-      </div>
-
-      <motion.p
-        initial={false}
+      {/* Content wrapper */}
+      <motion.div
         animate={{
-          color: isActive ? "rgba(var(--ink) / 0.8)" : cardColor.textMuted,
+          padding: "1.5rem",
+          // Push collapsed content to the right so it doesn't sit
+          // underneath the overlapping expanded card.
+          paddingLeft: isActive ? "1.5rem" : "3.75rem",
         }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="shrink-0 text-xs sm:text-sm"
+        className="flex h-full flex-col justify-between"
       >
-        {step.description}
-      </motion.p>
+        <div className="flex flex-col">
+          <ProcessStepNumber
+            step={index + 1}
+            strokeColor={isActive ? "rgb(var(--ink))" : cardColor.text}
+            isActive={isActive}
+            cardRef={cardRef}
+          />
+
+          <motion.h3
+            initial={false}
+            animate={{
+              color: isActive ? "rgb(var(--ink))" : cardColor.text,
+            }}
+            transition={{ duration: 0.5, ease: EASE }}
+            style={
+              isActive
+                ? undefined
+                : {
+                  writingMode: "vertical-rl",
+                  transform: "rotate(180deg)",
+                }
+            }
+            className={`mt-2 shrink-0 whitespace-nowrap font-heading leading-heading ${isActive
+                ? "text-heading-xl sm:text-heading-2xl"
+                : "text-base sm:text-lg"
+              }`}
+          >
+            {step.title}
+          </motion.h3>
+        </div>
+
+        <AnimatePresence>
+          {isActive && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: EASE }}
+              className="shrink-0 text-xs sm:text-sm"
+              style={{ color: "rgba(var(--ink) / 0.8)" }}
+            >
+              {step.description}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }
@@ -265,8 +300,9 @@ export default function OurProcess({ steps }: { steps: ProcessStep[] }) {
               </h2>
             </motion.div>
 
-            {/* The Horizontal Expanding Cards */}
-            <div className="flex flex-1 w-full min-h-[300px] max-h-[500px] gap-2">
+            {/* The Horizontal Expanding Cards — no gap className anymore;
+                overlap comes from each card's own negative marginLeft. */}
+            <div className="flex flex-1 w-full min-h-[300px] max-h-[500px]">
               {steps.map((step, i) => {
                 const isActive = activeIndex === i;
 

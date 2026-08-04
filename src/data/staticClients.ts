@@ -34,6 +34,34 @@ const PORTFOLIO_CLIENTS: Client[] = [
     logoSquare: "/clients/Drushti Client - Uber.png",
     logoFocus: "/clients/Drushti Client - Uber - focused.png",
   },
+  // No dedicated logo art on file for these four yet — using their first
+  // company-profile design as a stand-in for both crops so the required
+  // Client.logoSquare/logoFocus fields are satisfied. Swap in real logos
+  // (square + focus crop) whenever they're available.
+  {
+    slug: "abi",
+    name: "Abi",
+    logoSquare: "/Drushti Company Profile Designs/Abi/Company Profile SM Desings-01.png",
+    logoFocus: "/Drushti Company Profile Designs/Abi/Company Profile SM Desings-01.png",
+  },
+  {
+    slug: "ibh",
+    name: "IBH",
+    logoSquare: "/Drushti Company Profile Designs/IBH/Company Profile SM Desings-05.png",
+    logoFocus: "/Drushti Company Profile Designs/IBH/Company Profile SM Desings-05.png",
+  },
+  {
+    slug: "om-ceylon",
+    name: "OM Ceylon",
+    logoSquare: "/Drushti Company Profile Designs/OM Ceylon/Company Profile SM Desings-09.png",
+    logoFocus: "/Drushti Company Profile Designs/OM Ceylon/Company Profile SM Desings-09.png",
+  },
+  {
+    slug: "speak",
+    name: "Speak",
+    logoSquare: "/Drushti Company Profile Designs/Speak/Company Profile SM Desings-17.png",
+    logoFocus: "/Drushti Company Profile Designs/Speak/Company Profile SM Desings-17.png",
+  },
 ];
 
 export const STATIC_CLIENTS: Client[] = [

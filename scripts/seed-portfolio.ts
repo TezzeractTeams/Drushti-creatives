@@ -59,7 +59,16 @@ async function ensureClient(
   }
 
   const logoSquareId = await ensureMedia(payload, `${client.name} logo square`, client.logoSquare);
-  const logoFocusId = await ensureMedia(payload, `${client.name} logo focus`, client.logoFocus);
+  // Same source file used for both crops (no dedicated focus crop yet) —
+  // reuse the one upload instead of uploading it a second time. Uploading
+  // the identical file twice under a different alt makes Payload's
+  // filename-collision handling invent an unrelated numeric suffix (e.g.
+  // "-01.png" re-uploaded becomes "-2.webp"), which can then collide with
+  // and shadow a *real* file of that generated name uploaded later.
+  const logoFocusId =
+    client.logoFocus === client.logoSquare
+      ? logoSquareId
+      : await ensureMedia(payload, `${client.name} logo focus`, client.logoFocus);
 
   if (!logoSquareId || !logoFocusId) {
     console.warn(`Could not create logos for client ${client.slug}`);
@@ -158,13 +167,14 @@ async function seed() {
       continue;
     }
 
-    const galleryIds = (
-      await Promise.all(
-        project.images.map((imagePath, index) =>
-          ensureMedia(payload, `${project.client} gallery ${index + 1}`, imagePath),
-        ),
-      )
-    ).filter((id): id is number => id !== null);
+    // Sequential, not Promise.all: concurrent media creates against the
+    // SQLite-backed dev DB race each other and intermittently fail with a
+    // misleading "filename" validation error (single-writer contention).
+    const galleryIds: number[] = [];
+    for (const [index, imagePath] of project.images.entries()) {
+      const id = await ensureMedia(payload, `${project.client} gallery ${index + 1}`, imagePath);
+      if (id !== null) galleryIds.push(id);
+    }
 
     await payload.create({
       collection: "portfolio",
