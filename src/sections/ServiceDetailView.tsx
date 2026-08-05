@@ -35,6 +35,7 @@ type ServiceDetails = {
     faqs: FAQItem[];
     bgClass: string;
     textClass: string;
+    heroImage: string;
 };
 
 const SERVICES_DATA: Record<string, ServiceDetails> = {
@@ -61,7 +62,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "How do I know if the marketing is actually working?", answer: "We provide a simple monthly update. We show you how many people reached out, how many saw your brand, and exactly where your ad budget went." }
         ],
         bgClass: "bg-blue",
-        textClass: "text-white"
+        textClass: "text-white",
+        heroImage: "/services/digital-social-media.png"
     },
     brand: {
         title: "Logo Design & Brand Identity",
@@ -86,7 +88,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "How long does the branding process take?", answer: "A full identity usually takes about 2 to 3 weeks. This gives us enough time to think, design, and get your feedback." }
         ],
         bgClass: "bg-orange",
-        textClass: "text-white"
+        textClass: "text-white",
+        heroImage: "/services/logo-design.png"
     },
     web: {
         title: "Website & UI Designing",
@@ -110,7 +113,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "Will my website show up on Google?", answer: "We set up the basics to make sure Google can find you. For higher rankings, we can talk about a long-term plan to keep your site active and relevant." }
         ],
         bgClass: "bg-yellow",
-        textClass: "text-ink"
+        textClass: "text-ink",
+        heroImage: "/services/Website.png"
     },
     video: {
         title: "Video Production/Editing",
@@ -135,7 +139,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "What do I need to prepare before we film?", answer: "We’ll handle the plan and the script. You just need to provide the space (if we are filming at your office) and make sure your team is ready." }
         ],
         bgClass: "bg-sky",
-        textClass: "text-white"
+        textClass: "text-white",
+        heroImage: "/services/video-production.png"
     },
     graphic: {
         title: "Graphic Design & Content Development",
@@ -160,7 +165,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
             { question: "How fast can I get a design done?", answer: "Small designs usually take 3 to 5 days. For larger projects like a 20-page profile, we’ll give you a specific timeline at the start." }
         ],
         bgClass: "bg-green",
-        textClass: "text-white"
+        textClass: "text-white",
+        heroImage: "/services/graphic.png"
     }
 };
 
@@ -278,7 +284,7 @@ export default function ServiceDetailView({
                             </p>
                         </div>
                         <ServiceHeroImage
-                            src="/services/digital-social-media.png"
+                            src={details.heroImage}
                             alt={details.title}
                         />
                     </div>
@@ -343,30 +349,14 @@ export default function ServiceDetailView({
                                         <AnimatePresence initial={false}>
                                             {isOpen && (
                                                 <motion.div
-                                                    className="grid gap-6 sm:grid-cols-2"
-                                                    initial="hidden"
-                                                    whileInView="visible"
-                                                    viewport={{ once: true, amount: 0.2 }}
-                                                    variants={{
-                                                        visible: { transition: { staggerChildren: 0.1 } }
-                                                    }}
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.3, ease: "easeInOut" }}
                                                 >
-                                                    {details.focus.map((item, index) => {
-                                                        const [title, description] = item.split(": ");
-                                                        return (
-                                                            <motion.div
-                                                                key={index}
-                                                                variants={{
-                                                                    hidden: { opacity: 0, y: 24 },
-                                                                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
-                                                                }}
-                                                                className="bg-white p-8 rounded-3xl border border-ink/5 shadow-sm hover:shadow-md transition-shadow"
-                                                            >
-                                                                <h3 className="font-heading text-lg font-semibold mb-2">{title}</h3>
-                                                                <p className="text-sm text-ink/70 leading-relaxed">{description}</p>
-                                                            </motion.div>
-                                                        );
-                                                    })}
+                                                    <div className="px-6 pb-6 sm:px-8 sm:pb-8 text-ink/70 text-sm md:text-base leading-relaxed border-t border-ink/5 pt-4">
+                                                        {faq.answer}
+                                                    </div>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
