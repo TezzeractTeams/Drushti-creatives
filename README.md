@@ -63,7 +63,83 @@ If you edit content directly in the Payload admin UI, those changes stay in your
 | `npm run setup` | First-time Payload setup (`.env` + seed) |
 | `npm run seed` | Re-seed users and CMS content |
 | `npm run generate:types` | Regenerate Payload TypeScript types |
+| `npm run preview` | Build and preview in Cloudflare Workers runtime |
+| `npm run deploy` | Migrate D1 + deploy to Cloudflare |
+| `npm run migrate:create` | Create a new Payload D1 migration |
 
-## Deploy on Vercel
+## Deploy on Cloudflare
 
-See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying). For production, use a hosted database (Postgres) instead of the local SQLite file and set `DATABASE_URL`, `PAYLOAD_SECRET`, and `NEXT_PUBLIC_SERVER_URL` in your hosting environment.
+This app deploys to **Cloudflare Workers** via [OpenNext](https://opennext.js.org/cloudflare) with Payload backed by **D1** (database) and **R2** (media uploads).
+
+> **Note:** Payload on Workers typically requires a **Workers Paid plan** due to bundle size limits.
+
+### One-time Cloudflare setup
+
+```bash
+# 1. Authenticate
+npx wrangler login
+
+# 2. Create D1 database
+npx wrangler d1 create drushti-creatives
+# Copy the database_id into wrangler.jsonc
+
+# 3. Create R2 bucket for media
+npx wrangler r2 bucket create drushti-creatives-media
+
+# 4. Set production secret
+npx wrangler secret put PAYLOAD_SECRET
+
+# 5. Update wrangler.jsonc vars
+#    - NEXT_PUBLIC_SERVER_URL → your production URL
+#    - database_id → from step 2
+```
+
+### Build & deploy commands
+
+**Local preview** (Workers runtime, closest to production):
+
+```bash
+npm run preview
+```
+
+**Production build only:**
+
+```bash
+npx opennextjs-cloudflare build
+```
+
+**Full deploy** (migrate remote D1 schema + deploy app):
+
+```bash
+npm run deploy
+```
+
+Manual equivalent:
+
+```bash
+cross-env NODE_ENV=production PAYLOAD_SECRET=ignore npx payload migrate
+npx opennextjs-cloudflare build
+npx opennextjs-cloudflare deploy
+```
+
+### First deploy: seed production content
+
+After the first deploy, D1 is empty. Run migrations via `npm run deploy`, then seed admin users and content into remote D1 using Wrangler remote bindings (e.g. run `npm run seed` with Cloudflare context via `wrangler dev` or adapt the seed scripts for remote D1).
+
+### Git-connected Cloudflare (Workers Builds)
+
+In Cloudflare dashboard → Workers & Pages → Connect Git:
+
+- **Build command:** `npm run deploy`
+- **Node version:** 20+
+- Set `PAYLOAD_SECRET` as an encrypted environment variable
+- Ensure D1 + R2 bindings in the dashboard match `wrangler.jsonc`
+
+### Environment variables
+
+| Variable | Local | Cloudflare |
+| --- | --- | --- |
+| `PAYLOAD_SECRET` | `.env` | Wrangler secret |
+| `DATABASE_URL` | `file:./payload.db` | Not used (D1 binding) |
+| `CONTENT_PROVIDER` | `payload` | `payload` (in `wrangler.jsonc` vars) |
+| `NEXT_PUBLIC_SERVER_URL` | `http://localhost:3000` | Production URL (in `wrangler.jsonc` vars) |

@@ -2,12 +2,9 @@ import { cache } from "react";
 import type { Project, ServiceCategory } from "@/lib/content/types";
 import * as payloadAdapter from "@/lib/content/adapters/payload";
 import * as staticAdapter from "@/lib/content/adapters/static";
+import { shouldUsePayloadProvider } from "@/lib/content/provider";
 
 export const REVALIDATE_SECONDS = 60;
-
-function shouldUsePayloadProvider(): boolean {
-  return process.env.CONTENT_PROVIDER !== "static" && Boolean(process.env.DATABASE_URL);
-}
 
 async function withFallback(
   fetcher: () => Promise<Project[]>,

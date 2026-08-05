@@ -11,6 +11,7 @@
 
 # next.js
 /.next/
+/.open-next/
 /out/
 
 # production
@@ -39,3 +40,4 @@ media/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+cloudflare-env.d.ts
