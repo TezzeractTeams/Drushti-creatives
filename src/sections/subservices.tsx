@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useMotionValueEvent, type MotionValue } from "motion/react";
-import Container from "@/components/Container";
 import PillButton from "@/components/PillButton";
 
 type Band = {

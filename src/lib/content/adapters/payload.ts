@@ -2,45 +2,12 @@ import type { Client, Project, ServiceCategory, TeamMember } from "@/lib/content
 import { projectHref } from "@/lib/content/types";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import type { Portfolio, Client as PayloadClient, Media as PayloadMedia, Team as PayloadTeam } from "@/payload-types";
 
-type MediaDoc = {
-  url?: string | null;
-};
-
-type ClientDoc = {
-  slug: string;
-  name: string;
-  logoSquare?: number | MediaDoc | null;
-  logoFocus?: number | MediaDoc | null;
-};
-
-type TeamDoc = {
-  name: string;
-  designation: string;
-  photo?: number | MediaDoc | null;
-  sortOrder?: number | null;
-};
-
-type PortfolioDoc = {
-  slug: string;
-  name: string;
-  client?: number | ClientDoc | null;
-  description: string;
-  serviceCategory: string;
-  createdAt: string;
-  updatedAt: string;
-  featuredImage?: number | MediaDoc | null;
-  images?: { image?: number | MediaDoc | null; id?: string | null }[] | null;
-  featuredOnHero?: boolean | null;
-  featuredOnHomepage?: boolean | null;
-  challenge: string;
-  strategy?: {
-    intro?: string | null;
-    points?: { title?: string | null; text?: string | null; id?: string | null }[] | null;
-  } | null;
-  results?: { metric?: string | null; text?: string | null; id?: string | null }[] | null;
-  tags?: { tag?: string | null; id?: string | null }[] | null;
-};
+type MediaDoc = PayloadMedia;
+type ClientDoc = PayloadClient;
+type TeamDoc = PayloadTeam;
+type PortfolioDoc = Portfolio;
 
 function resolveMediaUrl(media: number | MediaDoc | null | undefined): string {
   if (!media || typeof media === "number") return "";
@@ -66,7 +33,7 @@ function mapTeamDoc(doc: TeamDoc): TeamMember {
 }
 
 function mapPortfolioDoc(doc: PortfolioDoc): Project {
-  const clientDoc = doc.client && typeof doc.client !== "number" ? doc.client : null;
+  const clientDoc = doc.client && typeof doc.client !== "number" ? (doc.client as ClientDoc) : null;
   const clientName = clientDoc?.name ?? "";
   const clientSlug = clientDoc?.slug ?? "";
 
@@ -82,7 +49,7 @@ function mapPortfolioDoc(doc: PortfolioDoc): Project {
     doc.strategy?.intro || (doc.strategy?.points?.length ?? 0) > 0
       ? {
           intro: doc.strategy?.intro ?? "",
-          points: doc.strategy?.points?.map((point) => ({
+          points: (doc.strategy?.points ?? []).map((point) => ({
             title: point.title ?? "",
             text: point.text ?? "",
           })),
@@ -96,16 +63,16 @@ function mapPortfolioDoc(doc: PortfolioDoc): Project {
     clientSlug,
     clientLogoSquare: resolveMediaUrl(clientDoc?.logoSquare),
     clientLogoFocus: resolveMediaUrl(clientDoc?.logoFocus),
-    description: doc.description,
+    description: doc.description ?? "",
     tags,
-    serviceCategory: doc.serviceCategory as ServiceCategory,
+    serviceCategory: (doc.serviceCategory ?? "Social Media & Digital Marketing") as ServiceCategory,
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
     featuredImage: resolveMediaUrl(doc.featuredImage),
     images,
     featuredOnHero: doc.featuredOnHero ?? false,
     featuredOnHomepage: doc.featuredOnHomepage ?? false,
-    challenge: doc.challenge,
+    challenge: doc.challenge ?? "",
     strategy,
     results: (doc.results ?? []).map((result) => ({
       metric: result.metric ?? undefined,
