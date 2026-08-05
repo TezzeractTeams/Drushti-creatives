@@ -116,35 +116,36 @@ export default function Services() {
       // smaller height => less scroll distance => faster snapping.
       style={{ height: `${CATEGORIES.length * 55}vh` }}
     >
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-20">
+      <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-16 sm:py-20">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-10 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink"
+            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink sm:mb-10"
           >
             <Burst className="h-4 w-4 text-orange" />
             Services
           </motion.div>
 
-          <div className="grid gap-16 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-16">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.7, ease: EASE }}
+              className="order-2 min-w-0 lg:order-1"
             >
               {CATEGORIES.map((cat, i) => {
                 const isActive = i === active;
                 return (
-                  <div key={cat.name} className="border-b border-ink/10 py-6 first:pt-0">
+                  <div key={cat.name} className="border-b border-ink/10 py-5 first:pt-0 sm:py-6">
                     <button
                       type="button"
                       onClick={() => setActive(i)}
                       aria-expanded={isActive}
-                      className={`text-left font-heading text-heading-3xl leading-heading tracking-tight transition-colors duration-300 ${isActive ? cat.color : "text-ink/25 hover:text-ink/50"
+                      className={`text-left font-heading text-heading-xl leading-heading tracking-tight transition-colors duration-300 sm:text-heading-2xl lg:text-heading-3xl ${isActive ? cat.color : "text-ink/25 hover:text-ink/50"
                         }`}
                     >
                       {cat.name}
@@ -159,7 +160,7 @@ export default function Services() {
                           transition={{ duration: 0.4, ease: EASE }}
                           className="overflow-hidden"
                         >
-                          <p className="mt-4 max-w-xl text-base text-ink/70">{cat.description}</p>
+                          <p className="mt-4 max-w-xl text-sm text-ink/70 sm:text-base">{cat.description}</p>
                           <div className="mt-5 flex flex-wrap gap-2">
                             {cat.tags.map((tag) => (
                               <Tag key={tag}>{tag}</Tag>
@@ -178,7 +179,7 @@ export default function Services() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.7, ease: EASE }}
-              className="mx-auto flex size-[500px] items-center justify-center"
+              className="order-1 mx-auto flex size-[180px] items-center justify-center sm:size-[280px] lg:order-2 lg:size-[500px]"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -195,8 +196,8 @@ export default function Services() {
                       alt={activeCategory.name}
                       width={SERVICE_ICON_SIZE}
                       height={SERVICE_ICON_SIZE}
-                      sizes="500px"
-                      className="size-[500px] object-contain"
+                      sizes="(max-width: 640px) 180px, (max-width: 1024px) 280px, 500px"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <ActiveShape className="h-full w-full" />

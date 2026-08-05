@@ -25,14 +25,12 @@ export const Clients: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       label: "Logo (square)",
-      required: true,
     },
     {
       name: "logoFocus",
       type: "upload",
       relationTo: "media",
       label: "Logo (focus crop)",
-      required: true,
     },
   ],
 };

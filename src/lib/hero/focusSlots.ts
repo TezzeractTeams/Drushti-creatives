@@ -25,6 +25,14 @@ export const CANVAS_H_VH = 200;
 export const IMAGE_BOX_WIDTH_VW = 20;
 export const IMAGE_BOX_HEIGHT_VW = 12.5;
 
+// On phones the same 20vw box reads as a tiny, hard-to-read thumbnail (20vw
+// of a 375px screen is ~75px). Scaling the box up on mobile keeps the same
+// 8:5 aspect ratio and the same rest-position layout (IMAGE_POSITIONS is
+// unchanged — a bigger box just overlaps its neighbors a bit more, which
+// reads as intentional overlap rather than broken layout at this size).
+export const IMAGE_BOX_WIDTH_VW_MOBILE = 34;
+export const IMAGE_BOX_HEIGHT_VW_MOBILE = 21.25;
+
 /** Focus-frame images revealed together on first paint, before one-by-one sequence. */
 export const INITIAL_FOCUS_BATCH = 2;
 

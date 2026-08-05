@@ -12,8 +12,13 @@ import {
   INITIAL_FOCUS_BATCH,
   IMAGE_BOX_HEIGHT_VW,
   IMAGE_BOX_WIDTH_VW,
+  IMAGE_BOX_HEIGHT_VW_MOBILE,
+  IMAGE_BOX_WIDTH_VW_MOBILE,
   IMAGE_POSITIONS,
 } from "@/lib/hero/focusSlots";
+
+/** Below this width, floating images use the larger mobile box size. */
+const MOBILE_BREAKPOINT_PX = 640;
 
 /** Wait for entrance animation before revealing the next focus box. */
 const FOCUS_ENTRANCE_MS = 500;
@@ -39,6 +44,7 @@ export function BackgroundLayer({
 }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ targetX: 0.5, targetY: 0.5, x: 0.5, y: 0.5 });
+  const [isMobile, setIsMobile] = useState(false);
   const [focusStep, setFocusStep] = useState(-1);
   const focusStepRef = useRef(-1);
   const loadedFocusSlotsRef = useRef(new Set<number>());
@@ -76,6 +82,14 @@ export function BackgroundLayer({
     const timeout = window.setTimeout(goToNextFocusSlot, FOCUS_SLOT_TIMEOUT_MS);
     return () => window.clearTimeout(timeout);
   }, [loadPhase, focusStep, focusRevealOrder.length, goToNextFocusSlot]);
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`);
+    setIsMobile(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -158,6 +172,9 @@ export function BackgroundLayer({
           const entranceDelay =
             img.inFocus && orderIndex <= initialBatchEnd ? orderIndex * 0.08 : 0;
 
+          const boxWidth = isMobile ? IMAGE_BOX_WIDTH_VW_MOBILE : IMAGE_BOX_WIDTH_VW;
+          const boxHeight = isMobile ? IMAGE_BOX_HEIGHT_VW_MOBILE : IMAGE_BOX_HEIGHT_VW;
+
           return (
             <div
               key={i}
@@ -165,8 +182,8 @@ export function BackgroundLayer({
               style={{
                 left: IMAGE_POSITIONS[i].left,
                 top: IMAGE_POSITIONS[i].top,
-                width: `${IMAGE_BOX_WIDTH_VW}vw`,
-                height: `${IMAGE_BOX_HEIGHT_VW}vw`,
+                width: `${boxWidth}vw`,
+                height: `${boxHeight}vw`,
               }}
             >
               <FloatingImage

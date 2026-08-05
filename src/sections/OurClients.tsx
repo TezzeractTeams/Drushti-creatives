@@ -79,7 +79,7 @@ export default function OurClients({ contentFadeOpacity, clientLogos }: OurClien
             <h2 className="max-w-3xl font-heading text-heading-4xl leading-heading text-ink sm:text-heading-5xl lg:text-heading-6xl">
               We believe every great business deserves a voice as strong as its vision.
             </h2>
-            <p>More than a service provider, we are your strategic partner. We combine creativity, strategy, and digital
+            <p className="mt-6 text-ink/65">More than a service provider, we are your strategic partner. We combine creativity, strategy, and digital
               expertise to help your business stand out. We strip away the noise to find the heart of your message, crafting visuals and narratives that don’t just look good. They actually move people.</p>
           </motion.div>
 

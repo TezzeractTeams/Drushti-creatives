@@ -22,31 +22,28 @@ export const Portfolio: CollectionConfig = {
       name: "client",
       type: "relationship",
       relationTo: "clients",
-      required: true,
     },
-    { name: "description", type: "textarea", required: true },
+    { name: "description", type: "textarea" },
     {
       name: "serviceCategory",
       type: "select",
-      required: true,
       options: SERVICE_CATEGORIES.map((value) => ({ label: value, value })),
     },
     {
       name: "tags",
       type: "array",
-      fields: [{ name: "tag", type: "text", required: true }],
+      fields: [{ name: "tag", type: "text" }],
     },
     {
       name: "featuredImage",
       type: "upload",
       relationTo: "media",
-      required: true,
     },
     {
       name: "images",
       type: "array",
       label: "Gallery images",
-      fields: [{ name: "image", type: "upload", relationTo: "media", required: true }],
+      fields: [{ name: "image", type: "upload", relationTo: "media" }],
     },
     {
       type: "row",
@@ -55,7 +52,7 @@ export const Portfolio: CollectionConfig = {
         { name: "featuredOnHomepage", type: "checkbox", label: "Featured on homepage", defaultValue: false },
       ],
     },
-    { name: "challenge", type: "textarea", required: true },
+    { name: "challenge", type: "textarea" },
     {
       name: "strategy",
       type: "group",
@@ -65,8 +62,8 @@ export const Portfolio: CollectionConfig = {
           name: "points",
           type: "array",
           fields: [
-            { name: "title", type: "text", required: true },
-            { name: "text", type: "textarea", required: true },
+            { name: "title", type: "text" },
+            { name: "text", type: "textarea" },
           ],
         },
       ],
@@ -74,10 +71,9 @@ export const Portfolio: CollectionConfig = {
     {
       name: "results",
       type: "array",
-      required: true,
       fields: [
         { name: "metric", type: "text" },
-        { name: "text", type: "text", required: true },
+        { name: "text", type: "text" },
       ],
     },
   ],

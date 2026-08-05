@@ -201,8 +201,8 @@ export interface Client {
   id: number;
   name: string;
   slug: string;
-  logoSquare: number | Media;
-  logoFocus: number | Media;
+  logoSquare?: (number | null) | Media;
+  logoFocus?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -230,44 +230,49 @@ export interface Portfolio {
   id: number;
   name: string;
   slug: string;
-  client: number | Client;
-  description: string;
-  serviceCategory:
-    | 'Social Media & Digital Marketing'
-    | 'Logo Design & Graphic Design'
-    | 'Content Development'
-    | 'Website & UI Designing';
+  client?: (number | null) | Client;
+  description?: string | null;
+  serviceCategory?:
+    | (
+        | 'Social Media & Digital Marketing'
+        | 'Logo Design & Graphic Design'
+        | 'Content Development'
+        | 'Website & UI Designing'
+      )
+    | null;
   tags?:
     | {
-        tag: string;
+        tag?: string | null;
         id?: string | null;
       }[]
     | null;
-  featuredImage: number | Media;
+  featuredImage?: (number | null) | Media;
   images?:
     | {
-        image: number | Media;
+        image?: (number | null) | Media;
         id?: string | null;
       }[]
     | null;
   featuredOnHero?: boolean | null;
   featuredOnHomepage?: boolean | null;
-  challenge: string;
+  challenge?: string | null;
   strategy?: {
     intro?: string | null;
     points?:
       | {
-          title: string;
-          text: string;
+          title?: string | null;
+          text?: string | null;
           id?: string | null;
         }[]
       | null;
   };
-  results: {
-    metric?: string | null;
-    text: string;
-    id?: string | null;
-  }[];
+  results?:
+    | {
+        metric?: string | null;
+        text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }

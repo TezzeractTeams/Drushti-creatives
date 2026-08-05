@@ -94,7 +94,7 @@ export function FloatingImage({
             alt={alt}
             fill
             className="object-cover"
-            sizes={sizes ?? "20vw"}
+            sizes={sizes ?? "(max-width: 640px) 34vw, 20vw"}
             priority={priority}
             fetchPriority={priority ? "high" : undefined}
             onLoadingComplete={handleLoadingComplete}
