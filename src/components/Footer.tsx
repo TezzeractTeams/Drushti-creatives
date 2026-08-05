@@ -10,16 +10,17 @@ import {
 } from "motion/react";
 import Container from "@/components/Container";
 import Image from "next/image";
+import Link from "next/link";
 import PillButton from "@/components/PillButton";
 import { EASE } from "@/lib/motion";
 
 const WORDS = ["Exceptional", "Innovative", "Impactful", "Memorable", "Remarkable"];
 
 const NAV_LINKS = [
-  { label: "Services", href: "#services" },
+  { label: "Services", href: "/services" },
   { label: "Our Works", href: "/portfolio" },
-  { label: "About Us", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "About Us", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const SOCIAL_LINKS = [
@@ -158,7 +159,7 @@ export default function Footer() {
           contact + socials + copyright) can never get clipped by
           overflow-hidden — the exact vh pin height is only enforced from
           lg upward, where the row layout is short enough to fit reliably. */}
-      <footer className="sticky bottom-0 z-0 -mt-[14vh] flex min-h-[70vh] flex-col overflow-hidden bg-blue sm:-mt-[18vh] sm:min-h-[80vh] lg:-mt-[25vh] lg:h-[90vh] lg:min-h-0">
+      <footer className="sticky bottom-0 z-0 -mt-[14vh] flex min-h-screen flex-col overflow-hidden bg-blue sm:-mt-[18vh] lg:-mt-[25vh] lg:h-screen lg:min-h-0">
         <div className="h-[10vh] shrink-0 sm:h-[14vh] lg:h-[20vh]" aria-hidden />
         <Container className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-10 py-10 text-center sm:gap-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:text-left">
           {/* Wordmark, left. Sized down for phones so it doesn't dominate
@@ -178,13 +179,13 @@ export default function Footer() {
           <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:gap-14 lg:gap-16">
             <nav className="flex flex-col items-center gap-2 sm:items-start">
               {NAV_LINKS.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   className="w-fit whitespace-nowrap text-sm text-white transition-colors hover:text-white/60"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
