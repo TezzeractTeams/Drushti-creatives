@@ -98,9 +98,6 @@ function FloatingImage({
             className="
               relative block aspect-[8/5]
               overflow-hidden rounded-2xl
-              shadow-xl
-              transition-shadow
-              hover:shadow-2xl
             "
           >
             <Image

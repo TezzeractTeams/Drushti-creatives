@@ -85,7 +85,7 @@ export function FloatingImage({
         <a
           href={href ?? "#work"}
           tabIndex={visible ? undefined : -1}
-          className={`block h-full w-full cursor-pointer overflow-hidden rounded-2xl shadow-xl transform-gpu transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.08] hover:shadow-2xl${
+          className={`block h-full w-full cursor-pointer overflow-hidden rounded-2xl transform-gpu transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.08]${
             linkClassName ? ` ${linkClassName}` : ""
           }`}
         >

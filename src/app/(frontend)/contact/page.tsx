@@ -135,13 +135,13 @@ function FloatingIcon({
           animate={{ width: boxSize, height: boxSize }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}
           style={{ backgroundColor: color }}
-          className="flex flex-col items-center justify-center rounded-[2rem] p-4 shadow-xl select-none transition-colors"
+          className="flex flex-col items-center justify-center rounded-[2rem] p-4 select-none transition-colors"
         >
           <motion.div
             animate={prefersReducedMotion || hovered ? undefined : { y: [0, -6, 0] }}
             transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
             style={{ width: size + 24, height: size + 24, backgroundColor: color }}
-            className="flex items-center justify-center rounded-full border border-white shadow-inner text-white shrink-0"
+            className="flex items-center justify-center rounded-full border border-white text-white shrink-0"
           >
             <div style={{ width: size, height: size }}>
               <Icon className="h-full w-full" />
@@ -160,7 +160,7 @@ function FloatingIcon({
                 <PillButton
                   href={href}
                   variant={btnVariant}
-                  className="!px-4 !py-2 !text-[9px] tracking-wider shadow-lg"
+                  className="!px-4 !py-2 !text-[9px] tracking-wider"
                 >
                   {label}
                 </PillButton>

@@ -135,12 +135,12 @@ export default function Footer() {
               </span>
             </h2>
 
-            <p className="mb-8 text-sm text-white sm:mb-10 sm:text-base">
+            <p className="mb-8 text-sm text-white/80 sm:mb-10 sm:text-base">
               Kick start a project with us today
             </p>
 
             <div className="flex flex-wrap gap-3 sm:gap-4">
-              <PillButton href="mailto:collabs@drushticreatives.com">
+              <PillButton href="mailto:collabs@drushticreatives.com" variant="onColor">
                 Discuss a project
               </PillButton>
               <PillButton href="https://wa.me/94768519161" variant="light">

@@ -93,7 +93,7 @@ export default function Header() {
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: EASE }}
-      className="fixed inset-x-0 top-0 z-40 border-b border-white/25 bg-blue"
+      className="fixed inset-x-0 top-0 z-40 bg-blue"
     >
       <Container className="flex items-center justify-between py-0">
         <Link href="/" className="block px-[0.45rem] py-[0.9rem]">

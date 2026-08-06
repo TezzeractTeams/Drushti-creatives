@@ -10,13 +10,15 @@ interface PillButtonProps {
   className?: string;
   target?: string;
   rel?: string;
-  /** "dark" (default): black bg, white text. "light": white bg, ink text, bordered. */
-  variant?: "dark" | "light";
+  /** "dark" (default): black bg, white text. "light": white bg, ink text, bordered.
+   *  "onColor": black at rest, white on hover — for use on brand-color section backgrounds. */
+  variant?: "dark" | "light" | "onColor";
 }
 
 const VARIANT_CLASSES = {
   dark: "border border-transparent",
   light: "border",
+  onColor: "border border-transparent",
 } as const;
 
 const COLOR_TRANSITION = { duration: 0.55, ease: EASE };
@@ -44,6 +46,18 @@ const VARIANT_ANIMATION = {
       backgroundColor: "rgb(26, 26, 26)",
       color: "rgb(255, 255, 255)",
       borderColor: "rgb(26, 26, 26)",
+    },
+  },
+  onColor: {
+    rest: {
+      backgroundColor: "rgb(26, 26, 26)",
+      color: "rgb(255, 255, 255)",
+      borderColor: "rgb(26, 26, 26)",
+    },
+    hover: {
+      backgroundColor: "rgb(255, 255, 255)",
+      color: "rgb(26, 26, 26)",
+      borderColor: "rgb(255, 255, 255)",
     },
   },
 } as const;

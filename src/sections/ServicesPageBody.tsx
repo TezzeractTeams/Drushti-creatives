@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 import clsx from "clsx";
 import PillButton from "@/components/PillButton";
+import HeadlinePill from "@/components/HeadlinePill";
 import { Burst, Circle, ScallopBadge, Spike } from "@/components/HeroShapes";
 import { EASE } from "@/lib/motion";
 
@@ -24,7 +25,7 @@ function GreenBurst({ className }: { className?: string }) {
   return (
     <span
       aria-hidden
-      className={clsx("inline-block bg-green", className)}
+      className={clsx("inline-block bg-light-blue", className)}
       style={{
         maskImage: "url(/blast-icon.png)",
         WebkitMaskImage: "url(/blast-icon.png)",
@@ -36,25 +37,6 @@ function GreenBurst({ className }: { className?: string }) {
         WebkitMaskPosition: "center",
       }}
     />
-  );
-}
-
-function HeadlinePill({
-  children,
-  variant,
-}: {
-  children: ReactNode;
-  variant: "blue" | "orange";
-}) {
-  return (
-    <span
-      className={clsx(
-        "mx-[0.06em] inline-flex translate-y-[0.06em] items-center rounded-pill px-[0.42em] py-[0.08em] align-baseline",
-        variant === "blue" ? "bg-blue text-white" : "bg-orange text-white",
-      )}
-    >
-      {children}
-    </span>
   );
 }
 
@@ -74,7 +56,9 @@ function HeroStamp({
   size = "lg",
 }: HeroStampProps) {
   const shell =
-    size === "lg" ? "h-20 w-20 sm:h-24 sm:w-24" : "h-[4.25rem] w-[4.25rem] sm:h-20 sm:w-20";
+    size === "lg"
+      ? "h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24"
+      : "h-14 w-14 sm:h-[4.25rem] sm:w-[4.25rem] md:h-20 md:w-20";
   const iconSize =
     size === "lg" ? "h-9 w-9 sm:h-10 sm:w-10" : "h-7 w-7 sm:h-8 sm:w-8";
 
@@ -104,78 +88,90 @@ function HeroStampFlipped({
   size?: "lg" | "md";
 }) {
   const shell =
-    size === "lg" ? "h-20 w-20 sm:h-24 sm:w-24" : "h-[4.25rem] w-[4.25rem] sm:h-20 sm:w-20";
+    size === "lg"
+      ? "h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24"
+      : "h-14 w-14 sm:h-[4.25rem] sm:w-[4.25rem] md:h-20 md:w-20";
 
   return (
     <div
       className={clsx("relative inline-flex items-center justify-center", shell, className)}
       aria-hidden
     >
-      <Spike className="absolute inset-0 h-full w-full scale-[1.08] text-light-blue" />
+      <Spike className="absolute inset-0 h-full w-full scale-[1.08] text-yellow" />
     </div>
   );
 }
 
+const HERO_DECOR =
+  "pointer-events-none absolute z-0 origin-center motion-reduce:transition-none";
+
 function ServicesHeroIntro() {
   return (
-    <div className="relative ml-[calc(50%-50vw)] w-screen max-w-[100vw] bg-grain pt-24 pb-10 sm:pt-28 sm:pb-12 md:pt-32">
+    <div className="relative ml-[calc(50%-50vw)] w-screen max-w-[100vw] overflow-x-clip bg-blue pb-10 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] sm:pb-12 sm:pt-28 md:pt-32">
       <div className="relative z-[1] px-4 sm:px-8 lg:px-12">
-        <div className="relative mx-auto w-full max-w-[92rem] py-4">
+        <div className="relative mx-auto w-full max-w-[92rem] py-6 sm:py-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.85, rotate: -18 }}
             animate={{ opacity: 1, scale: 1, rotate: -12 }}
             transition={{ duration: 0.7, delay: 0.35, ease: EASE }}
-            className="pointer-events-none absolute left-0 top-[34%] z-0 hidden md:block md:-left-3 lg:left-1 xl:left-5"
+            className={clsx(
+              HERO_DECOR,
+              "-left-1 top-[24%] scale-[0.42] sm:-left-2 sm:top-[28%] sm:scale-[0.52] md:-left-3 md:top-[32%] md:scale-[0.68] lg:left-1 lg:top-[34%] lg:scale-[0.85] xl:left-5 xl:scale-100",
+            )}
           >
-            <HeroStamp badgeColor="yellow" />
+            <HeroStamp badgeColor="orange" />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.7, rotate: -8 }}
             animate={{ opacity: 1, scale: 1, rotate: 6 }}
             transition={{ duration: 0.65, delay: 0.42, ease: EASE }}
-            className="pointer-events-none absolute right-[10%] top-[20%] z-0 hidden md:block lg:right-[14%] xl:right-[18%]"
+            className={clsx(
+              HERO_DECOR,
+              "right-1 top-[8%] scale-[0.65] sm:right-[5%] sm:top-[12%] sm:scale-75 md:right-[10%] md:top-[18%] md:scale-90 lg:right-[14%] lg:top-[20%] lg:scale-100 xl:right-[18%]",
+            )}
           >
-            <GreenBurst className="h-10 w-10 sm:h-11 sm:w-11" />
+            <GreenBurst className="h-7 w-7 sm:h-9 sm:w-9 md:h-10 md:w-10 lg:h-11 lg:w-11" />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.85, rotate: 20 }}
             animate={{ opacity: 1, scale: 1, rotate: 14 }}
             transition={{ duration: 0.75, delay: 0.48, ease: EASE }}
-            className="pointer-events-none absolute right-0 top-[58%] z-0 hidden md:block md:-right-4 lg:right-0 xl:right-3"
+            className={clsx(
+              HERO_DECOR,
+              "-right-1 top-[50%] scale-[0.42] sm:-right-2 sm:top-[54%] sm:scale-[0.52] md:-right-4 md:top-[56%] md:scale-[0.68] lg:right-0 lg:top-[58%] lg:scale-[0.85] xl:right-3 xl:scale-100",
+            )}
           >
             <HeroStampFlipped />
           </motion.div>
 
-          <div className="relative z-[1] flex flex-col items-center text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, ease: EASE }}
-            className="w-full font-heading text-[clamp(2rem,7.5vw,7.25rem)] font-bold leading-[0.88] tracking-tight text-ink"
-          >
-            <span className="block whitespace-nowrap max-[480px]:whitespace-normal">
-              Clear <HeadlinePill variant="blue">solutions</HeadlinePill>
-            </span>
-            <span className="block whitespace-nowrap max-[480px]:whitespace-normal">
-              for your brand&apos;s
-            </span>
-            <span className="block whitespace-nowrap max-[480px]:whitespace-normal">
-              <HeadlinePill variant="orange">growth</HeadlinePill>.
-            </span>
-          </motion.h1>
+          <div className="relative z-[1] flex flex-col items-center px-5 text-center sm:px-10 md:px-14 lg:px-20">
+            <motion.h1
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, ease: EASE }}
+              className="w-full font-heading text-heading-hero-half font-bold leading-[0.88] tracking-tight text-white sm:max-w-none"
+            >
+              <span className="block sm:whitespace-nowrap">
+                Clear <HeadlinePill variant="green">solutions</HeadlinePill>
+              </span>
+              <span className="block sm:whitespace-nowrap">for your brand&apos;s</span>
+              <span className="block sm:whitespace-nowrap">
+                <HeadlinePill variant="orange">growth</HeadlinePill>.
+              </span>
+            </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.12, ease: EASE }}
-            className="mt-8 w-full max-w-4xl text-sm leading-relaxed text-ink/70 sm:mt-10 sm:text-base"
-          >
-            We handle everything from strategy to execution — branding, digital
-            marketing, web, video, and graphic design — so your brand stays
-            consistent, professional, and always moving forward.
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.12, ease: EASE }}
+              className="mt-6 w-full max-w-[34rem] text-pretty text-sm leading-relaxed text-white/70 sm:mt-8 sm:max-w-2xl sm:text-base md:mt-10 md:max-w-3xl lg:max-w-4xl"
+            >
+              We handle everything from strategy to execution — branding, digital
+              marketing, web, video, and graphic design — so your brand stays
+              consistent, professional, and always moving forward.
+            </motion.p>
           </div>
         </div>
       </div>
@@ -203,7 +199,7 @@ const BANDS: Band[] = [
   { id: "brand", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
   { id: "web", label: "Website & UI Designing", bg: "bg-orange", text: "text-white", buttonVariant: "light" },
   /*{ id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },*/
-  { id: "graphic", label: "Content Development", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
+  { id: "graphic", label: "Content Development", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },
 ];
 
 // Each band owns a slice of the section's overall scroll progress, with a
@@ -268,8 +264,10 @@ function ParallaxBand({
 
   return (
     <motion.div style={{ height }} className={`relative w-full overflow-hidden ${band.bg}`}>
-      <div className={`absolute inset-0 flex items-center justify-start px-6 sm:px-12 ${band.text}`}>
-        <span className="font-heading text-heading-4xl font-black uppercase leading-heading tracking-tight sm:text-heading-5xl lg:text-heading-6xl">
+      <div
+        className={`absolute inset-0 flex items-center justify-start px-4 py-3 sm:px-8 sm:py-4 md:px-12 ${band.text}`}
+      >
+        <span className="max-w-[18ch] font-heading text-[clamp(1.25rem,3.75vw,3.25rem)] font-black uppercase leading-[0.95] tracking-tight sm:max-w-none sm:text-heading-3xl sm:leading-heading md:text-heading-4xl lg:text-heading-5xl">
           {band.label}
         </span>
       </div>
@@ -278,7 +276,7 @@ function ParallaxBand({
       <motion.div
         ref={buttonOpacityRef}
         style={{ scale: buttonScale, opacity: buttonOpacity.get() }}
-        className="absolute bottom-6 left-6 sm:bottom-8 sm:left-12"
+        className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 md:bottom-8 md:left-12"
       >
         <PillButton href={`/services/${band.id}`} variant={band.buttonVariant}>
           Explore service

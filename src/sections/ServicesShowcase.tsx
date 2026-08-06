@@ -159,7 +159,7 @@ function ServicePanel({
                 <div
                   role="img"
                   aria-label={service.lines.join(" ")}
-                  className="w-full max-w-[500px] aspect-square drop-shadow-2xl"
+                  className="w-full max-w-[500px] aspect-square"
                   style={{
                     backgroundColor: service.tint,
                     WebkitMaskImage: `url("${service.image}")`,

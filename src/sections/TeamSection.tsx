@@ -127,41 +127,29 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
 
   // Travel ranges: columns start already on-screen (matching the reference
   // position at load) and stream further up past the pinned heading as the
-  // user scrolls — right column stays ~40vh behind the left so cards arrive
-  // staggered instead of in lockstep.
-  const leftY = useTransform(scrollYProgress, [0, 1], ["6vh", "-90vh"]);
-  const rightY = useTransform(scrollYProgress, [0, 1], ["46vh", "-50vh"]);
+  // user scrolls — right column stays staggered behind the left so cards arrive
+  // at different times instead of in lockstep. Start values sit below the
+  // fixed header (~10vh) so cards never slide under it.
+  const leftY = useTransform(scrollYProgress, [0, 1], ["14vh", "-90vh"]);
+  const rightY = useTransform(scrollYProgress, [0, 1], ["22vh", "-50vh"]);
 
   return (
     <section ref={sectionRef} className="relative h-[150vh] bg-blue">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         {/* Pinned center content */}
         <div className="relative z-20 flex flex-col items-center gap-6 px-6 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="text-xs font-semibold uppercase tracking-[0.32em] text-orange"
-          >
-            About Us
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="max-w-xs sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl font-heading text-heading-hero-half leading-heading-display tracking-tight text-white"
-          >
+          <h1 className="max-w-xs sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl font-heading text-heading-hero-half leading-heading-display tracking-tight text-white">
             We build the voice your vision deserves.
-          </motion.h1>
+          </h1>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
           >
-            <PillButton href="#contact">Meet team</PillButton>
+            <PillButton href="#contact" variant="onColor">
+              Meet team
+            </PillButton>
           </motion.div>
         </div>
 

@@ -51,7 +51,7 @@ export default function BlogHero() {
           {POSTS.map((post) => (
             <article
               key={post.slug}
-              className="group overflow-hidden rounded-3xl border border-ink/10 bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              className="group overflow-hidden rounded-3xl border border-ink/10 bg-white transition-all duration-300 hover:-translate-y-2"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <Image

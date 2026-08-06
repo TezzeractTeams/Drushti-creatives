@@ -27,7 +27,7 @@ function FaqRow({
   onToggle: () => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+    <div className="overflow-hidden rounded-3xl border border-ink/10 bg-white">
       <button
         type="button"
         onClick={onToggle}

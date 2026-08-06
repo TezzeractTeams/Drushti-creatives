@@ -77,7 +77,7 @@ function ContentCard({
       {/* Mobile: flat, static, stacked — no scroll or hover motion at all */}
       <div
         style={{ backgroundColor: card.color }}
-        className="flex h-80 w-full max-w-sm flex-col justify-end rounded-2xl p-6 shadow-xl sm:hidden"
+        className="flex h-80 w-full max-w-sm flex-col justify-end rounded-2xl p-6 sm:hidden"
       >
         <div className="flex-1 flex items-center justify-center w-full min-h-0 mb-4">
           <div className="relative h-32 w-32">
@@ -99,7 +99,7 @@ function ContentCard({
       >
         <div
           style={{ backgroundColor: card.color }}
-          className="flex h-full w-full flex-col justify-end rounded-2xl p-7 shadow-xl"
+          className="flex h-full w-full flex-col justify-end rounded-2xl p-7"
         >
           <div className="flex-1 flex items-center justify-center w-full min-h-0 mb-6">
             <div className="relative h-40 w-40 md:h-48 md:w-48">
@@ -145,7 +145,7 @@ export default function WhatWeDo() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
-            className="mb-16 max-w-2xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
+            className="mb-16 max-w-4xl font-heading text-[clamp(2rem,5vw,4rem)] font-bold leading-[0.95] text-white"
           >
             We Build on &ldquo;Deep Strategic Thinking&rdquo;
           </motion.h2>
