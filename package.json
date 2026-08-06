@@ -17,7 +17,8 @@
     "preview": "npm run cf-typegen && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:database": "cross-env NODE_ENV=production PAYLOAD_SECRET=ignore payload migrate && wrangler d1 execute D1 --command 'PRAGMA optimize' --remote",
     "deploy:app": "npm run cf-typegen && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "deploy": "npm run deploy:database && npm run deploy:app",
+    "deploy": "npm run deploy:app",
+    "deploy:full": "npm run deploy:database && npm run deploy:app",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },

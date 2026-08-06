@@ -14,19 +14,5 @@
   "vars": {
     "CONTENT_PROVIDER": "static",
     "NEXT_PUBLIC_SERVER_URL": "https://drushti-creatives.example.com"
-  },
-  "d1_databases": [
-    {
-      "binding": "D1",
-      "database_name": "drushti-creatives",
-      "database_id": "FILL_AFTER_WRANGLER_D1_CREATE",
-      "remote": true
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "drushti-creatives-media"
-    }
-  ]
+  }
 }

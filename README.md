@@ -130,10 +130,9 @@ After the first deploy, D1 is empty. Run migrations via `npm run deploy`, then s
 
 In Cloudflare dashboard → Workers & Pages → Connect Git:
 
-- **Build command:** `npm run deploy`
+- **Build command:** `npm run deploy` (static frontend) or `npm run deploy:full` (Payload + D1)
 - **Node version:** 20+
-- Set `PAYLOAD_SECRET` as an encrypted environment variable
-- Ensure D1 + R2 bindings in the dashboard match `wrangler.jsonc`
+- For Payload CMS later: set `PAYLOAD_SECRET`, create D1/R2, add bindings, and use `deploy:full`
 
 ### Environment variables
 
