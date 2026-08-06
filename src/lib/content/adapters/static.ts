@@ -47,8 +47,8 @@ export function getStaticProjectsByCategory(category: ServiceCategory): Project[
 export function toWorkItems(projects: Project[]) {
   return projects.map((p) => ({
     name: p.name,
-    client: p.client,
-    image: p.featuredImage,
+    client: p.client || p.name,
+    image: p.featuredImage || p.images?.[0] || "/work/advantis.webp",
     tags: p.tags,
     href: p.href,
   }));
