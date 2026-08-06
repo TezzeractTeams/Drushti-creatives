@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "motion/react";
 import Container from "@/components/Container";
 import PillButton from "@/components/PillButton";
 
@@ -22,10 +22,10 @@ type Band = {
 // button links straight to that service's detail page.
 const BANDS: Band[] = [
   { id: "marketing", label: "Social Media & Digital Marketing", bg: "bg-sky", text: "text-white", buttonVariant: "light" },
-  { id: "brand", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
+  { id: "logo", label: "Logo Design & Graphic Design", bg: "bg-green", text: "text-white", buttonVariant: "light" },
   { id: "web", label: "Website & UI Designing", bg: "bg-orange", text: "text-white", buttonVariant: "light" },
   /*{ id: "video", label: "Video Production", bg: "bg-yellow", text: "text-white", buttonVariant: "light" },*/
-  { id: "graphic", label: "Content Development", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
+  { id: "content", label: "Content Development", bg: "bg-blue", text: "text-white", buttonVariant: "light" },
 ];
 
 // Each band owns a slice of the section's overall scroll progress, with a
@@ -96,7 +96,7 @@ function ParallaxBand({
         </span>
       </div>
 
-      {/* Revealed once the band has (mostly) finished expanding*/}
+      {/* Revealed once the band has (mostly) finished expanding */}
       <motion.div
         ref={buttonOpacityRef}
         style={{ scale: buttonScale, opacity: buttonOpacity.get() }}
@@ -107,6 +107,97 @@ function ParallaxBand({
         </PillButton>
       </motion.div>
     </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Headline inline widgets
+//
+// The reference recording embeds small media directly inside a running
+// sentence — not laid out in a flex/grid row, but genuinely inline (like an
+// emoji or an <img> sitting mid-word), so the browser's own text-wrapping
+// handles line breaks around them for free. That's reproduced here the same
+// way: the <h1> below is plain text with inline-block spans dropped in, and
+// wrapping is left entirely to the browser rather than choreographed by us.
+// ---------------------------------------------------------------------------
+
+// Static fanned strip of 3 overlapping rounded chips — a stand-in for real
+// brand/tool logos or a small photo strip later. Swap PLACEHOLDER_CHIPS'
+// bg classes for actual logo images/icons once assets are ready.
+const PLACEHOLDER_CHIPS = [
+  { bg: "bg-orange", rotate: -8 },
+  { bg: "bg-blue", rotate: 0 },
+  { bg: "bg-ink", rotate: 6 },
+];
+
+function InlineIconStack() {
+  return (
+    <span className="mx-1 inline-flex align-middle sm:mx-2" aria-hidden>
+      {PLACEHOLDER_CHIPS.map((chip, i) => (
+        <motion.span
+          key={i}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+          style={{ rotate: `${chip.rotate}deg`, zIndex: PLACEHOLDER_CHIPS.length - i }}
+          className={`h-9 w-9 rounded-xl border-2 border-white shadow-sm sm:h-12 sm:w-12 sm:rounded-2xl ${chip.bg} ${i > 0 ? "-ml-3 sm:-ml-4" : ""}`}
+        />
+      ))}
+    </span>
+  );
+}
+
+// Hand-drawn squiggle-to-arrow doodle, same beat as the reference's loopy
+// orange arrow bridging "into" and "brands" — a bit of informal, human
+// energy dropped into an otherwise very geometric display face.
+function ArrowDoodle() {
+  return (
+    <span className="mx-1 inline-flex align-middle sm:mx-2" aria-hidden>
+      <svg
+        viewBox="0 0 90 40"
+        className="h-6 w-14 text-orange sm:h-8 sm:w-20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 28C16 8 28 4 34 14C40 24 26 30 22 20C19 12 30 6 40 10C55 16 62 26 60 30" />
+        <path d="M60 30L72 26M60 30L64 18" />
+      </svg>
+    </span>
+  );
+}
+
+// Crossfading slot standing in for the reference's rotating showcase (client
+// photos, a scrolling word list, etc.) — currently 4 flat brand-color
+// placeholders cycling on a timer. Swap SLOT_ITEMS for real images/words
+// later; the crossfade mechanics won't need to change.
+const SLOT_ITEMS = ["bg-sky", "bg-green", "bg-yellow", "bg-blue"];
+const SLOT_INTERVAL_MS = 2200;
+
+function RotatingSlot() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % SLOT_ITEMS.length);
+    }, SLOT_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <span className="relative mx-1 inline-flex h-9 w-14 align-middle sm:mx-2 sm:h-12 sm:w-20 md:h-14 md:w-24" aria-hidden>
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={index}
+          initial={{ opacity: 0, scale: 0.4, rotate: -8 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.4, rotate: 8 }}
+          transition={{ type: "spring", bounce: 0.55, duration: 0.7 }}
+          className={`absolute inset-0 rounded-xl sm:rounded-2xl ${SLOT_ITEMS[index]}`}
+        />
+      </AnimatePresence>
+    </span>
   );
 }
 
@@ -141,20 +232,23 @@ export default function ServicesHero() {
   });
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-blue pt-16 md:pt-24">
+    <section ref={sectionRef} className="relative overflow-hidden bg-blue pt-28 md:pt-36">
       <Container>
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-16">
-          <h1 className="font-heading text-6xl text-white font-bold leading-[1.05] tracking-tight sm:text-7xl md:text-8xl">
-            Clear solutions for your{" "}
-            <span className="italic text-orange">brand&apos;s</span> growth.
-          </h1>
+        <h1 className="font-heading text-4xl font-black leading-[1.15] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+          We
+          <InlineIconStack />
+          turn bold ideas
+          <ArrowDoodle />
+          into brands
+          <RotatingSlot />
+          people remember.
+        </h1>
 
-          <p className="max-w-md text-sm leading-relaxed text-white sm:text-base lg:justify-self-end lg:text-right">
-            We handle everything from strategy to execution — branding, digital
-            marketing, web, video, and graphic design — so your brand stays
-            consistent, professional, and always moving forward.
-          </p>
-        </div>
+        <p className="mt-8 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">
+          We handle everything from strategy to execution — branding, digital
+          marketing, web, video, and graphic design — so your brand stays
+          consistent, professional, and always moving forward.
+        </p>
       </Container>
 
       <div className="relative mt-14 md:mt-20">
