@@ -35,7 +35,7 @@ export default function PortfolioGrid({ projects }: { projects: Project[] }) {
     <>
       <section className="bg-cream">
         <div className="p-2">
-          <div className="mb-2 flex flex-wrap gap-2">
+          <div className="my-6 flex flex-wrap gap-2 sm:my-8">
             {filters.map((filter) => {
               const isActive = activeFilter === filter;
               return (

@@ -20,6 +20,13 @@ const LINKS = [
 const MENU_BUTTON_CLASSES =
   "rounded-full bg-white font-heading text-xs uppercase text-ink transition-colors duration-300 hover:bg-ink hover:text-white";
 
+const ICON_TRANSITION = { duration: 0.45, ease: EASE };
+const ICON_STROKE = {
+  stroke: "currentColor",
+  strokeWidth: 1.25,
+  strokeLinecap: "round" as const,
+};
+
 // Timing for the Blog link's full-screen "curtain" transition: solid panel
 // covers the screen with the logo fading in, navigation happens underneath
 // it, then the panel curls away from the bottom to reveal the new page —
@@ -31,8 +38,8 @@ const CURTAIN_COVER_MS = 550;
 const CURTAIN_NAV_DELAY_MS = 150;
 const CURTAIN_REVEAL_MS = 750;
 
-/** Top-right + expands into a row of nav pills, morphing to × — matching
- *  the reference site's header interaction. Hides on scroll down, shows on
+/** Top-right menu (three lines) expands into a row of nav pills, morphing to
+ *  × — matching the reference site's header interaction. Hides on scroll down, shows on
  *  scroll up, matching copula.agency's header behavior. On mobile, the
  *  expanded nav drops into a stacked panel below the header instead of
  *  a horizontal row, since four pills won't fit inline on a narrow screen. */
@@ -146,16 +153,39 @@ export default function Header() {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            animate={{ rotate: open ? 45 : 0 }}
-            transition={{ duration: 0.45, ease: EASE }}
             className={`relative z-10 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center ${MENU_BUTTON_CLASSES}`}
           >
-            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path
-                d="M8 1v14M1 8h14"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
+            <svg width="28" height="28" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <motion.line
+                animate={{
+                  x1: open ? 3 : 1.5,
+                  y1: open ? 3 : 4,
+                  x2: open ? 13 : 14.5,
+                  y2: open ? 13 : 4,
+                }}
+                transition={ICON_TRANSITION}
+                {...ICON_STROKE}
+              />
+              <motion.line
+                x1={1.5}
+                y1={8}
+                y2={8}
+                animate={{
+                  opacity: open ? 0 : 1,
+                  x2: open ? 1.5 : 14.5,
+                }}
+                transition={ICON_TRANSITION}
+                {...ICON_STROKE}
+              />
+              <motion.line
+                animate={{
+                  x1: open ? 13 : 1.5,
+                  y1: open ? 3 : 12,
+                  x2: open ? 3 : 14.5,
+                  y2: open ? 13 : 12,
+                }}
+                transition={ICON_TRANSITION}
+                {...ICON_STROKE}
               />
             </svg>
           </motion.button>
