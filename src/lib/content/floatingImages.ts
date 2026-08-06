@@ -28,6 +28,7 @@ const DECORATIVE_HERO_IMAGES = [
   { src: "/work/pxbee_2026-07-31_12-35-44.jpeg", alt: "Creative project", href: "/portfolio" },
   { src: "/work/pxbee_2026-07-31_12-41-27.jpeg", alt: "Branding project", href: "/portfolio" },
   { src: "/work/pxbee_2026-07-31_12-42-20.jpeg", alt: "Strategy project", href: "/portfolio" },
+  { src: "/work/image.jpeg", alt: "Design project", href: "/portfolio" },
 ];
 
 type HeroImageSource = { src: string; alt: string; href: string };
