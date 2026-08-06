@@ -601,8 +601,8 @@ export const STATIC_PROJECTS: Project[] = [
     },
     results: [
       { metric: "40%", text: "Reduction in cost per results." },
-      { text: "Increased Inquiry Rate across both driver and rider segments." },
-      { text: "High Brand Awareness established among the specific target audiences regarding the opportunity." },
+      { text: "Increased inquiry rate across both driver and rider segments." },
+      { text: "High brand awareness established among the specific target audiences regarding the opportunity." },
     ],
   }),
   buildProject({
@@ -626,7 +626,7 @@ export const STATIC_PROJECTS: Project[] = [
         "Acting as the creative brain, we stripped away the corporate noise to find a message that resonated on the streets. Our approach utilized Strategic Empathy to turn “hard-to-explain” business goals into a simple path forward — prioritizing Real Connections over robotic content to deliver significant operational peace of mind for the client.",
     },
     results: [
-      { metric: "75%", text: "Reduction in Cost Per Lead (CPL)." },
+      { metric: "75%", text: "Reduction in cost per lead (CPL)." },
       { metric: "25%", text: "Increase in lead-to-conversion ratio." },
       { text: "Optimized ROAS through highly targeted, local communication." },
     ],

@@ -53,7 +53,7 @@ const CATEGORIES = [
       "Copywriting & Messaging Strategy",
       "Social Media Content Creation",
       "Video Production & Editing",
-      "Social Meida Reels & Editing",
+      "Social Media Reels & Editing",
       "Blog & Article Writing",
     ],
     Shape: Burst,
@@ -62,8 +62,8 @@ const CATEGORIES = [
   },
 
   {
-    name: "Website & UI Designing",
-    description: "We help you reach the right people and turn them into customers. We handle everything from creating your daily posts to managing your ad campaigns, ensuring every dollar you spend helps your business grow.",
+    name: "Website & UI Design",
+    description: "We design and build fast, responsive, and user-friendly websites tailored to your brand to turn visitors into customers.",
     tags: [
       "Custom Website Development",
       "UI/UX Design & Prototyping",

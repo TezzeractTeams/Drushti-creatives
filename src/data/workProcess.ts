@@ -19,6 +19,6 @@ export const PROCESS_STEPS = [
   },
   {
     title: "The Evolution",
-    description: "We stay with you to see how the work performed, using those insights to help your brand keep growing.",
+    description: "We stay with you to see how the work performs, using those insights to help your brand keep growing.",
   },
 ];

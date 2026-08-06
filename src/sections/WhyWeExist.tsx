@@ -19,7 +19,7 @@ const CARDS = [
   {
     title: "Radical Clarity",
     description:
-      "We strip away the noise to turn your complex ideas into a simple, professional message that everyone understands.",
+      "We strip away the noise to turn your complex ideas into simple, professional messages that everyone understands.",
     color: "#DC5C26", // Drushti orange
     rotate: 4,
     image: "/why we exist/RADICAL CLARITY.png",
@@ -35,7 +35,7 @@ const CARDS = [
   {
     title: "Total Accountability",
     description:
-      "We handle the creative & strategic thinking focus on the fine details, giving you the freedom to focus entirely on leading your business.",
+      "We handle the creative & strategic thinking, focusing on the fine details, giving you the freedom to focus entirely on leading your business.",
     color: "#E0B624", // Drushti yellow
     rotate: 5,
     image: "/why we exist/TOTAL ACCOUNTABLITY.png",

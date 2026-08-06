@@ -99,8 +99,7 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
                 our clients
               </h2>
               <p className="mb-12 max-w-sm text-sm text-white/80 sm:text-base">
-                We won&apos;t just be executors. We&apos;ll be your partners, we
-                promise. If you&apos;re not convinced, check out our verified
+                We aren&apos;t just execution partners—we are strategic collaborators. If you&apos;re not convinced, check out our verified
                 testimonials from around the world about working with us.
               </p>
 
@@ -121,60 +120,60 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
                   const isActive = i === index;
 
                   return (
-                  <motion.div
-                    key={t.id}
-                    initial={false}
-                    animate={{
-                      backgroundColor: isActive
-                        ? "rgba(255, 255, 255, 0.9)"
-                        : "rgba(255, 255, 255, 0.15)",
-                    }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                    style={{
-                      width: CARD_WIDTH,
-                      minWidth: CARD_WIDTH,
-                      borderRadius: "1.5rem",
-                      overflow: "hidden",
-                    }}
-                    className="flex min-h-[440px] flex-col justify-between p-12"
-                  >
-                    <motion.p
+                    <motion.div
+                      key={t.id}
                       initial={false}
                       animate={{
-                        color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
+                        backgroundColor: isActive
+                          ? "rgba(255, 255, 255, 0.9)"
+                          : "rgba(255, 255, 255, 0.15)",
                       }}
                       transition={{ duration: 0.5, ease: EASE }}
-                      className="text-sm leading-relaxed sm:text-base"
+                      style={{
+                        width: CARD_WIDTH,
+                        minWidth: CARD_WIDTH,
+                        borderRadius: "1.5rem",
+                        overflow: "hidden",
+                      }}
+                      className="flex min-h-[440px] flex-col justify-between p-12"
                     >
-                      {t.text}
-                    </motion.p>
+                      <motion.p
+                        initial={false}
+                        animate={{
+                          color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
+                        }}
+                        transition={{ duration: 0.5, ease: EASE }}
+                        className="text-sm leading-relaxed sm:text-base"
+                      >
+                        {t.text}
+                      </motion.p>
 
-                    <div className="mt-8 flex items-center gap-6">
-                      <CompanyLogo company={t.company} clients={clients} />
+                      <div className="mt-8 flex items-center gap-6">
+                        <CompanyLogo company={t.company} clients={clients} />
 
-                      <div className="min-w-0 flex-1">
-                        <motion.p
-                          initial={false}
-                          animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
-                          transition={{ duration: 0.5, ease: EASE }}
-                          className="flex items-center gap-2 font-bold"
-                        >
-                          {t.name}
-                          <LinkedInIcon />
-                        </motion.p>
-                        <motion.p
-                          initial={false}
-                          animate={{
-                            color: isActive ? "rgba(var(--ink) / 0.5)" : "rgba(255, 255, 255, 0.7)",
-                          }}
-                          transition={{ duration: 0.5, ease: EASE }}
-                          className="mt-1 text-sm"
-                        >
-                          {t.role} at {t.company}
-                        </motion.p>
+                        <div className="min-w-0 flex-1">
+                          <motion.p
+                            initial={false}
+                            animate={{ color: isActive ? "rgb(var(--ink))" : "#ffffff" }}
+                            transition={{ duration: 0.5, ease: EASE }}
+                            className="flex items-center gap-2 font-bold"
+                          >
+                            {t.name}
+                            <LinkedInIcon />
+                          </motion.p>
+                          <motion.p
+                            initial={false}
+                            animate={{
+                              color: isActive ? "rgba(var(--ink) / 0.5)" : "rgba(255, 255, 255, 0.7)",
+                            }}
+                            transition={{ duration: 0.5, ease: EASE }}
+                            className="mt-1 text-sm"
+                          >
+                            {t.role} at {t.company}
+                          </motion.p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
                   );
                 })}
               </motion.div>
