@@ -168,6 +168,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
     }
 };
 
+export const SERVICE_DETAIL_IDS = Object.keys(SERVICES_DATA);
+
 export default function ServiceDetailView({
     id,
     workItems,
@@ -192,16 +194,6 @@ export default function ServiceDetailView({
 
     return (
         <main className="min-h-screen bg-cream text-ink pb-20 md:pb-28">
-            {/* Hero removed — the page now opens straight into OurWork, whose
-                header carries the service title/description next to the
-                stacked-photo deck. The back link moved up here since it no
-                longer has a colored hero band to sit inside of. */}
-            <Container className="pt-28 md:pt-36">
-                <Link href="/services" className="inline-flex items-center gap-2 text-sm font-semibold text-ink/70 hover:text-ink transition-colors">
-                    ← Back to Services
-                </Link>
-            </Container>
-
             <OurWork
                 serviceId={id}
                 items={workItems}
@@ -218,12 +210,12 @@ export default function ServiceDetailView({
             />
 
             {/* Our Focus Section */}
-            <section className="py-16 md:py-24">
+            <section className="bg-green py-16 text-white md:py-24">
                 <Container>
                     <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
                         <div>
                             <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-tight">Our Focus</h2>
-                            <p className="mt-4 text-ink/65 text-sm md:text-base leading-relaxed">
+                            <p className="mt-4 text-sm leading-relaxed text-white/75 md:text-base">
                                 Key values and strategic benefits we deliver under this service stream.
                             </p>
                         </div>
@@ -231,9 +223,12 @@ export default function ServiceDetailView({
                             {details.focus.map((item, index) => {
                                 const [title, description] = item.split(": ");
                                 return (
-                                    <div key={index} className="bg-white p-8 rounded-3xl border border-ink/5 shadow-sm hover:shadow-md transition-shadow">
-                                        <h3 className="font-heading text-lg font-semibold mb-2">{title}</h3>
-                                        <p className="text-sm text-ink/70 leading-relaxed">{description}</p>
+                                    <div
+                                        key={index}
+                                        className="rounded-3xl bg-white p-8"
+                                    >
+                                        <h3 className="mb-2 font-heading text-lg font-semibold text-green">{title}</h3>
+                                        <p className="text-sm leading-relaxed text-ink/70">{description}</p>
                                     </div>
                                 );
                             })}

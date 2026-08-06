@@ -12,18 +12,12 @@ export interface ProcessStep {
   description: string;
 }
 
-// Each card gets its own color (cycled) instead of every card sharing one
-// section-wide background — traced from WorkProcess.tsx's horizontal
-// expanding cards, but with per-card color and a centered title block.
-// Orange is left out since the section background itself is orange (an
-// inactive orange card would disappear into it). Each entry carries its own
-// inactive-state text color, since yellow needs dark ink text rather than
-// the white used by the darker colors.
+// Steps 1–4: light blue, green, yellow, orange (fixed order).
 const CARD_COLORS = [
-  { bg: "rgb(var(--blue))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
+  { bg: "rgb(var(--light-blue))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
   { bg: "rgb(var(--green))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
-  { bg: "rgb(var(--sky))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
   { bg: "rgb(var(--yellow))", text: "rgb(var(--ink))", textMuted: "rgba(var(--ink) / 0.8)" },
+  { bg: "rgb(var(--orange))", text: "#ffffff", textMuted: "rgba(255, 255, 255, 0.9)" },
 ];
 
 // Tailwind rem scale: 7xl=4.5rem, 12xl=12rem, 14xl=14rem
@@ -119,7 +113,7 @@ function ProcessCard({
       initial={false}
       animate={{
         flex: isActive ? 4 : 1,
-        backgroundColor: isActive ? "#ffffff" : cardColor.bg,
+        backgroundColor: cardColor.bg,
       }}
       transition={{ duration: 0.5, ease: EASE }}
       style={{
@@ -154,7 +148,7 @@ function ProcessCard({
         <div className="flex flex-col">
           <ProcessStepNumber
             step={index + 1}
-            strokeColor={isActive ? "rgb(var(--ink))" : cardColor.text}
+            strokeColor={cardColor.text}
             isActive={isActive}
             cardRef={cardRef}
           />
@@ -162,7 +156,7 @@ function ProcessCard({
           <motion.h3
             initial={false}
             animate={{
-              color: isActive ? "rgb(var(--ink))" : cardColor.text,
+              color: cardColor.text,
             }}
             transition={{ duration: 0.5, ease: EASE }}
             style={
@@ -190,7 +184,7 @@ function ProcessCard({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: EASE }}
               className="shrink-0 text-xs sm:text-sm"
-              style={{ color: "rgba(var(--ink) / 0.8)" }}
+              style={{ color: cardColor.textMuted }}
             >
               {step.description}
             </motion.p>
@@ -229,10 +223,10 @@ function ProcessCardStatic({ step, index }: { step: ProcessStep; index: number }
 }
 
 /** "Our Process" for a single-service page: a horizontal row of cards where
- *  clicking (or scrolling, on desktop) expands one card to white while the
- *  rest contract — each card keeping its own distinct color instead of all
- *  sharing one section-wide background. Traced from the homepage's
- *  WorkProcess.tsx, with a centered title block instead of left-aligned. */
+ *  clicking (or scrolling, on desktop) expands one card while the rest
+ *  contract — each card keeping its own distinct color in both states.
+ *  Traced from the homepage's WorkProcess.tsx, with a centered title block
+ *  instead of left-aligned. */
 export default function OurProcess({ steps }: { steps: ProcessStep[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -252,7 +246,7 @@ export default function OurProcess({ steps }: { steps: ProcessStep[] }) {
   if (steps.length === 0) return null;
 
   return (
-    <section ref={containerRef} className="relative bg-orange" style={{ height: "auto" }}>
+    <section ref={containerRef} className="relative bg-blue" style={{ height: "auto" }}>
       {/* ---------- Mobile: plain stacked list, no sticky, no scroll effect ---------- */}
       <div className="sm:hidden">
         <Container className="py-12">

@@ -46,7 +46,6 @@ const CURTAIN_REVEAL_MS = 750;
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [curtainPhase, setCurtainPhase] = useState<"idle" | "cover" | "reveal">("idle");
   const [curtainLogoVisible, setCurtainLogoVisible] = useState(false);
   const pathname = usePathname();
@@ -57,8 +56,6 @@ export default function Header() {
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     const scrollingDown = latest > previous;
-
-    setScrolled(latest > 10);
 
     if (open) {
       setHidden(false);
@@ -71,10 +68,6 @@ export default function Header() {
       setHidden(false);
     }
   });
-
-  const isContactPage = pathname === "/contact";
-  const isPortfolioPage =
-    pathname === "/portfolio" || pathname.startsWith("/portfolio/");
 
   // Only the Blog link gets the curtain treatment (see CURTAIN_* constants
   // above): cover the screen, navigate underneath it, then curl the panel
@@ -100,14 +93,7 @@ export default function Header() {
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: EASE }}
-      className={`fixed inset-x-0 top-0 z-40 border-b transition-colors duration-300 ${scrolled
-        ? "bg-blue border-white/25"
-        : isContactPage
-          ? "bg-transparent border-[#1A1A1A]/10"
-          : isPortfolioPage
-            ? "bg-blue border-white/25"
-            : "bg-transparent border-white/25"
-        }`}
+      className="fixed inset-x-0 top-0 z-40 border-b border-white/25 bg-blue"
     >
       <Container className="flex items-center justify-between py-0">
         <Link href="/" className="block px-[0.45rem] py-[0.9rem]">

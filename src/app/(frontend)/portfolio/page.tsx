@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import ServicesHero from "@/sections/ServicesHero";
-import PortfolioGrid from "@/sections/PortfolioGrid";
+import PortfolioPageClient from "@/sections/PortfolioPageClient";
 import { getProjects } from "@/lib/content/portfolio";
 
 export const revalidate = 60;
@@ -29,12 +28,12 @@ export default async function PortfolioPage() {
   ).filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
-    <main>
-      <ServicesHero
+    <main className="w-full overflow-x-clip">
+      <PortfolioPageClient
+        projects={projects}
         heading="Portfolio"
         paragraph="Creativity isn't an end in itself for us — it's essential to how we work. We love what we do, and that turns every client project into something we truly care about."
       />
-      <PortfolioGrid projects={projects} />
     </main>
   );
 }

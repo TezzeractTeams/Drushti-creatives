@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
-import Container from "@/components/Container";
 import PortfolioCard from "@/components/PortfolioCard";
 
 export type WorkItem = {
@@ -13,51 +12,87 @@ export type WorkItem = {
   href: string;
 };
 
-// Distance scrolled before cards completely expand from stack into grid
-const UNSTACK_DISTANCE = 450;
+// Scroll distance (px) before cards fully expand — mobile completes sooner.
+const UNSTACK_DISTANCE = { mobile: 220, desktop: 420 } as const;
+const MOBILE_MQ = "(max-width: 639px)";
 
 type Offset = { dx: number; dy: number; rotate: number };
 
-// Deterministic fanned offsets for cards in the stacked state (center = index 2)
-const FANNED_OFFSETS: Offset[] = [
-  { rotate: -12, dx: -180, dy: 14 },
-  { rotate: -6, dx: -90, dy: 6 },
-  { rotate: 0, dx: 0, dy: 0 },
-  { rotate: 6, dx: 90, dy: 6 },
-  { rotate: 12, dx: 180, dy: 14 },
-];
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function useStackScrollConfig() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MQ);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const unstackDistance = isMobile ? UNSTACK_DISTANCE.mobile : UNSTACK_DISTANCE.desktop;
+  return { isMobile, unstackDistance };
+}
+
+/** Fan spread scales with card width so the stack looks tight at any breakpoint. */
+function buildFanOffsets(count: number, cardWidth: number): Offset[] {
+  if (count === 0) return [];
+  if (count === 1) return [{ dx: 0, dy: 0, rotate: 0 }];
+
+  const center = (count - 1) / 2;
+  const maxSpread = clamp(cardWidth * 0.85, 72, 200);
+  const maxRotate = 12;
+
+  return Array.from({ length: count }, (_, i) => {
+    const t = center === 0 ? 0 : (i - center) / center;
+    return {
+      dx: t * maxSpread * 0.5,
+      rotate: t * maxRotate,
+      dy: Math.abs(t) * clamp(cardWidth * 0.04, 6, 14),
+    };
+  });
+}
+
+function stackZIndex(index: number, count: number) {
+  // First card in the list sits on top of the pile.
+  return count - index;
+}
 
 function StackCard({
   index,
+  count,
   offset,
+  fan,
   progress,
+  compactStagger,
   children,
 }: {
   index: number;
+  count: number;
   offset: Offset | null;
+  fan: Offset;
   progress: MotionValue<number>;
+  compactStagger?: boolean;
   children: React.ReactNode;
 }) {
-  const fanned = FANNED_OFFSETS[index % FANNED_OFFSETS.length];
+  const dx = (offset?.dx ?? 0) + fan.dx;
+  const dy = (offset?.dy ?? 0) + fan.dy;
 
-  // Total delta from card's grid position to stack position
-  const dx = (offset?.dx ?? 0) + fanned.dx;
-  const dy = (offset?.dy ?? 0) + fanned.dy;
-  const rot = fanned.rotate;
-
-  // Staggered un-stacking transition: 0 (stacked under text) -> 1 (grid position)
-  const start = Math.min(index * 0.04, 0.2);
+  const step = compactStagger ? 0.025 : 0.04;
+  const cap = compactStagger ? 0.15 : 0.25;
+  const start = Math.min(index * step, cap);
 
   const x = useTransform(progress, [start, 1], [dx, 0]);
   const y = useTransform(progress, [start, 1], [dy, 0]);
-  const rotate = useTransform(progress, [start, 1], [rot, 0]);
+  const rotate = useTransform(progress, [start, 1], [fan.rotate, 0]);
   const scale = useTransform(progress, [start, 1], [0.92, 1]);
-
-  const baseZIndex = 30 - Math.abs(index - 2);
 
   return (
     <motion.div
-      style={{ x, y, rotate, scale, zIndex: baseZIndex }}
+      style={{ x, y, rotate, scale, zIndex: stackZIndex(index, count) }}
       className="relative"
     >
       {children}
@@ -76,18 +111,32 @@ export default function OurWork({
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [offsets, setOffsets] = useState<Offset[] | null>(null);
+  const [cardWidth, setCardWidth] = useState(0);
+  const { isMobile, unstackDistance } = useStackScrollConfig();
 
   const hasItems = items.length > 0;
 
-  // Measure each grid card relative to the central stack anchor under text
+  const fanOffsets = useMemo(
+    () => buildFanOffsets(items.length, cardWidth),
+    [items.length, cardWidth],
+  );
+
+  // Measure grid card positions and card width — re-run on resize / column changes.
   useEffect(() => {
     if (!hasItems) return;
+
     const measure = () => {
       const anchor = anchorRef.current;
       if (!anchor) return;
+
+      const firstCard = cardRefs.current.find(Boolean);
+      if (firstCard) {
+        setCardWidth(firstCard.getBoundingClientRect().width);
+      }
 
       const anchorRect = anchor.getBoundingClientRect();
       const targetX = anchorRect.left + anchorRect.width / 2;
@@ -105,63 +154,85 @@ export default function OurWork({
 
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [items.length, hasItems]);
+
+    const grid = gridRef.current;
+    const ro = grid ? new ResizeObserver(measure) : null;
+    if (grid && ro) ro.observe(grid);
+
+    return () => {
+      window.removeEventListener("resize", measure);
+      ro?.disconnect();
+    };
+  }, [hasItems, items.length, serviceId]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end end"],
+    // Fixed pixel track — not tied to full section height (which is much
+    // taller on mobile's single-column grid).
+    offset: ["start start", `${unstackDistance}px start`],
   });
 
-  const progress = useTransform(scrollYProgress, (v) =>
-    Math.min(1, Math.max(0, v * (1000 / UNSTACK_DISTANCE)))
-  );
+  const progress = useTransform(scrollYProgress, (v) => clamp(v, 0, 1));
+
+  const layoutReady = offsets !== null && cardWidth > 0;
 
   return (
-    <section ref={sectionRef} className="bg-white py-16 md:py-24 overflow-hidden">
-      <Container>
-        {/* Centered Header & Stack Anchor */}
-        <div className="mb-12 flex flex-col items-center justify-center text-center">
-          {header}
+    <section
+      ref={sectionRef}
+      className="relative w-screen max-w-[100vw] ml-[calc(50%-50vw)] bg-cream pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden"
+    >
+      {/* Centered Header & Stack Anchor */}
+      <div className="mb-16 flex flex-col items-center justify-center px-6 text-center sm:px-8 md:mb-20 lg:px-12">
+        {header}
 
-          {/* Invisible anchor where fanned stack forms before unstacking */}
-          {hasItems && (
-            <div
-              ref={anchorRef}
-              className="pointer-events-none mt-10 h-[280px] sm:h-[340px] w-48 sm:w-64 opacity-0"
-              aria-hidden
-            />
-          )}
-        </div>
-
-        {/* Portfolio Cards Grid — un-stacks from center pile into grid on scroll */}
+        {/* Invisible anchor where fanned stack forms before unstacking */}
         {hasItems && (
-          <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 md:gap-8">
-            {items.map((project, index) => (
-              <div
-                key={`${serviceId}-${project.name}`}
-                ref={(el) => {
-                  cardRefs.current[index] = el;
-                }}
-              >
-                <StackCard index={index} offset={offsets ? offsets[index] : null} progress={progress}>
-                  <PortfolioCard
-                    name={project.name}
-                    client={project.client}
-                    image={project.image}
-                    tags={project.tags}
-                    href={project.href}
-                    isHovered={hovered === index}
-                    isDimmed={hovered !== null && hovered !== index}
-                    onHover={() => setHovered(index)}
-                    onLeave={() => setHovered(null)}
-                  />
-                </StackCard>
-              </div>
-            ))}
-          </div>
+          <div
+            ref={anchorRef}
+            className="pointer-events-none mt-10 h-[200px] w-40 opacity-0 sm:mt-12 sm:h-[280px] sm:w-48 md:mt-14 md:h-[340px] md:w-64"
+            aria-hidden
+          />
         )}
-      </Container>
+      </div>
+
+      {hasItems && (
+        <div
+          ref={gridRef}
+          className={`relative grid gap-3 px-6 transition-opacity duration-150 sm:grid-cols-2 sm:px-8 md:gap-4 lg:grid-cols-3 lg:px-12 ${
+            layoutReady ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {items.map((project, index) => (
+            <div
+              key={`${serviceId}-${project.name}`}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
+            >
+              <StackCard
+                index={index}
+                count={items.length}
+                offset={offsets ? offsets[index] : null}
+                fan={fanOffsets[index] ?? { dx: 0, dy: 0, rotate: 0 }}
+                progress={progress}
+                compactStagger={isMobile}
+              >
+                <PortfolioCard
+                  name={project.name}
+                  client={project.client}
+                  image={project.image}
+                  href={project.href}
+                  isHovered={hovered === index}
+                  isDimmed={hovered !== null && hovered !== index}
+                  onHover={() => setHovered(index)}
+                  onLeave={() => setHovered(null)}
+                  borderless
+                />
+              </StackCard>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
