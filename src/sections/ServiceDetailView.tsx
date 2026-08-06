@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import {
-    motion,
-    AnimatePresence,
-    useMotionValue,
-    useSpring,
-    useTransform,
-    useReducedMotion,
-} from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import Link from "next/link";
@@ -36,6 +28,7 @@ type ServiceDetails = {
     bgClass: string;
     textClass: string;
     heroImage: string;
+    titleColorClass: string;
 };
 
 const SERVICES_DATA: Record<string, ServiceDetails> = {
@@ -63,7 +56,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
         ],
         bgClass: "bg-blue",
         textClass: "text-white",
-        heroImage: "/services/digital-social-media.png"
+        heroImage: "/services/digital-social-media.png",
+        titleColorClass: "text-sky"
     },
     brand: {
         title: "Logo Design & Brand Identity",
@@ -89,7 +83,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
         ],
         bgClass: "bg-orange",
         textClass: "text-white",
-        heroImage: "/services/logo-design.png"
+        heroImage: "/services/logo-design.png",
+        titleColorClass: "text-green"
     },
     web: {
         title: "Website & UI Designing",
@@ -114,7 +109,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
         ],
         bgClass: "bg-yellow",
         textClass: "text-ink",
-        heroImage: "/services/Website.png"
+        heroImage: "/services/Website.png",
+        titleColorClass: "text-orange"
     },
     video: {
         title: "Video Production/Editing",
@@ -140,7 +136,8 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
         ],
         bgClass: "bg-sky",
         textClass: "text-white",
-        heroImage: "/services/video-production.png"
+        heroImage: "/services/video-production.png",
+        titleColorClass: "text-sky"
     },
     graphic: {
         title: "Graphic Design & Content Development",
@@ -166,77 +163,10 @@ const SERVICES_DATA: Record<string, ServiceDetails> = {
         ],
         bgClass: "bg-green",
         textClass: "text-white",
-        heroImage: "/services/graphic.png"
+        heroImage: "/services/graphic.png",
+        titleColorClass: "text-blue"
     }
 };
-
-// Right-side hero art: fades/scales in once (whileInView), floats gently at
-// idle, and tilts in 3D toward the cursor on hover — three separate motion
-// layers so the entrance, idle float, and pointer tilt never fight over the
-// same animated property.
-function ServiceHeroImage({ src, alt }: { src: string; alt: string }) {
-    const prefersReducedMotion = useReducedMotion();
-
-    const px = useMotionValue(0.5);
-    const py = useMotionValue(0.5);
-    const springX = useSpring(px, { stiffness: 150, damping: 15, mass: 0.5 });
-    const springY = useSpring(py, { stiffness: 150, damping: 15, mass: 0.5 });
-
-    const rotateX = useTransform(springY, (v) => (v - 0.5) * -16);
-    const rotateY = useTransform(springX, (v) => (v - 0.5) * 16);
-
-    const handlePointer = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (prefersReducedMotion) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        px.set((e.clientX - rect.left) / rect.width);
-        py.set((e.clientY - rect.top) / rect.height);
-    };
-    const reset = () => {
-        px.set(0.5);
-        py.set(0.5);
-    };
-
-    return (
-        // Layer 1: one-time entrance
-        <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="relative mx-auto w-full max-w-sm lg:max-w-md"
-        >
-            {/* Layer 2: idle float, disabled under reduced motion */}
-            <motion.div
-                animate={
-                    prefersReducedMotion
-                        ? undefined
-                        : { y: [0, -10, 0] }
-                }
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
-                {/* Layer 3: cursor-driven 3D tilt */}
-                <motion.div
-                    onMouseMove={handlePointer}
-                    onMouseLeave={reset}
-                    style={
-                        prefersReducedMotion
-                            ? undefined
-                            : { rotateX, rotateY, transformPerspective: 1000 }
-                    }
-                >
-                    <Image
-                        src={src}
-                        alt={alt}
-                        width={640}
-                        height={640}
-                        priority
-                        className="h-auto w-full drop-shadow-2xl"
-                    />
-                </motion.div>
-            </motion.div>
-        </motion.div>
-    );
-}
 
 export default function ServiceDetailView({
     id,
@@ -262,36 +192,30 @@ export default function ServiceDetailView({
 
     return (
         <main className="min-h-screen bg-cream text-ink pb-20 md:pb-28">
-            {/* Hero Section: no top padding on <main> so this block sits
-                flush against the very top of the viewport with zero gap. */}
-            <section className={`w-full ${details.bgClass} ${details.textClass} py-16 md:py-24 overflow-hidden`}>
-                <Container>
-                    <Link href="/services" className="inline-flex items-center gap-2 mb-8 text-sm font-semibold opacity-80 hover:opacity-100 transition-opacity">
-                        ← Back to Services
-                    </Link>
-                    <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-                        <div className="max-w-2xl">
-                            {/* Fluid size (clamp) rather than fixed breakpoints so the
-                                title keeps shrinking to fit a single line as the text
-                                column narrows against the image, instead of jumping
-                                between a few fixed steps. Tune the clamp max (currently
-                                3rem) down further if your longest title still wraps. */}
-                            <h1 className="font-heading whitespace-normal lg:whitespace-nowrap text-[clamp(1.75rem,4vw,3rem)] font-normal leading-[1.05] tracking-tight mb-8">
-                                {details.title}
-                            </h1>
-                            <p className="text-lg sm:text-xl font-medium leading-relaxed opacity-90">
-                                {details.description}
-                            </p>
-                        </div>
-                        <ServiceHeroImage
-                            src={details.heroImage}
-                            alt={details.title}
-                        />
-                    </div>
-                </Container>
-            </section>
+            {/* Hero removed — the page now opens straight into OurWork, whose
+                header carries the service title/description next to the
+                stacked-photo deck. The back link moved up here since it no
+                longer has a colored hero band to sit inside of. */}
+            <Container className="pt-28 md:pt-36">
+                <Link href="/services" className="inline-flex items-center gap-2 text-sm font-semibold text-ink/70 hover:text-ink transition-colors">
+                    ← Back to Services
+                </Link>
+            </Container>
 
-            <OurWork serviceId={id} items={workItems} />
+            <OurWork
+                serviceId={id}
+                items={workItems}
+                header={
+                    <div className="max-w-2xl">
+                        <h1 className={`font-heading whitespace-normal lg:whitespace-nowrap text-[clamp(1.75rem,4vw,3rem)] font-normal leading-[1.05] tracking-tight ${details.titleColorClass}`}>
+                            {details.title}
+                        </h1>
+                        <p className="mt-4 text-ink/65 text-sm md:text-base leading-relaxed">
+                            {details.description}
+                        </p>
+                    </div>
+                }
+            />
 
             {/* Our Focus Section */}
             <section className="py-16 md:py-24">
