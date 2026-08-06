@@ -10,25 +10,24 @@ const FLOAT_PARAMS: Pick<
   FloatingImageConfig,
   "speed" | "phase" | "amplitude"
 >[] = [
-  { speed: 8, phase: 0, amplitude: 18 },
-  { speed: 11, phase: 1.2, amplitude: 12 },
-  { speed: 9, phase: 2.4, amplitude: 16 },
-  { speed: 7.5, phase: 0.8, amplitude: 20 },
-  { speed: 10, phase: 1.8, amplitude: 14 },
-  { speed: 9.5, phase: 3.0, amplitude: 13 },
-  { speed: 8.5, phase: 2.0, amplitude: 15 },
-  { speed: 10.5, phase: 0.5, amplitude: 17 },
-  { speed: 9, phase: 3.6, amplitude: 15 },
-  { speed: 10.5, phase: 0.2, amplitude: 12 },
-  { speed: 8.2, phase: 2.2, amplitude: 11 },
-  { speed: 9.7, phase: 1.1, amplitude: 14 },
-];
+    { speed: 8, phase: 0, amplitude: 18 },
+    { speed: 11, phase: 1.2, amplitude: 12 },
+    { speed: 9, phase: 2.4, amplitude: 16 },
+    { speed: 7.5, phase: 0.8, amplitude: 20 },
+    { speed: 10, phase: 1.8, amplitude: 14 },
+    { speed: 9.5, phase: 3.0, amplitude: 13 },
+    { speed: 8.5, phase: 2.0, amplitude: 15 },
+    { speed: 10.5, phase: 0.5, amplitude: 17 },
+    { speed: 9, phase: 3.6, amplitude: 15 },
+    { speed: 10.5, phase: 0.2, amplitude: 12 },
+    { speed: 8.2, phase: 2.2, amplitude: 11 },
+    { speed: 9.7, phase: 1.1, amplitude: 14 },
+  ];
 
 const DECORATIVE_HERO_IMAGES = [
   { src: "/work/pxbee_2026-07-31_12-35-44.jpeg", alt: "Creative project", href: "/portfolio" },
   { src: "/work/pxbee_2026-07-31_12-41-27.jpeg", alt: "Branding project", href: "/portfolio" },
   { src: "/work/pxbee_2026-07-31_12-42-20.jpeg", alt: "Strategy project", href: "/portfolio" },
-  { src: "/work/pxbee_2026-07-31_12-43-15.jpeg", alt: "Design project", href: "/portfolio" },
 ];
 
 type HeroImageSource = { src: string; alt: string; href: string };
