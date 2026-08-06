@@ -17,7 +17,11 @@ const nextConfig = {
       { pathname: "/**" },
     ],
   },
-  serverExternalPackages: ["jose"],
+  serverExternalPackages: [
+    "jose",
+    "@libsql/client",
+    "@libsql/isomorphic-ws",
+  ],
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       ".cjs": [".cts", ".cjs"],
