@@ -24,12 +24,17 @@ const isCLI = process.argv.some((value) => {
 });
 const isProduction = process.env.NODE_ENV === "production";
 
-async function getCloudflareEnv(): Promise<Pick<CloudflareEnv, "D1" | "R2"> | null> {
+type PayloadCloudflareBindings = {
+  D1?: D1Database;
+  R2?: R2Bucket;
+};
+
+async function getCloudflareEnv(): Promise<PayloadCloudflareBindings | null> {
   try {
     if (isProduction && !isCLI) {
       const { getCloudflareContext } = await import("@opennextjs/cloudflare");
       const ctx = await getCloudflareContext({ async: true });
-      return ctx.env as Pick<CloudflareEnv, "D1" | "R2">;
+      return ctx.env as PayloadCloudflareBindings;
     }
 
     const wrangler = await import(/* webpackIgnore: true */ `${"__wrangler".replaceAll("_", "")}`);
@@ -38,7 +43,7 @@ async function getCloudflareEnv(): Promise<Pick<CloudflareEnv, "D1" | "R2"> | nu
       remoteBindings: isProduction,
     } satisfies GetPlatformProxyOptions);
 
-    return proxy.env as Pick<CloudflareEnv, "D1" | "R2">;
+    return proxy.env as PayloadCloudflareBindings;
   } catch {
     return null;
   }
