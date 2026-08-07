@@ -1,4 +1,5 @@
-import ServiceDetailView, { SERVICE_DETAIL_IDS } from "@/sections/ServiceDetailView";
+import { SERVICE_DETAIL_IDS } from "@/data/serviceDetails";
+import ServiceDetailView from "@/sections/ServiceDetailView";
 import { getServiceWorkItems } from "@/data/serviceWork";
 
 export const revalidate = 60;
