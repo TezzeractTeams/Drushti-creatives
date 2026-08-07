@@ -37,7 +37,7 @@ function buildProject(input: StaticProjectInput): Project {
 export const STATIC_PROJECTS: Project[] = [
   buildProject({
     slug: "fun",
-    name: "Fun Triangle",
+    name: "Fun Tingle",
     clientSlug: "",
     description:
       "",
@@ -92,25 +92,7 @@ export const STATIC_PROJECTS: Project[] = [
     results: [
     ],
   }),
-  buildProject({
-    slug: "Airbrush-image-extender1",
-    name: "Airbrush-image-extender1",
-    clientSlug: "Airbrush-image-extender",
-    description:
-      "",
-    tags: [],
-    serviceCategory: "Logo Design & Graphic Design",
-    createdAt: "2026-08-05T02:49:21.793Z",
-    updatedAt: "2026-08-05T02:51:49.585Z",
-    featuredImage: "/cms-export/Airbrush-image-extender (1)-1.webp",
-    images: [],
-    featuredOnHero: true,
-    featuredOnHomepage: false,
-    challenge:
-      "",
-    results: [
-    ],
-  }),
+
   buildProject({
     slug: "baby-center",
     name: "Baby Center",
@@ -122,25 +104,6 @@ export const STATIC_PROJECTS: Project[] = [
     createdAt: "2026-08-05T02:51:36.170Z",
     updatedAt: "2026-08-05T02:51:36.170Z",
     featuredImage: "/cms-export/pxbee_2026-07-31_12-43-59.webp",
-    images: [],
-    featuredOnHero: true,
-    featuredOnHomepage: false,
-    challenge:
-      "",
-    results: [
-    ],
-  }),
-  buildProject({
-    slug: "Airbrush-image-extender",
-    name: "Airbrush-image-extender",
-    clientSlug: "Airbrush-image-extender",
-    description:
-      "",
-    tags: [],
-    serviceCategory: "Logo Design & Graphic Design",
-    createdAt: "2026-08-05T02:47:09.354Z",
-    updatedAt: "2026-08-05T02:49:41.646Z",
-    featuredImage: "/cms-export/Airbrush-image-extender-2.webp",
     images: [],
     featuredOnHero: true,
     featuredOnHomepage: false,
