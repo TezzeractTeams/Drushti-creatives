@@ -76,13 +76,13 @@ const IconAt = (p: SVGProps<SVGSVGElement>) => (
 
 const FLOATING_ICONS = [
   // Left Side
-  { Icon: IconMail, top: "15%", left: "18%", size: 42, duration: 9, depth: 26, label: "Send Email", href: "mailto:hello@drushticreatives.com", color: "#E0B624", btnVariant: "dark" },
+  { Icon: IconMail, top: "15%", left: "18%", size: 42, duration: 9, depth: 26, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#E0B624", btnVariant: "dark" },
   { Icon: IconSend, top: "45%", left: "12%", size: 34, duration: 7.5, depth: 34, label: "Send Message", href: "#form", color: "#257FC2", btnVariant: "light" },
-  { Icon: IconPhone, top: "75%", left: "15%", size: 40, duration: 8.5, depth: 22, label: "Call Us", href: "tel:+94112345678", color: "#77C26B", btnVariant: "light" },
+  { Icon: IconPhone, top: "75%", left: "15%", size: 40, duration: 8.5, depth: 22, label: "Call Us", href: "tel:+94768519161", color: "#77C26B", btnVariant: "light" },
   // Right Side
-  { Icon: IconChatDots, top: "15%", left: "82%", size: 50, duration: 10.5, depth: -30, label: "Chat Now", href: "https://wa.me/94112345678", color: "#77C26B", btnVariant: "light" },
-  { Icon: IconAt, top: "45%", left: "88%", size: 36, duration: 9.5, depth: -28, label: "Send Email", href: "mailto:hello@drushticreatives.com", color: "#DC5C26", btnVariant: "light" },
-  { Icon: IconPin, top: "75%", left: "85%", size: 38, duration: 11, depth: -20, label: "View Map", href: "https://maps.google.com", color: "#257FC2", btnVariant: "light" },
+  { Icon: IconChatDots, top: "15%", left: "82%", size: 50, duration: 10.5, depth: -30, label: "Chat Now", href: "https://wa.link/62g3lq", color: "#77C26B", btnVariant: "light" },
+  { Icon: IconAt, top: "45%", left: "88%", size: 36, duration: 9.5, depth: -28, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#DC5C26", btnVariant: "light" },
+  { Icon: IconPin, top: "75%", left: "85%", size: 38, duration: 11, depth: -20, label: "View Map", href: "https://share.google/f3G6G1pm4Yp41hSnT", color: "#257FC2", btnVariant: "light" },
 ] as const;
 
 function FloatingIcon({

@@ -113,9 +113,9 @@ export default function ContactForm() {
           </p>
 
           <div className="mt-6 space-y-4 text-sm">
-            <ContactRow label="Email" value="hello@drushticreatives.com" />
-            <ContactRow label="Phone" value="+94 11 234 5678" />
-            <ContactRow label="Studio" value="Colombo, Sri Lanka" />
+            <ContactRow label="Email" value="collabs@drushticreatives.com" />
+            <ContactRow label="Phone" value="+94 76 851 9161" />
+            <ContactRow label="Studio" value="No. 752 Dr Danister De Silva Mawatha, Colombo 00900" />
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-6">
