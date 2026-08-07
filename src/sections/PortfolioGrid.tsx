@@ -82,7 +82,7 @@ export default function PortfolioGrid({
                 key={project.slug}
                 name={project.name}
                 client={project.client}
-                image={project.featuredImage}
+                image={project.featuredImageCard ?? project.featuredImage}
                 href={project.href}
                 isHovered={hovered === index}
                 isDimmed={hovered !== null && hovered !== index}

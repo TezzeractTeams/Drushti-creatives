@@ -14,6 +14,11 @@ function resolveMediaUrl(media: number | MediaDoc | null | undefined): string {
   return media.url ?? "";
 }
 
+function resolveMediaCardUrl(media: number | MediaDoc | null | undefined): string {
+  if (!media || typeof media === "number") return "";
+  return media.sizes?.card?.url ?? media.sizes?.large?.url ?? media.url ?? "";
+}
+
 function mapClientDoc(doc: ClientDoc): Client {
   return {
     slug: doc.slug,
@@ -38,7 +43,7 @@ function mapPortfolioDoc(doc: PortfolioDoc): Project {
   const clientSlug = clientDoc?.slug ?? "";
 
   const tags = (doc.tags ?? [])
-    .map((row) => row.tag)
+    .map((tag) => (typeof tag === "number" ? null : tag?.name))
     .filter((tag): tag is string => Boolean(tag));
 
   const images = (doc.images ?? [])
@@ -69,6 +74,7 @@ function mapPortfolioDoc(doc: PortfolioDoc): Project {
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
     featuredImage: resolveMediaUrl(doc.featuredImage),
+    featuredImageCard: resolveMediaCardUrl(doc.featuredImage) || undefined,
     images,
     featuredOnHero: doc.featuredOnHero ?? false,
     featuredOnHomepage: doc.featuredOnHomepage ?? false,

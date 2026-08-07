@@ -105,7 +105,8 @@ export default function CaseStudy({ project }: { project: Project }) {
                   src={src}
                   alt={index === 0 ? project.name : `${project.name} gallery ${index}`}
                   fill
-                  className="object-contain"
+                  quality={90}
+                  className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 55vw"
                   priority={index === 0}
                 />

@@ -283,7 +283,7 @@ async function exportPortfolio(
 
     // Tags
     const tags = (project.tags ?? [])
-      .map((row) => row.tag)
+      .map((tag) => (typeof tag === "number" ? null : tag?.name))
       .filter((tag): tag is string => Boolean(tag));
 
     // Strategy

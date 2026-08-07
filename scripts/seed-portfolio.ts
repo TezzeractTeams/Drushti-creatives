@@ -89,6 +89,34 @@ async function ensureClient(
   return created.id;
 }
 
+async function ensureTag(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  name: string,
+): Promise<number | null> {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  const existing = await payload.find({
+    collection: "tags",
+    where: {
+      or: [{ name: { equals: name } }, { slug: { equals: slug } }],
+    },
+    limit: 1,
+  });
+
+  if (existing.docs[0]) return existing.docs[0].id;
+
+  const created = await payload.create({
+    collection: "tags",
+    data: { name, slug },
+  });
+
+  console.log(`Created tag: ${name}`);
+  return created.id;
+}
+
 async function ensureTeamMember(
   payload: Awaited<ReturnType<typeof getPayload>>,
   member: (typeof STATIC_TEAM)[number],
@@ -176,6 +204,12 @@ async function seed() {
       if (id !== null) galleryIds.push(id);
     }
 
+    const tagIds: number[] = [];
+    for (const tag of project.tags) {
+      const id = await ensureTag(payload, tag);
+      if (id !== null) tagIds.push(id);
+    }
+
     await payload.create({
       collection: "portfolio",
       data: {
@@ -184,7 +218,7 @@ async function seed() {
         client: clientId,
         description: project.description,
         serviceCategory: project.serviceCategory,
-        tags: project.tags.map((tag) => ({ tag })),
+        tags: tagIds,
         featuredImage: featuredImageId,
         images: galleryIds.map((image) => ({ image })),
         featuredOnHero: project.featuredOnHero,

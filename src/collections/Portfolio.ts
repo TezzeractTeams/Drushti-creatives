@@ -31,8 +31,12 @@ export const Portfolio: CollectionConfig = {
     },
     {
       name: "tags",
-      type: "array",
-      fields: [{ name: "tag", type: "text" }],
+      type: "relationship",
+      relationTo: "tags",
+      hasMany: true,
+      admin: {
+        description: "Select existing tags or create a new one.",
+      },
     },
     {
       name: "featuredImage",

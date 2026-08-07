@@ -51,6 +51,8 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   featuredImage: string;
+  /** Payload `card` (800px) variant — sized for grid thumbnails, not full originals. */
+  featuredImageCard?: string;
   images: string[];
   featuredOnHero: boolean;
   featuredOnHomepage: boolean;

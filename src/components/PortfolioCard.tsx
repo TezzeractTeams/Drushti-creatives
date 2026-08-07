@@ -39,6 +39,7 @@ export default function PortfolioCard({
         src={image}
         alt={name}
         fill
+        quality={85}
         className={`object-cover transition-transform duration-500 ${
           isHovered ? "scale-105" : "scale-100"
         }`}

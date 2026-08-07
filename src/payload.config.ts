@@ -8,6 +8,7 @@ import sharp from "sharp";
 import { Clients } from "./collections/Clients";
 import { Media } from "./collections/Media";
 import { Portfolio } from "./collections/Portfolio";
+import { Tags } from "./collections/Tags";
 import { Team } from "./collections/Team";
 import { Users } from "./collections/Users";
 
@@ -21,7 +22,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Clients, Team, Portfolio],
+  collections: [Users, Media, Clients, Tags, Team, Portfolio],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "dev-secret-change-me",
   typescript: {
@@ -31,6 +32,7 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URL || "file:./payload.db",
     },
+    push: false,
   }),
   sharp,
 });

@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     clients: Client;
+    tags: Tag;
     team: Team;
     portfolio: Portfolio;
     'payload-kv': PayloadKv;
@@ -82,6 +83,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     portfolio: PortfolioSelect<false> | PortfolioSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -208,6 +210,20 @@ export interface Client {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  name: string;
+  /**
+   * Auto-generated from the tag name if left blank.
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
 export interface Team {
@@ -240,12 +256,10 @@ export interface Portfolio {
         | 'Website & UI Designing'
       )
     | null;
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Select existing tags or create a new one.
+   */
+  tags?: (number | Tag)[] | null;
   featuredImage?: (number | null) | Media;
   images?:
     | {
@@ -311,6 +325,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'clients';
         value: number | Client;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
       } | null)
     | ({
         relationTo: 'team';
@@ -450,6 +468,16 @@ export interface ClientsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team_select".
  */
 export interface TeamSelect<T extends boolean = true> {
@@ -470,12 +498,7 @@ export interface PortfolioSelect<T extends boolean = true> {
   client?: T;
   description?: T;
   serviceCategory?: T;
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
+  tags?: T;
   featuredImage?: T;
   images?:
     | T
